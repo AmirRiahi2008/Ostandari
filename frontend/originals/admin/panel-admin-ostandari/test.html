@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>پرینت در همان صفحه</title>
+    <style>
+        /* فقط برای زیبایی - اختیاری */
+        button {
+            background: blue;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #mySection {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-top: 20px;
+            background: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- دکمه شما -->
+    <button onclick="printSection('mySection')">
+        🖨️ پرینت بخش مورد نظر
+    </button>
+
+    <!-- بخشی که می‌خواهید پرینت شود -->
+    <div id="mySection">
+        <h2>عنوان گزارش</h2>
+        <p>این متن پرینت گرفته می‌شود.</p>
+        <p>تاریخ: 1403/02/15</p>
+        <p>امضا: ___________</p>
+    </div>
+
+    <!-- بقیه محتوای صفحه که نباید پرینت شود -->
+    <p style="margin-top: 20px; color: red;">
+        این متن در پرینت دیده نمی‌شود!
+    </p>
+
+    <script>
+        function printSection(elementId) {
+            const element = document.getElementById(elementId);
+            if (!element) {
+                alert('بخش مورد نظر پیدا نشد!');
+                return;
+            }
+
+            // clone گرفتن از بخش مورد نظر
+            const clone = element.cloneNode(true);
+            clone.querySelectorAll('script').forEach(s => s.remove());
+
+            // ساخت کانتینر موقتی
+            const tempContainer = document.createElement('div');
+            tempContainer.id = 'tempPrintContainer';
+            tempContainer.style.position = 'absolute';
+            tempContainer.style.top = '-9999px';
+            tempContainer.style.left = '-9999px';
+            tempContainer.appendChild(clone);
+            document.body.appendChild(tempContainer);
+
+            // استایل مخصوص پرینت
+            const style = document.createElement('style');
+            style.id = 'tempPrintStyle';
+            style.textContent = `
+                @media print {
+                    /* مخفی کردن همه چیز به جز کانتینر موقتی */
+                    body > :not(#tempPrintContainer) {
+                        display: none !important;
+                    }
+                    
+                    /* نمایش کانتینر موقتی */
+                    #tempPrintContainer {
+                        display: block !important;
+                        position: absolute !important;
+                        top: 0 !important;
+                        left: 0 !important;
+                        width: 100% !important;
+                        margin: 0 !important;
+                        padding: 20px !important;
+                        background: white !important;
+                    }
+                    
+                    /* تنظیم حاشیه صفحه */
+                    @page {
+                        margin: 2cm;
+                    }
+                    
+                    /* رنگ‌ها برای پرینت */
+                    body, #tempPrintContainer, #tempPrintContainer * {
+                        color: black !important;
+                        background: white !important;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+
+            // اجرای پرینت
+            window.print();
+
+            // پاک کردن المان‌های موقتی بعد از پرینت
+            setTimeout(() => {
+                const temp = document.getElementById('tempPrintContainer');
+                const styleTag = document.getElementById('tempPrintStyle');
+                if (temp) temp.remove();
+                if (styleTag) styleTag.remove();
+            }, 100);
+        }
+    </script>
+</body>
+</html>

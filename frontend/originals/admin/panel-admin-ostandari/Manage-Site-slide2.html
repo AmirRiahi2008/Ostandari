@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صدیار</title>
+    <link href="./assets/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/select2/select2.css">
+    <!-- <link rel="stylesheet" href="bootstrap/bootstrap.css"> -->
+    <style>
+        /* ===== فیلدهای اضافه‌شده برای مودال تعریف اسلایدشو ===== */
+        .cbn-modal-body {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .cbn-flex-form {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .cbn-flex-field {
+            flex: auto;
+        }
+
+        .cbn-flex-field label {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 6px;
+            font-weight: 500;
+
+        }
+
+        .cbn-flex-field input[type="text"],
+        .cbn-flex-field select {
+            width: 100%;
+            height: 38px;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            padding: 0 12px;
+            font-size: 13px;
+            color: #3d4855;
+            background: #fff;
+            outline: none;
+            transition: border-color .15s ease;
+            box-sizing: border-box;
+        }
+
+        .cbn-flex-field input[type="text"]:focus,
+        .cbn-flex-field select:focus {
+            border-color: #139e99;
+        }
+
+        .cbn-flex-field select {
+            appearance: none;
+            -webkit-appearance: none;
+            background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23139e99' d='M1 1l5 5 5-5'/%3E%3C/svg%3E") no-repeat left 12px center;
+            padding-left: 30px;
+            cursor: pointer;
+        }
+
+        /* رادیو گروه نوع محتوا */
+        .cbn-radio-group {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .cbn-radio-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #3d4855;
+        }
+
+        .cbn-radio-item input[type="radio"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 17px;
+            height: 17px;
+            border: 1.5px solid #c7cdd3;
+            border-radius: 50%;
+            position: relative;
+            cursor: pointer;
+            margin: 0;
+            transition: border-color .15s ease;
+        }
+
+        .cbn-radio-item input[type="radio"]:checked {
+            border-color: #139e99;
+        }
+
+        .cbn-radio-item input[type="radio"]:checked::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 9px;
+            height: 9px;
+            background: #139e99;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* ناحیه محتوای صفحه (جایگزین ادیتور) */
+        .cbn-content-editor {
+            width: 100%;
+            min-height: 160px;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 13px;
+            color: #3d4855;
+            resize: vertical;
+            outline: none;
+            box-sizing: border-box;
+            font-family: inherit;
+            transition: border-color .15s ease;
+        }
+
+        .cbn-content-editor:focus {
+            border-color: #139e99;
+        }
+
+        /* آپلود تصویر */
+        .cbn-upload-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            height: 44px;
+            border: 1.5px dashed #c7cdd3;
+            border-radius: 8px;
+            background: #fafbfc;
+            color: #5b6770;
+            font-size: 13px;
+            cursor: pointer;
+            transition: border-color .15s ease, background .15s ease;
+        }
+
+        .cbn-upload-box:hover {
+            border-color: #139e99;
+            background: #f2fbfa;
+            color: #139e99;
+        }
+
+        .cbn-upload-hint {
+            font-size: 11px;
+            color: #97a1a8;
+            margin-top: 4px;
+        }
+
+        .cbn-upload-preview {
+            display: none;
+            margin-top: 8px;
+            max-width: 100%;
+            max-height: 140px;
+            border-radius: 8px;
+            border: 1px solid #eef0f2;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="all-website">
+        <div class="sadyar-header">
+            <div class="sadyar-header-right makecenter">
+                <div class="sadyar-header-right-text">
+                    <div>پنل</div>
+                    <div class="special-text-header">استانداری ماندران</div>
+                </div>
+            </div>
+            <div class="sadyar-header-left">
+                <div class="sadyar-header-left-right makecenter">
+                    <button class="sadyar-header-left-righ-createbtn">
+                        <span>ایجاد</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor"
+                            class="bi bi-chevron-down" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="sadyar-header-left-left">
+                    <div class="header-bigitem" id="clickdiv1">
+                        <div class="header-bigitem-logo makecenter">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-person" viewBox="0 0 16 16">
+                                <path
+                                    d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z" />
+                            </svg>
+                        </div>
+                        <div class="header-bigitem-text makecenter">کامیار حق شناس</div>
+                        <div class="bigitem-menu bigitem-menu1" id="hiddendiv1">
+                            <div class="bigitem-menu-top">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-person-video" viewBox="0 0 16 16">
+                                    <path d="M8 9.05a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5" />
+                                    <path
+                                        d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zm10.798 11c-.453-1.27-1.76-3-4.798-3-3.037 0-4.345 1.73-4.798 3H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1z" />
+                                </svg>
+                                <p> کامیار حق شناس</p>
+                            </div>
+                            <div class="bigitem-menu-bottom">
+                                <div class="bigitem-menu-bottom-item">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-list-ol" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd"
+                                            d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5" />
+                                        <path
+                                            d="M1.713 11.865v-.474H2c.217 0 .363-.137.363-.317 0-.185-.158-.31-.361-.31-.223 0-.367.152-.373.31h-.59c.016-.467.373-.787.986-.787.588-.002.954.291.957.703a.595.595 0 0 1-.492.594v.033a.615.615 0 0 1 .569.631c.003.533-.502.8-1.051.8-.656 0-1-.37-1.008-.794h.582c.008.178.186.306.422.309.254 0 .424-.145.422-.35-.002-.195-.155-.348-.414-.348h-.3zm-.004-4.699h-.604v-.035c0-.408.295-.844.958-.844.583 0 .96.326.96.756 0 .389-.257.617-.476.848l-.537.572v.03h1.054V9H1.143v-.395l.957-.99c.138-.142.293-.304.293-.508 0-.18-.147-.32-.342-.32a.33.33 0 0 0-.342.338zM2.564 5h-.635V2.924h-.031l-.598.42v-.567l.629-.443h.635z" />
+                                    </svg>
+                                    وظایف من
+                                </div>
+                                <div class="bigitem-menu-bottom-item bigitem-menu-exit">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-person-x" viewBox="0 0 16 16">
+                                        <path
+                                            d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m.256 7a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1z" />
+                                        <path
+                                            d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m-.646-4.854.646.647.646-.647a.5.5 0 0 1 .708.708l-.647.646.647.646a.5.5 0 0 1-.708.708l-.646-.647-.646.647a.5.5 0 0 1-.708-.708l.647-.646-.647-.646a.5.5 0 0 1 .708-.708" />
+                                    </svg>
+                                    خروج
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="header-bigitem" id="clickdiv2">
+                        <a class="header-bigitem-logo makecenter" href="mail-workpage.html">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-envelope nav-item-icon" viewBox="0 0 16 16">
+                                <path
+                                    d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z">
+                                </path>
+                            </svg>
+                        </a>
+                        <div class="header-bigitem-text makecenter"> مکاتبات</div>
+                        <div class="bigitem-menu bigitem-menu2" id="hiddendiv2">
+                            <a href="home.html" class="bigitem-menu-options">
+
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-grid" viewBox="0 0 16 16">
+                                    <path
+                                        d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5zM2.5 2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zm6.5.5A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zM1 10.5A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zm6.5.5A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5z" />
+                                </svg>
+                                سطح دسترسی
+                            </a>
+                            <div class="bigitem-menu-options">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-headset" viewBox="0 0 16 16">
+                                    <path
+                                        d="M8 1a5 5 0 0 0-5 5v1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a6 6 0 1 1 12 0v6a2.5 2.5 0 0 1-2.5 2.5H9.366a1 1 0 0 1-.866.5h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 .866.5H11.5A1.5 1.5 0 0 0 13 12h-1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1V6a5 5 0 0 0-5-5" />
+                                </svg>
+                                انتخاب
+                            </div>
+                            <div class="bigitem-menu-options">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-headset" viewBox="0 0 16 16">
+                                    <path
+                                        d="M8 1a5 5 0 0 0-5 5v1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a6 6 0 1 1 12 0v6a2.5 2.5 0 0 1-2.5 2.5H9.366a1 1 0 0 1-.866.5h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 .866.5H11.5A1.5 1.5 0 0 0 13 12h-1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1V6a5 5 0 0 0-5-5" />
+                                </svg>
+                                انتخاب
+                            </div>
+                            <div class="bigitem-menu-options">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-headset" viewBox="0 0 16 16">
+                                    <path
+                                        d="M8 1a5 5 0 0 0-5 5v1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a6 6 0 1 1 12 0v6a2.5 2.5 0 0 1-2.5 2.5H9.366a1 1 0 0 1-.866.5h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 .866.5H11.5A1.5 1.5 0 0 0 13 12h-1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1V6a5 5 0 0 0-5-5" />
+                                </svg>
+                                انتخاب
+                            </div>
+                            <div class="bigitem-menu-options">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-headset" viewBox="0 0 16 16">
+                                    <path
+                                        d="M8 1a5 5 0 0 0-5 5v1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a6 6 0 1 1 12 0v6a2.5 2.5 0 0 1-2.5 2.5H9.366a1 1 0 0 1-.866.5h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 .866.5H11.5A1.5 1.5 0 0 0 13 12h-1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1V6a5 5 0 0 0-5-5" />
+                                </svg>
+                                انتخاب
+                            </div>
+                        </div>
+                    </div>
+                    <div class="header-smallitem makecenter" id="openModalBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-headset" viewBox="0 0 16 16">
+                            <path
+                                d="M8 1a5 5 0 0 0-5 5v1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a6 6 0 1 1 12 0v6a2.5 2.5 0 0 1-2.5 2.5H9.366a1 1 0 0 1-.866.5h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 .866.5H11.5A1.5 1.5 0 0 0 13 12h-1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1V6a5 5 0 0 0-5-5" />
+                        </svg>
+                    </div>
+                    <div id="theme-toggle" class="header-smallitem makecenter" aria-label="Toggle dark/light mode">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-moon-stars" viewBox="0 0 16 16">
+                            <path
+                                d="M6 .278a.77.77 0 0 1 .08.858 7.2 7.2 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277q.792-.001 1.533-.16a.79.79 0 0 1 .81.316.73.73 0 0 1-.031.893A8.35 8.35 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.75.75 0 0 1 6 .278M4.858 1.311A7.27 7.27 0 0 0 1.025 7.71c0 4.02 3.279 7.276 7.319 7.276a7.32 7.32 0 0 0 5.205-2.162q-.506.063-1.029.063c-4.61 0-8.343-3.714-8.343-8.29 0-1.167.242-2.278.681-3.286" />
+                            <path
+                                d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.73 1.73 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.73 1.73 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.73 1.73 0 0 0 1.097-1.097zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.16 1.16 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.16 1.16 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732z" />
+                        </svg>
+                    </div>
+                    <div class="header-smallitem makecenter" id="clickdiv3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-bell" viewBox="0 0 16 16">
+                            <path
+                                d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6" />
+                        </svg>
+                        <div class="bigitem-menu bigitem-menu3" id="hiddendiv3">
+                            <div class="bigitem-menu-top-notif">
+                                <div class="bigitem-menu-top-notif-top"> اعلان ها </div>
+                                <div class="bigitem-menu-top-notif-bottom"> بدون اعلان</div>
+                            </div>
+                            <div class="bigitem-menu-bottom">
+                                <div class="bigitem-menu-bottom-item-notif">
+                                    <img src="assets/images/notif.svg">
+                                </div>
+                                <div class="makecenter notif-bottom-text"> شما هیچ اعلانی ندارید.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="header-smallitem makecenter" id="openBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-exclamation-circle" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                            <path
+                                d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z" />
+                        </svg>
+                    </div>
+                    <div class="header-smallitem makecenter" id="clickforsearch">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-search" viewBox="0 0 16 16">
+                            <path
+                                d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                        </svg>
+                    </div>
+                    <div class="header-smallitem makecenter">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-plus-lg" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2" />
+                        </svg>
+                    </div>
+                    <div class="header-smallitem makecenter" id="clickdiv4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-question" viewBox="0 0 16 16">
+                            <path
+                                d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286m1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94" />
+                        </svg>
+                        <div class="bigitem-menu bigitem-menu2" id="hiddendiv4">
+                            <div class="bigitem-menu-options">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-headset" viewBox="0 0 16 16">
+                                    <path
+                                        d="M8 1a5 5 0 0 0-5 5v1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a6 6 0 1 1 12 0v6a2.5 2.5 0 0 1-2.5 2.5H9.366a1 1 0 0 1-.866.5h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 .866.5H11.5A1.5 1.5 0 0 0 13 12h-1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1V6a5 5 0 0 0-5-5" />
+                                </svg>
+                                راهنمایی و آموزش
+                            </div>
+                            <div class="bigitem-menu-options">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-headset" viewBox="0 0 16 16">
+                                    <path
+                                        d="M8 1a5 5 0 0 0-5 5v1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a6 6 0 1 1 12 0v6a2.5 2.5 0 0 1-2.5 2.5H9.366a1 1 0 0 1-.866.5h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 .866.5H11.5A1.5 1.5 0 0 0 13 12h-1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1V6a5 5 0 0 0-5-5" />
+                                </svg>
+                                شروع به کار
+                            </div>
+                            <div class="bigitem-menu-options">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-headset" viewBox="0 0 16 16">
+                                    <path
+                                        d="M8 1a5 5 0 0 0-5 5v1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a6 6 0 1 1 12 0v6a2.5 2.5 0 0 1-2.5 2.5H9.366a1 1 0 0 1-.866.5h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 .866.5H11.5A1.5 1.5 0 0 0 13 12h-1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1V6a5 5 0 0 0-5-5" />
+                                </svg>
+                                ارسال پیام به پشتیبانی
+                            </div>
+                            <div class="bigitem-menu-options">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-headset" viewBox="0 0 16 16">
+                                    <path
+                                        d="M8 1a5 5 0 0 0-5 5v1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a6 6 0 1 1 12 0v6a2.5 2.5 0 0 1-2.5 2.5H9.366a1 1 0 0 1-.866.5h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 .866.5H11.5A1.5 1.5 0 0 0 13 12h-1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1V6a5 5 0 0 0-5-5" />
+                                </svg>
+                                تاریخچه تغییرات محصول
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- bottom pannel -->
+                    <div id="panel">
+                        <div id="handle"></div>
+                        <div class="content">
+                        </div>
+                    </div>
+
+                    <!-- Chatbox -->
+                    <div class="container">
+                        <div class="chat-box" id="modalContent">
+                            <div class="chat-header">
+                                <div class="header-img makecenter">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-person-circle" viewBox="0 0 16 16">
+                                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"></path>
+                                        <path fill-rule="evenodd"
+                                            d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1">
+                                        </path>
+                                    </svg>
+                                </div>
+                                <div class="onvan-header">
+                                    <div class="title-name">کریمی</div>
+                                    <div class="title-text">پاسخگوی سوالات شما هستیم...</div>
+                                </div>
+                                <div class="header-close" onclick="closeModal()">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-x" viewBox="0 0 16 16">
+                                        <path
+                                            d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="chat-body">
+                                <div class="send-container">
+                                    <div class="send-box">
+                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sed reprehenderit
+                                            voluptatibus ut,
+                                            qui animi excepturi praesentium natus distinctio totam consequuntur
+                                            obcaecati iusto rerum,
+                                            aliquam illum numquam. Ut in saepe ea doloremque maxime ratione magnam
+                                            eveniet!</p>
+                                        <div class="send-mosalas">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="recive-container">
+                                    <div class="recive-box">
+
+                                        <p>سلام امروز یک شنبه است و هنوزم نت ها وصل نشده است</p>
+                                        <div class="recive-mosalas">
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="sadra">
+                                    <p>طراحی و توسعه، مهندسی صدرا رایانه نوین طبرستان</p>
+                                </div>
+                            </div>
+
+                            <div class="chat-footer">
+                                <form action="">
+                                    <div class="chat-footer-right">
+                                        <div class="mice">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-mic" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5" />
+                                                <path
+                                                    d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3" />
+                                            </svg>
+                                        </div>
+                                        <div class="payam-footer"><input type="text"
+                                                placeholder="پیام خود را بنویسید..."></div>
+                                    </div>
+                                    <div class="chat-footer-left">
+                                        <div class="emoji">
+                                            <!-- <img src="image" alt=""> -->
+                                        </div>
+                                        <div class="sanjagh makecenter">
+                                            <label for="payam" class="makecenter payamsvg">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    fill="currentColor" class="bi bi-paperclip" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M4.5 3a2.5 2.5 0 0 1 5 0v9a1.5 1.5 0 0 1-3 0V5a.5.5 0 0 1 1 0v7a.5.5 0 0 0 1 0V3a1.5 1.5 0 1 0-3 0v9a2.5 2.5 0 0 0 5 0V5a.5.5 0 0 1 1 0v7a3.5 3.5 0 1 1-7 0z" />
+                                                </svg>
+                                            </label>
+                                            <input type="file" id="payam">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="sadyar-content">
+            <div class="sidebar shrink">
+                <div class="sidebar-contents">
+                    <div class="sidebar-profile">
+                        <div class="sidebar-profile-top">
+                            <div class="sidebar-profile-top-right makecenter">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-person-circle" viewBox="0 0 16 16">
+                                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"></path>
+                                    <path fill-rule="evenodd"
+                                        d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1">
+                                    </path>
+                                </svg>
+                                <div class="sidebar-profile-top-right-role">مدیر</div>
+                            </div>
+                            <div class="sidebar-profile-top-left">
+                                <div class="sidebar-profile-top-left-item">کامیار حق شناس </div>
+                                <div class="sidebar-profile-top-left-item">
+                                    <div class="sidebar-profile-top-left-item-number">
+                                        <span>09360729679 </span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="sidebar-profile-bottom">
+                        </div>
+                    </div>
+
+                    <div class="nav-bar-parent" style="height: 88%;">
+                        <div class="nav-bar" dir="ltr">
+                            <a href="!-home.html" class="nav-item ">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
+                                    class="bi bi-people" viewBox="0 0 16 16">
+                                    <path
+                                        d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4" />
+                                </svg>
+                                <div class="nav-item-text">
+                                    <div>داشبورد</div>
+                                    <div>Dashboard</div>
+                                </div>
+                                <div class="nav-item-text-2"> داشبورد</div>
+                            </a>
+                            <a href="!-side-opinions.html" class="nav-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-eye nav-item-icon-active" viewBox="0 0 16 16">
+                                    <path
+                                        d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z" />
+                                    <path
+                                        d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0" />
+                                </svg>
+                                <div class="nav-item-text">
+                                    <div>مدیریت سایت</div>
+                                    <div>Manage Site</div>
+                                </div>
+                                <div class="nav-item-text-2"> سایت</div>
+                            </a>
+                            <a href="karbaran-daron.html" class="nav-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-pencil-square nav-item-icon" viewBox="0 0 16 16">
+                                    <path
+                                        d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                    <path fill-rule="evenodd"
+                                        d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                                </svg>
+                                <div class="nav-item-text">
+                                    <div>مدیریت کاربران</div>
+                                    <div>Manage Users</div>
+                                </div>
+                                <div class="nav-item-text-2"> کاربران</div>
+                            </a>
+                            <a href="manage-sazman.html" class="nav-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-building nav-item-icon" viewBox="0 0 16 16">
+                                <path d="M4 2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zM4 5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM7.5 5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM4.5 8a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"></path>
+                                <path d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1zm11 0H3v14h3v-2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V15h3z"></path>
+                            </svg>
+                                <div class="nav-item-text">
+                                    <div>مدیریت سازمان ها</div>
+                                    <div> Members</div>
+                                </div>
+                                <div class="nav-item-text-2">سازمان‌ها</div>
+                            </a>
+                            <a href="talar.html" class="nav-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-book nav-item-icon" viewBox="0 0 16 16">
+                                    <path
+                                        d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783" />
+                                </svg>
+                                <div class="nav-item-text">
+                                    <div> مدیریت تالار گفتوگو </div>
+                                    <div> Discussion Forum</div>
+                                </div>
+                                <div class="nav-item-text-2"> گفتوگو</div>
+                            </a>
+                            <a href="emkanat.html" class="nav-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 112 81"
+                                    fill="none" class="nav-item-icon">
+                                    <g clip-path="url(#clip0_479_107)">
+                                        <path
+                                            d="M69.7358 55.1798C76.8591 55.1798 82.6336 49.4052 82.6336 42.2819C82.6336 35.1586 76.8591 29.384 69.7358 29.384C62.6125 29.384 56.8379 35.1586 56.8379 42.2819C56.8379 49.4052 62.6125 55.1798 69.7358 55.1798Z"
+                                            stroke="#3d4855" stroke-width="2.65261" stroke-miterlimit="10"></path>
+                                        <path
+                                            d="M106.073 51.4463C103.839 60.2935 98.4536 68.0214 90.9268 73.1796C83.4 78.3379 74.2493 80.5718 65.1923 79.4622C56.1353 78.3525 47.7946 73.9756 41.7357 67.1529C35.6767 60.3302 32.316 51.5307 32.2844 42.406C32.2528 33.2814 35.5524 24.4588 41.5639 17.5942C47.5754 10.7297 55.8855 6.29504 64.9346 5.12263C73.9837 3.95023 83.1496 6.12067 90.712 11.2266C98.2744 16.3325 103.713 24.0229 106.008 32.8544"
+                                            stroke="#3d4855" stroke-width="2.65261" stroke-miterlimit="10"></path>
+                                        <path
+                                            d="M100.006 50.9109C97.9266 58.2101 93.2824 64.5133 86.927 68.6616C80.5716 72.8099 72.9322 74.5244 65.4136 73.4897C57.895 72.4551 51.0027 68.7409 46.0041 63.0301C41.0054 57.3193 38.2364 49.9959 38.2063 42.4066C38.1762 34.8172 40.887 27.472 45.8402 21.7218C50.7934 15.9716 57.6561 12.2028 65.1662 11.1085C72.6763 10.0143 80.3291 11.6681 86.7172 15.7658C93.1053 19.8636 97.7994 26.1298 99.9361 33.4122"
+                                            stroke="#3d4855" stroke-width="2.65261" stroke-miterlimit="10"></path>
+                                        <path d="M79.1562 32.8645H110.651V51.4466H79.1562" stroke="#3d4855"
+                                            stroke-width="2.65261" stroke-miterlimit="10"></path>
+                                        <path
+                                            d="M69.7354 51.7017C74.9378 51.7017 79.1553 47.4842 79.1553 42.2817C79.1553 37.0793 74.9378 32.8618 69.7354 32.8618C64.5329 32.8618 60.3154 37.0793 60.3154 42.2817C60.3154 47.4842 64.5329 51.7017 69.7354 51.7017Z"
+                                            stroke="#3d4855" stroke-width="2.65261" stroke-miterlimit="10"></path>
+                                        <path
+                                            d="M69.7362 9.3268C70.5494 9.3268 71.2086 8.66755 71.2086 7.85432C71.2086 7.04109 70.5494 6.38184 69.7362 6.38184C68.9229 6.38184 68.2637 7.04109 68.2637 7.85432C68.2637 8.66755 68.9229 9.3268 69.7362 9.3268Z"
+                                            fill="#3d4855"></path>
+                                        <path
+                                            d="M69.7362 78.2584C70.5494 78.2584 71.2086 77.5992 71.2086 76.786C71.2086 75.9727 70.5494 75.3135 69.7362 75.3135C68.9229 75.3135 68.2637 75.9727 68.2637 76.786C68.2637 77.5992 68.9229 78.2584 69.7362 78.2584Z"
+                                            fill="#3d4855"></path>
+                                        <path
+                                            d="M94.1082 19.421C94.9215 19.421 95.5807 18.7618 95.5807 17.9486C95.5807 17.1353 94.9215 16.4761 94.1082 16.4761C93.295 16.4761 92.6357 17.1353 92.6357 17.9486C92.6357 18.7618 93.295 19.421 94.1082 19.421Z"
+                                            fill="#3d4855"></path>
+                                        <path
+                                            d="M45.366 68.1642C46.1793 68.1642 46.8385 67.505 46.8385 66.6917C46.8385 65.8785 46.1793 65.2192 45.366 65.2192C44.5528 65.2192 43.8936 65.8785 43.8936 66.6917C43.8936 67.505 44.5528 68.1642 45.366 68.1642Z"
+                                            fill="#3d4855"></path>
+                                        <path
+                                            d="M35.2713 43.7914C36.0845 43.7914 36.7438 43.1322 36.7438 42.3189C36.7438 41.5057 36.0845 40.8464 35.2713 40.8464C34.4581 40.8464 33.7988 41.5057 33.7988 42.3189C33.7988 43.1322 34.4581 43.7914 35.2713 43.7914Z"
+                                            fill="#3d4855"></path>
+                                        <path
+                                            d="M94.1082 68.1642C94.9215 68.1642 95.5807 67.505 95.5807 66.6917C95.5807 65.8785 94.9215 65.2192 94.1082 65.2192C93.295 65.2192 92.6357 65.8785 92.6357 66.6917C92.6357 67.505 93.295 68.1642 94.1082 68.1642Z"
+                                            fill="#3d4855"></path>
+                                        <path
+                                            d="M45.366 19.421C46.1793 19.421 46.8385 18.7618 46.8385 17.9486C46.8385 17.1353 46.1793 16.4761 45.366 16.4761C44.5528 16.4761 43.8936 17.1353 43.8936 17.9486C43.8936 18.7618 44.5528 19.421 45.366 19.421Z"
+                                            fill="#3d4855"></path>
+                                        <path d="M21.3 57.0981V79.7481H6.09668V57.0981" stroke="#3d4855"
+                                            stroke-width="2.65261" stroke-miterlimit="10"></path>
+                                        <path d="M6.09668 28.7394V1.73145H21.3V28.7394" stroke="#3d4855"
+                                            stroke-width="2.65261" stroke-miterlimit="10"></path>
+                                        <path d="M26.1391 28.7395H1.04492V57.1009H26.1391V28.7395Z" stroke="#3d4855"
+                                            stroke-width="2.65261" stroke-miterlimit="10"></path>
+                                        <path d="M33.7995 53.6178H26.1396V30.9456H33.7995" stroke="#3d4855"
+                                            stroke-width="2.65261" stroke-miterlimit="10"></path>
+                                    </g>
+                                    <defs>
+                                        <clipPath id="clip0_479_107">
+                                            <rect width="111.589" height="80" fill="white"
+                                                transform="translate(0.0537109 0.73999)"></rect>
+                                        </clipPath>
+                                    </defs>
+                                </svg>
+                                <div class="nav-item-text">
+                                    <div> مدیریت امکانات </div>
+                                    <div> Manage Facilities </div>
+                                </div>
+                                <div class="nav-item-text-2">امکانات</div>
+                            </a>
+
+
+                            <a href="manage-khabarname.html" class="nav-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-search nav-item-icon" viewBox="0 0 16 16">
+                                    <path
+                                        d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                                </svg>
+                                <div class="nav-item-text">
+                                    <div>مدیریت اعضا خبرنامه</div>
+                                    <div>Newsletter Users</div>
+                                </div>
+                                <div class="nav-item-text-2">خبرنامه</div>
+                            </a>
+                            <a href="manage-karmandan.html" class="nav-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-map nav-item-icon" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M15.817.113A.5.5 0 0 1 16 .5v14a.5.5 0 0 1-.402.49l-5 1a.5.5 0 0 1-.196 0L5.5 15.01l-4.902.98A.5.5 0 0 1 0 15.5v-14a.5.5 0 0 1 .402-.49l5-1a.5.5 0 0 1 .196 0L10.5.99l4.902-.98a.5.5 0 0 1 .415.103M10 1.91l-4-.8v12.98l4 .8zm1 12.98 4-.8V1.11l-4 .8zm-6-.8V1.11l-4 .8v12.98z" />
+                                </svg>
+                                <div class="nav-item-text">
+                                    <div> مدیریت فرم ها </div>
+                                    <div>Manage Forms </div>
+                                </div>
+                                <div class="nav-item-text-2">فرم‌ها</div>
+                            </a>
+                            <a href="payam-pasokh.html" class="nav-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-building nav-item-icon" viewBox="0 0 16 16">
+                                    <path d="M4 2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zM4 5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM7.5 5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM4.5 8a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"></path>
+                                    <path d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1zm11 0H3v14h3v-2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V15h3z"></path>
+                                </svg>
+                                <div class="nav-item-text">
+                                    <div>پیام‌های رئیس سازمان</div>
+                                    <div> Sms Organization </div>
+                                </div>
+                                <div class="nav-item-text-2"> پیام‌ها</div>
+                            </a>
+                            <a href="nazar-pasokh.html" class="nav-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-building nav-item-icon" viewBox="0 0 16 16">
+                                    <path d="M4 2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zM4 5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM7.5 5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM4.5 8a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"></path>
+                                    <path d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1zm11 0H3v14h3v-2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V15h3z"></path>
+                                </svg>
+                                <div class="nav-item-text">
+                                    <div>نظرات</div>
+                                    <div>Comments Documents</div>
+                                </div>
+                                <div class="nav-item-text-2"> نظرات</div>
+                            </a>
+                            <a href="!-side-meetings.html" class="nav-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi bi-chat nav-item-icon" viewBox="0 0 16 16">
+                                <path
+                                    d="M3.654 1.328a.678.678 0 0 1 .737-.149l2.522 1.01c.329.132.445.52.274.822l-1.096 1.83a.678.678 0 0 0 .145.856l2.457 2.457a.678.678 0 0 0 .856.145l1.83-1.096a.678.678 0 0 1 .822.274l1.01 2.522a.678.678 0 0 1-.148.737l-1.2 1.2a1.745 1.745 0 0 1-1.86.437c-2.7-.9-5.7-3.9-6.6-6.6a1.745 1.745 0 0 1 .437-1.86z" />
+                            </svg>
+                                <div class="nav-item-text">
+                                    <div>تماس باما</div>
+                                    <div>contact us</div>
+                                </div>
+                                <div class="nav-item-text-2"> تماس باما</div>
+                            </a>
+                            <a href="!-side-meetings.html" class="nav-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-building nav-item-icon" viewBox="0 0 16 16">
+                                    <path d="M4 2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zM4 5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM7.5 5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM4.5 8a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"></path>
+                                    <path d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1zm11 0H3v14h3v-2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V15h3z"></path>
+                                </svg>
+                                <div class="nav-item-text">
+                                    <div>گزارشات</div>
+                                    <div>Reports</div>
+                                </div>
+                                <div class="nav-item-text-2"> گزارشات</div>
+                            </a>
+                            <a href="motefareghe-img.html" class="nav-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-building nav-item-icon" viewBox="0 0 16 16">
+                                    <path d="M4 2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zM4 5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM7.5 5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM4.5 8a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"></path>
+                                    <path d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1zm11 0H3v14h3v-2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V15h3z"></path>
+                                </svg>
+                                <div class="nav-item-text">
+                                    <div>متفرقه ها</div>
+                                    <div>Misc</div>
+                                </div>
+                                <div class="nav-item-text-2"> متفرقه ها</div>
+                            </a>
+                        </div>
+                        <div class="nav-bar-bottom">
+                            <a class="nav-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-gear nav-item-icon" viewBox="0 0 16 16">
+                                    <path
+                                        d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0">
+                                    </path>
+                                    <path
+                                        d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.291.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z">
+                                    </path>
+                                </svg>
+                                <div class="nav-item-text">
+                                    <div> Manage Work Page </div>
+                                    <div> مدیریت مکاتبات</div>
+                                </div>
+                                <div class="nav-item-text-2">مدیریت </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="sidebar-extended">
+                <div class="sidebar-extended-top">
+
+                    <a href="!-side-opinions.html" class="nav-item av-item-active nav-item-new-mail remove-border">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-eye nav-item-icon" viewBox="0 0 16 16">
+                            <path
+                                d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z" />
+                            <path
+                                d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0" />
+                        </svg>
+                        <div class="nav-item-text">
+                            <div>مدیریت سایت</div>
+                            <div>Manage Site</div>
+                        </div>
+                        <div class="nav-item-text-2"> سایت</div>
+                    </a>
+                </div>
+                <div class="sidebar-extended-pages">
+                    <a class="sidebar-extended-pages-link " href="Manage-Site.html">
+                        منو
+                    </a>
+                    <a class="sidebar-extended-pages-link sidebar-extended-pages-link-active"
+                        href="Manage-Site-slide.html">
+                        اسلایدشوها
+                    </a>
+                    <a class="sidebar-extended-pages-link" href="khabar-group.html">
+                        گروه های خبری
+                    </a>
+                    <a class="sidebar-extended-pages-link" href="asnad.html">
+                        اسناد
+                    </a>
+                    <a class="sidebar-extended-pages-link" href="tag-khabar.html">
+                        تگ های خبری
+                    </a>
+                    <a class="sidebar-extended-pages-link" href="mail-new-forwarded.html">
+                        تعیین موقعیت جغرافیایی
+                    </a>
+                    <a class="sidebar-extended-pages-link" href="galery-tasavir.html">
+                        گالری تصاویر
+                    </a>
+                    <a class="sidebar-extended-pages-link" href="multi-resane.html">
+                        چندرسانه ای
+                    </a>
+                    <a class="sidebar-extended-pages-link" href="sokhan-roz.html">
+                        سخن روز
+                    </a>
+                    <a class="sidebar-extended-pages-link" href="porsesh.html">
+                        پرسش های متداول
+                    </a>
+                    <a class="sidebar-extended-pages-link" href="nazarsanji.html">
+                        نظرسنجی
+                    </a>
+                    <a class="sidebar-extended-pages-link" href="peyvand.html">
+                        پیوندها
+                    </a>
+                    <a class="sidebar-extended-pages-link" href="farakhan.html">
+                        مدیریت فراخوانها
+                    </a>
+                    <a class="sidebar-extended-pages-link" href="tabligh.html">
+                        مدیریت تبلیغات
+                    </a>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="main-content-header">
+                    <div class="main-content-header-inside">
+                        <h2>اسلایدشوها</h2>
+                    </div>
+                </div>
+                <div class="main-content-content">
+                    <section>
+                        <header class="cbn-header-flex">
+                            <h6>ایجاد اسلایدشو جدید </h6>
+                            <button type="button" class="cbn-plus-btn" id="cbnOpenCreateMenuModalBtn"
+                                title="ایجاد منو جدید">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-plus-lg" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2" />
+                                </svg>
+                            </button>
+                        </header>
+
+                        <div class="main-content-section-bottom">
+
+                            <form class="search-box-wrapper">
+                                <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                                    <div class="search-input-wrapper" style="flex: 2;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                            viewBox="0 0 16 16">
+                                            <path
+                                                d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                                        </svg>
+                                        <input type="text" id="searchInput" placeholder="جستجو...">
+                                    </div>
+                                    <div class="multi-select-responsive">
+                                        <select class="search-field-select-main" multiple="multiple"
+                                            style="width: 100%; display: none;">
+                                            <option value="all">همه</option>
+                                            <option value="univName">عنوان دانشگاه</option>
+                                            <option value="univType">نوع دانشگاه</option>
+                                            <option value="city">شهر</option>
+                                            <option value="address">آدرس</option>
+                                            <option value="postalCode">کد پستی</option>
+                                            <option value="link">لینک استعلام</option>
+                                        </select>
+                                    </div>
+                                    <button id="searchBtn" class="button-designv1"
+                                        style="padding: 8px 24px;">جستجو</button>
+                                    <button id="resetSearchBtn" class="button-designv2" style="padding: 8px 16px;">حذف
+                                        فیلتر</button>
+                                </div>
+                                <div class="active-filters" id="activeFilters"></div>
+                            </form>
+
+                            <div class="education-table-wrapper">
+                                <table class="education-table" id="educationTable">
+                                    <thead>
+                                        <tr>
+                                            <th>ردیف </th>
+                                            <th>شناسه</th>
+                                            <th>عکس اصلی</th>
+                                            <th>عنوان اصلی</th>
+                                            <th>عنوان فرعی</th>
+                                            <th>اولویت قرارگیری</th>
+                                            <th>تاریخ ایجاد</th>
+                                            <th>نمایش در صفحه عمومی</th>
+                                            <th>عملیات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="educationTableBody">
+                                        <tr>
+                                            <td>1</td>
+                                            <td>۲۳۱</td>
+                                            <td class="td-img" style="width: 30px;"><img
+                                                    style="width: 100%; height: 100%; border-radius: 12px; border: 1px solid lightgray;"
+                                                    src="./assets/image/1447216-باب-اسفنجی-از-نمای-روبرو.jpg" alt="">
+                                            </td>
+                                            <td>پویش مردمی آجر-به-آجر</td>
+                                            <td></td>
+                                            <td>1</td>
+                                            <td>1405/03/22 <br> 12:36:55</td>
+                                            <td><input type="checkbox"></td>
+                                            <td>
+                                                <div class="cbn-actions-wrapper">
+                                                    <button type="button" class="cbn-actions-trigger"
+                                                        onclick="cbnToggleActionsMenu(this)" aria-label="عملیات">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                            fill="currentColor" class="bi bi-three-dots"
+                                                            viewBox="0 0 16 16">
+                                                            <path
+                                                                d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3" />
+                                                        </svg>
+                                                    </button>
+                                                    <div class="cbn-actions-menu">
+                                                        <div class="cbn-actions-item"
+                                                            onclick="openEditCommitmentModal()">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="15"
+                                                                height="15" viewBox="0 0 24 24" fill="none"
+                                                                stroke="currentColor" stroke-width="2"
+                                                                stroke-linecap="round" stroke-linejoin="round">
+                                                                <path d="M17 3l4 4L7 21H3v-4L17 3z"></path>
+                                                                <path d="M15 5l4 4"></path>
+                                                            </svg>
+                                                            ویرایش
+                                                        </div>
+                                                        <div class="cbn-actions-item cbn-actions-item-danger">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="15"
+                                                                height="15" viewBox="0 0 24 24" fill="none"
+                                                                stroke="currentColor" stroke-width="2"
+                                                                stroke-linecap="round" stroke-linejoin="round">
+                                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                                <path
+                                                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                                                </path>
+                                                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                                                            </svg>
+                                                            حذف
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>۲۳۱</td>
+                                            <td class="td-img" style="width: 30px;"><img
+                                                    style="width: 100%; height: 100%; border-radius: 12px; border: 1px solid lightgray;"
+                                                    src="./assets/image/1447216-باب-اسفنجی-از-نمای-روبرو.jpg" alt="">
+                                            </td>
+                                            <td>پویش مردمی آجر-به-آجر</td>
+                                            <td></td>
+                                            <td>1</td>
+                                            <td>1405/03/22 <br> 12:36:55</td>
+                                            <td><input type="checkbox"></td>
+                                            <td>
+                                                <div class="cbn-actions-wrapper">
+                                                    <button type="button" class="cbn-actions-trigger"
+                                                        onclick="cbnToggleActionsMenu(this)" aria-label="عملیات">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                            fill="currentColor" class="bi bi-three-dots"
+                                                            viewBox="0 0 16 16">
+                                                            <path
+                                                                d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3" />
+                                                        </svg>
+                                                    </button>
+                                                    <div class="cbn-actions-menu">
+                                                        <div class="cbn-actions-item"
+                                                            onclick="openEditCommitmentModal()">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="15"
+                                                                height="15" viewBox="0 0 24 24" fill="none"
+                                                                stroke="currentColor" stroke-width="2"
+                                                                stroke-linecap="round" stroke-linejoin="round">
+                                                                <path d="M17 3l4 4L7 21H3v-4L17 3z"></path>
+                                                                <path d="M15 5l4 4"></path>
+                                                            </svg>
+                                                            ویرایش
+                                                        </div>
+                                                        <div class="cbn-actions-item cbn-actions-item-danger">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="15"
+                                                                height="15" viewBox="0 0 24 24" fill="none"
+                                                                stroke="currentColor" stroke-width="2"
+                                                                stroke-linecap="round" stroke-linejoin="round">
+                                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                                <path
+                                                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                                                </path>
+                                                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                                                            </svg>
+                                                            حذف
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>۲۳۱</td>
+                                            <td class="td-img" style="width: 30px;"><img
+                                                    style="width: 100%; height: 100%; border-radius: 12px; border: 1px solid lightgray;"
+                                                    src="./assets/image/1447216-باب-اسفنجی-از-نمای-روبرو.jpg" alt="">
+                                            </td>
+                                            <td>پویش مردمی آجر-به-آجر</td>
+                                            <td></td>
+                                            <td>1</td>
+                                            <td>1405/03/22 <br> 12:36:55</td>
+                                            <td><input type="checkbox"></td>
+                                            <td>
+                                                <div class="cbn-actions-wrapper">
+                                                    <button type="button" class="cbn-actions-trigger"
+                                                        onclick="cbnToggleActionsMenu(this)" aria-label="عملیات">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                            fill="currentColor" class="bi bi-three-dots"
+                                                            viewBox="0 0 16 16">
+                                                            <path
+                                                                d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3" />
+                                                        </svg>
+                                                    </button>
+                                                    <div class="cbn-actions-menu">
+                                                        <div class="cbn-actions-item"
+                                                            onclick="openEditCommitmentModal()">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="15"
+                                                                height="15" viewBox="0 0 24 24" fill="none"
+                                                                stroke="currentColor" stroke-width="2"
+                                                                stroke-linecap="round" stroke-linejoin="round">
+                                                                <path d="M17 3l4 4L7 21H3v-4L17 3z"></path>
+                                                                <path d="M15 5l4 4"></path>
+                                                            </svg>
+                                                            ویرایش
+                                                        </div>
+                                                        <div class="cbn-actions-item cbn-actions-item-danger">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="15"
+                                                                height="15" viewBox="0 0 24 24" fill="none"
+                                                                stroke="currentColor" stroke-width="2"
+                                                                stroke-linecap="round" stroke-linejoin="round">
+                                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                                <path
+                                                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                                                </path>
+                                                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                                                            </svg>
+                                                            حذف
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>۲۳۱</td>
+                                            <td class="td-img" style="width: 30px;"><img
+                                                    style="width: 100%; height: 100%; border-radius: 12px; border: 1px solid lightgray;"
+                                                    src="./assets/image/1447216-باب-اسفنجی-از-نمای-روبرو.jpg" alt="">
+                                            </td>
+                                            <td>پویش مردمی آجر-به-آجر</td>
+                                            <td></td>
+                                            <td>1</td>
+                                            <td>1405/03/22 <br> 12:36:55</td>
+                                            <td><input type="checkbox"></td>
+                                            <td>
+                                                <div class="cbn-actions-wrapper">
+                                                    <button type="button" class="cbn-actions-trigger"
+                                                        onclick="cbnToggleActionsMenu(this)" aria-label="عملیات">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                            fill="currentColor" class="bi bi-three-dots"
+                                                            viewBox="0 0 16 16">
+                                                            <path
+                                                                d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3" />
+                                                        </svg>
+                                                    </button>
+                                                    <div class="cbn-actions-menu">
+                                                        <div class="cbn-actions-item"
+                                                            onclick="openEditCommitmentModal()">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="15"
+                                                                height="15" viewBox="0 0 24 24" fill="none"
+                                                                stroke="currentColor" stroke-width="2"
+                                                                stroke-linecap="round" stroke-linejoin="round">
+                                                                <path d="M17 3l4 4L7 21H3v-4L17 3z"></path>
+                                                                <path d="M15 5l4 4"></path>
+                                                            </svg>
+                                                            ویرایش
+                                                        </div>
+                                                        <div class="cbn-actions-item cbn-actions-item-danger">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="15"
+                                                                height="15" viewBox="0 0 24 24" fill="none"
+                                                                stroke="currentColor" stroke-width="2"
+                                                                stroke-linecap="round" stroke-linejoin="round">
+                                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                                <path
+                                                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                                                </path>
+                                                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                                                            </svg>
+                                                            حذف
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+
+                        <!-- create menu modal: houses the "ایجاد منو جدید" inputs, opened via the plus icon -->
+                        <div class="cbn-modal-overlay" id="cbnCreateMenuModalOverlay">
+                            <div class="cbn-modal" style="width: 480px;">
+                                <div class="cbn-modal-header">
+                                    <h3>ایجاد اسلایدشو جدید</h3>
+                                    <div class="cbn-modal-close" id="cbnCloseCreateMenuModalBtn">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="cbn-modal-body">
+                                    <form class="cbn-flex-form" id="cbnSlideShowForm">
+
+                                        <div class="cbn-flex-field">
+                                            <label>انتخاب زبان:</label>
+                                            <select class="search-field-select-country">
+                                                <option value="1">فارسی</option>
+                                                <option value="2">انگلیسی</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="cbn-flex-field">
+                                            <label>اولویت قرارگیری:</label>
+                                            <input type="text" id="cbnSlidePriority" inputmode="numeric"
+                                                >
+                                        </div>
+
+                                        <div class="cbn-flex-field">
+                                            <label>عنوان اصلی:</label>
+                                            <input type="text" id="cbnSlideMainTitle">
+                                        </div>
+
+                                        <div class="cbn-flex-field">
+                                            <label>عنوان فرعی:</label>
+                                            <input type="text" id="cbnSlideSubTitle">
+                                        </div>
+
+                                        <div class="cbn-flex-field">
+                                            <label>انتخاب نوع محتوای اسلاید:</label>
+                                            <div class="cbn-radio-group">
+                                                <label class="cbn-radio-item">
+                                                    <input type="radio" name="cbnSlideContentType" value="link">
+                                                    لینک
+                                                </label>
+                                                <label class="cbn-radio-item">
+                                                    <input type="radio" name="cbnSlideContentType" value="dynamic"
+                                                        checked>
+                                                    صفحه دینامیک
+                                                </label>
+                                                <label class="cbn-radio-item">
+                                                    <input type="radio" name="cbnSlideContentType" value="empty">
+                                                    خالی
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="cbn-flex-field">
+                                            <label>محتوای صفحه:</label>
+                                            <textarea class="cbn-content-editor" id="cbnSlidePageContent"
+                                                placeholder="متن محتوای صفحه را وارد کنید..."></textarea>
+                                        </div>
+
+                                        <div class="cbn-flex-field">
+                                            <label>آپلود تصویر اصلی (فارسی):</label>
+                                            <label class="cbn-upload-box" for="cbnSlideMainImage">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    fill="currentColor" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M.002 3a2 2 0 0 1 2-2h11.996a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2.002a2 2 0 0 1-2-2V3zm1 9v1a1 1 0 0 0 1 1h11.996a1 1 0 0 0 1-1v-2.5l-3.777-3.777a.5.5 0 0 0-.68-.032L8.5 10.5l-2.746-2.746a.5.5 0 0 0-.708 0L1.002 11.708V12z" />
+                                                </svg>
+                                                انتخاب تصویر
+                                            </label>
+                                            <input type="file" id="cbnSlideMainImage" accept="image/*"
+                                                style="display:none;">
+                                            <div class="cbn-upload-hint">سایز پیشنهادی: 400*982</div>
+                                            <img class="cbn-upload-preview" id="cbnSlideMainImagePreview"
+                                                alt="پیش‌نمایش تصویر">
+                                        </div>
+
+                                    </form>
+                                </div>
+                                <div class="cbn-modal-footer">
+                                    <button type="button" class="button-designv2"
+                                        id="cbnCancelCreateMenuBtn">انصراف</button>
+                                    <button class="button-designv1" id="cbnSubmitCreateMenuBtn">ایجاد</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="top-modal-overlay" id="editCommitmentModal">
+                            <div class="top-modal-container">
+                                <div class="top-modal-header">
+                                    <h3>ویرایش استان ها </h3>
+                                    <div class="top-modal-close" onclick="closeEditCommitmentModal()">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="top-modal-body">
+                                    <form action="">
+                                        <div class="upload-item">
+                                            <label>کد استان:</label>
+                                            <input type="text" id="commitmentTitle" placeholder="عنوان را تایپ کنید">
+                                        </div>
+                                        <div class="upload-item">
+                                            <label>نام استان:</label>
+                                            <input type="text" id="commitmentTitle" placeholder="عنوان را تایپ کنید">
+                                        </div>
+                                        <div class="upload-item">
+                                            <div class="engineer-input-field" style="z-index: 100;">
+                                                <label>نام کشور:</label>
+                                                <select class="search-field-select-country">
+                                                    <option value="2">ایران</option>
+                                                    <option value="3">افغانستان</option>
+                                                    <option value="4">ترکیه</option>
+                                                    <option value="5">امارات</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="upload-item">
+                                            <label>کد استان در نظام مهندسی:</label>
+                                            <input type="text" id="commitmentTitle" placeholder="عنوان را تایپ کنید">
+                                        </div>
+                                        <div class="upload-item">
+                                            <label>ترتیب نمایش:</label>
+                                            <input type="text" id="commitmentTitle" placeholder="عنوان را تایپ کنید">
+                                        </div>
+                                </div>
+                                <div class="top-modal-footer">
+                                    <button class="button-designv2" onclick="closeEditCommitmentModal()">برگشت</button>
+                                    <button class="button-designv1">ذخیره</button>
+                                </div>
+                                </form>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <div class="search-dark-overlay" id="sharedOverlay">
+                    <div class="popup-content-wrapper" id="popupBody"></div>
+                </div>
+                <div class="popup-1-content" id="popup1Content" style="display: none;">
+                    <div class="search-middle">
+                        <div class="search-middle-top">
+                            <input type="text" placeholder="جستجو . . .">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="11.558" cy="11.0585" r="7.06194" stroke="currentColor" stroke-width="1.8"
+                                    stroke-linecap="round" stroke-linejoin="round"></circle>
+                                <path d="M20.5024 20.0034L16.5508 16.0518" stroke="currentColor" stroke-width="1.8"
+                                    stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                        </div>
+                        <div class="search-middle-bottom">
+                            <div class="search-middle-bottom-child">
+                                <div class="bigitem-menu-bottom-item-notif">
+                                    <img src="assets/images/notif.svg">
+                                </div>
+                                <div class="makecenter notif-bottom-text">نام منبع مورد نظر را وارد کنید</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="search-dark-overlay" id="sharedOverlay">
+                <div class="popup-content-wrapper" id="popupBody">
+                    <!-- your popup content with X button will go here -->
+                </div>
+            </div>
+
+            <!-- search popup content -->
+            <div class="popup-1-content" id="popup1Content" style="display: none;">
+                <div class="search-middle">
+                    <div class="search-middle-top">
+                        <input type="text" placeholder="جستجو . . .">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="11.558" cy="11.0585" r="7.06194" stroke="currentColor" stroke-width="1.8"
+                                stroke-linecap="round" stroke-linejoin="round"></circle>
+                            <path d="M20.5024 20.0034L16.5508 16.0518" stroke="currentColor" stroke-width="1.8"
+                                stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </div>
+                    <div class="search-middle-bottom">
+                        <div class="search-middle-bottom-child">
+                            <div class="bigitem-menu-bottom-item-notif">
+                                <img src="assets/images/notif.svg">
+                            </div>
+                            <div class="makecenter notif-bottom-text">نام منبع مورد نظر را وارد کنید</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- create new project popup -->
+            <div class="popup-2-content" id="popup2Content" style="display: none;">
+                <div class="second-popup mail-new-width">
+                    <div class="second-popup-1">
+                        <button class="close-popup-btn">✕</button>
+                        <span class="makecenter"> ایجاد مخاطب</span>
+                        <div style="padding: 16px;"></div>
+                    </div>
+                    <form>
+                        <div class="second-popup-2">
+                            <div class="main-middle-extra no-margin-top">
+                                <div class="main-middle-extra-file">
+                                    <div class="main-kartabl-top-row-row">
+                                        <div class="main-kartabl-top-item">
+                                            <div class="new-middle-item">
+                                                <input type="text" required="">
+                                                <div class="input-label-text"> نام</div>
+                                            </div>
+                                        </div>
+                                        <div class="main-kartabl-top-item">
+                                            <div class="new-middle-item">
+                                                <input type="text" required="">
+                                                <div class="input-label-text"> First Name</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="main-kartabl-top-row-row">
+                                        <div class="main-kartabl-top-item">
+                                            <div class="new-middle-item">
+                                                <input type="text" required="">
+                                                <div class="input-label-text">نام خانوادگی </div>
+                                            </div>
+                                        </div>
+                                        <div class="main-kartabl-top-item">
+                                            <div class="new-middle-item">
+                                                <input type="text" required="">
+                                                <div class="input-label-text"> last name</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="main-kartabl-top-row-row">
+                                        <div class="main-kartabl-top-item item-with-description-under">
+                                            <div class="new-middle-item">
+                                                <input type="text" required="">
+                                                <div class="input-label-text"> سمت/عنوان شغلی</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="main-kartabl-top-item">
+                                            <div class="new-middle-item">
+                                                <input type="text" required="">
+                                                <div class="input-label-text"> Job Title</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span class="item-with-description-under-text">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                            fill="currentColor" class="bi bi-exclamation-circle" viewBox="0 0 16 16">
+                                            <path
+                                                d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16">
+                                            </path>
+                                            <path
+                                                d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z">
+                                            </path>
+                                        </svg>
+                                        عنوان شغلی مخاطب شما. مانند: مدیر آموزش
+                                    </span>
+                                    <div class="main-kartabl-top-row-row">
+                                        <div class="main-kartabl-top-item">
+                                            <div class="new-middle-item">
+                                                <input type="text" required="">
+                                                <div class="input-label-text"> نام سازمان/نام تجاری</div>
+                                            </div>
+                                        </div>
+                                        <div class="main-kartabl-top-item">
+                                            <div class="new-middle-item">
+                                                <input type="text" required="">
+                                                <div class="input-label-text">Company Name</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span class="item-with-description-under-text">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                            fill="currentColor" class="bi bi-exclamation-circle" viewBox="0 0 16 16">
+                                            <path
+                                                d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16">
+                                            </path>
+                                            <path
+                                                d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z">
+                                            </path>
+                                        </svg>
+                                        نام سازمان مخاطب شما. مانند: موسسه آموزشی مسیر ایده‌آل
+                                    </span>
+                                </div>
+
+                                <div class="main-middle-extra-toptext">
+                                    <div> اطلاعات اصلی </div>
+                                    <span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                            fill="currentColor" class="bi bi-exclamation-circle" viewBox="0 0 16 16">
+                                            <path
+                                                d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16">
+                                            </path>
+                                            <path
+                                                d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z">
+                                            </path>
+                                        </svg>
+
+                                        برای ثبت مخاطب حداقل یکی از فیلدهای این بخش را وارد کنید.
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="main-middle-extra no-margin-top">
+                                <div class="main-middle-extra-file">
+                                    <div class="new-middle-item">
+                                        <div class="new-middle-item top-text-select left-padding-input select-chev">
+                                            <select>
+                                                <option>آقای</option>
+                                                <option>خانم</option>
+                                                <option>جناب آقای</option>
+                                                <option>سرکار خانم</option>
+                                                <option>دکتر</option>
+                                                <option>مهندس</option>
+                                                <option>آقای دکتر</option>
+                                                <option>جناب آقای دکتر</option>
+                                                <option>خانم دکتر</option>
+                                                <option>سرکار خانم دکتر</option>
+                                                <option>آقای مهندس</option>
+                                                <option>جناب آقای مهندس</option>
+                                                <option>خانم مهندس</option>
+                                                <option>سرکار خانم مهندس</option>
+                                            </select>
+                                            <div class="input-label-text">لقب</div>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd"
+                                                    d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708">
+                                                </path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="new-middle-item">
+                                        <div class="new-middle-item top-text-select left-padding-input select-chev">
+                                            <select>
+                                                <option>گروه پیش فرض</option>
+                                            </select>
+                                            <div class="input-label-text"> گروه مخاطب</div>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd"
+                                                    d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708">
+                                                </path>
+                                            </svg>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="main-middle-extra-toptext">
+                                    <div> اطلاعات تکمیلی </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div class="second-popup-3">
+                            <button class="create-new-project-button" type="submit">
+                                <span>ایجاد پروژه</span>
+                            </button>
+                        </div>
+                    </form>
+
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <script src="assets/select2/jquery.js"></script>
+    <script src="assets/select2/select2.js"></script>
+    <script src="assets/js/script.js"></script>
+
+
+</body>
+
+</html>

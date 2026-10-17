@@ -1,0 +1,329 @@
+import schemas from '@/data/admin/resource-schema.json';
+
+type FieldRules = Record<string, string[]>;
+export const fieldLabels: Record<string, string> = {
+  name: 'نام',
+  title: 'عنوان',
+  body: 'متن کامل',
+  description: 'توضیحات',
+  question: 'پرسش',
+  answer: 'پاسخ',
+  position: 'سمت',
+  bio: 'معرفی کوتاه',
+  slug: 'شناسه در نشانی',
+  type: 'نوع',
+  kind: 'گروه',
+  locale: 'زبان',
+  priority: 'ترتیب نمایش',
+  is_active: 'فعال',
+  is_current: 'مسئول فعلی',
+  organization_id: 'واحد سازمانی',
+  county_id: 'شهرستان',
+  parent_id: 'والد',
+  category_id: 'گروه‌بندی',
+  role_id: 'نقش کاربری',
+  menu_id: 'منو',
+  media_id: 'تصویر',
+  cover_media_id: 'تصویر شاخص',
+  gallery_id: 'گالری',
+  content_id: 'محتوا',
+  poll_id: 'نظرسنجی',
+  status: 'وضعیت',
+  subtitle: 'عنوان فرعی',
+  excerpt: 'خلاصه',
+  url: 'نشانی پیوند',
+  target: 'نحوهٔ باز شدن',
+  icon: 'آیکن',
+  key: 'کلید',
+  email: 'ایمیل',
+  phone: 'تلفن',
+  fax: 'فکس',
+  address: 'نشانی',
+  username: 'نام کاربری',
+  password: 'رمز عبور',
+  mobile: 'شماره همراه',
+  national_code: 'کد ملی',
+  person_type: 'نوع کاربر',
+  access_scope: 'محدودهٔ دسترسی',
+  permissions: 'دسترسی‌ها',
+  label: 'عنوان نمایشی',
+  starts_at: 'تاریخ شروع',
+  ends_at: 'تاریخ پایان',
+  published_at: 'زمان انتشار',
+  expires_at: 'زمان پایان انتشار',
+  term_start: 'شروع مسئولیت',
+  term_end: 'پایان مسئولیت',
+  comments_enabled: 'ارسال نظر فعال باشد',
+  is_featured: 'ویژه',
+  caption: 'شرح تصویر',
+  requirements: 'مدارک موردنیاز',
+  steps: 'مراحل انجام',
+  delivery_time: 'زمان ارائهٔ خدمت',
+  cost: 'هزینه',
+  target_audience: 'مخاطبان',
+  fields_schema: 'فیلدهای فرم',
+  settings: 'تنظیمات',
+  reply: 'متن پاسخ',
+  note: 'یادداشت داخلی',
+  urgency: 'اولویت رسیدگی',
+  metadata: 'اطلاعات تکمیلی',
+  seo_title: 'عنوان موتور جستجو',
+  seo_description: 'توضیحات موتور جستجو',
+  code: 'کد خدمت',
+  opens_at: 'زمان باز شدن فرم',
+  closes_at: 'مهلت فرم',
+  visibility: 'سطح انتشار فایل',
+  assigned_to: 'کارشناس رسیدگی',
+  message: 'متن پیام',
+};
+const labels: Record<string, string> = {
+  fa: 'فارسی',
+  en: 'انگلیسی',
+  ar: 'عربی',
+  draft: 'پیش‌نویس',
+  published: 'منتشرشده',
+  archived: 'بایگانی',
+  pending: 'در انتظار',
+  review: 'در حال بررسی',
+  referred: 'ارجاع‌شده',
+  resolved: 'پاسخ داده‌شده',
+  closed: 'بسته‌شده',
+  accepted: 'پذیرفته‌شده',
+  rejected: 'ردشده',
+  approved: 'تأییدشده',
+  active: 'فعال',
+  manager: 'مدیر',
+  governor: 'استاندار',
+  county_governor: 'فرماندار',
+  advisor: 'مشاور',
+  all: 'همهٔ واحدها',
+  organization: 'واحد سازمانی',
+  subtree: 'واحد و زیرمجموعه',
+  citizen: 'شهروند',
+  staff: 'کارمند',
+  low: 'کم',
+  medium: 'متوسط',
+  high: 'زیاد',
+  urgent: 'فوری',
+  news: 'خبر',
+  announcement: 'اطلاعیه',
+  resolution: 'مصوبه',
+  page: 'صفحه',
+  publication: 'انتشار',
+  tender: 'مناقصه',
+  contract: 'قرارداد',
+  call: 'فراخوان',
+  event: 'رویداد',
+  duty: 'شرح وظایف',
+  document: 'سند',
+};
+const extra: Record<string, FieldRules> = {
+  users: {
+    name: ['required', 'string', 'max:120'],
+    username: ['nullable', 'string'],
+    email: ['nullable', 'email'],
+    mobile: ['nullable', 'string'],
+    national_code: ['nullable', 'string'],
+    password: ['nullable', 'string'],
+    role_id: ['required', 'exists:roles,id'],
+    organization_id: ['nullable', 'exists:organizations,id'],
+    county_id: ['nullable', 'exists:counties,id'],
+    person_type: ['required', 'in:"staff","citizen"'],
+    access_scope: ['required', 'in:"all","organization","subtree"'],
+    is_active: ['boolean'],
+  },
+  roles: {
+    name: ['required', 'string'],
+    label: ['required', 'string'],
+    permissions: ['required', 'array'],
+  },
+  tickets: {
+    status: ['required', 'in:"pending","review","referred","resolved","rejected","closed"'],
+    organization_id: ['required', 'exists:organizations,id'],
+    assigned_to: ['nullable', 'exists:users,id'],
+    urgency: ['in:"low","medium","high","urgent"'],
+    note: ['nullable', 'string', 'max:4000'],
+    reply: ['nullable', 'string', 'max:20000'],
+  },
+  submissions: {
+    status: ['required', 'in:"pending","review","accepted","rejected"'],
+    reply: ['nullable', 'string', 'max:10000'],
+  },
+  subscribers: { is_active: ['boolean'] },
+  settings: { settings: ['required', 'array'] },
+  'moderation/comments': {
+    status: ['required', 'in:"pending","approved","rejected"'],
+    reply: ['nullable', 'string', 'max:5000'],
+  },
+  'moderation/forum-topics': {
+    status: ['required', 'in:"pending","approved","rejected","closed"'],
+  },
+};
+export function resourceFields(resource: string): FieldRules {
+  return (
+    extra[resource] ?? (schemas as Record<string, { fields: FieldRules }>)[resource]?.fields ?? {}
+  );
+}
+export function AdminResourceForm({
+  resource,
+  defaults = {},
+}: {
+  resource: string;
+  defaults?: Record<string, string>;
+}) {
+  const fields = resourceFields(resource);
+  return (
+    <form className="cbn-flex-form portal-resource-form" data-form="true">
+      {Object.entries(fields)
+        .filter(([field]) => !field.includes('.'))
+        .map(([field, rules]) => {
+          const label = fieldLabels[field] ?? field;
+          const id = 'editor-' + resource.replaceAll('/', '-') + '-' + field;
+          const required = rules.includes('required');
+          const json = rules.includes('array');
+          const flag = rules.includes('boolean');
+          const options = rules
+            .find((rule) => rule.startsWith('in:'))
+            ?.slice(3)
+            .split(',')
+            .map((value) => value.replace(/^"|"$/g, ''));
+          const lookup = rules
+            .find((rule) => rule.startsWith('exists:'))
+            ?.split(':')[1]
+            .split(',')[0];
+          const numeric = rules.includes('integer');
+          const long = [
+            'body',
+            'bio',
+            'description',
+            'excerpt',
+            'answer',
+            'note',
+            'reply',
+            'question',
+            'seo_description',
+          ].includes(field);
+          const initial =
+            defaults[field] ??
+            (field === 'locale' ? 'fa' : field === 'status' ? 'draft' : undefined);
+          const max = Number(rules.find((rule) => rule.startsWith('max:'))?.split(':')[1]);
+          const date = rules.includes('date');
+          return (
+            <div
+              className={'portal-resource-field' + (long || json ? ' portal-resource-wide' : '')}
+              key={field}
+            >
+              {flag ? (
+                <label className="portal-choice">
+                  <input
+                    id={id}
+                    type="checkbox"
+                    name={field}
+                    data-field={field}
+                    defaultChecked={field === 'is_active' || field === 'comments_enabled'}
+                  />
+                  {label}
+                </label>
+              ) : (
+                <>
+                  <label htmlFor={id}>
+                    {label}
+                    {required && <span aria-hidden="true"> *</span>}
+                  </label>
+                  {json ? (
+                    <textarea
+                      id={id}
+                      name={field}
+                      data-field={field}
+                      data-json="true"
+                      rows={5}
+                      dir="ltr"
+                      placeholder={field === 'permissions' ? '["content.manage"]' : '[]'}
+                    />
+                  ) : options ? (
+                    <select
+                      id={id}
+                      name={field}
+                      data-field={field}
+                      required={required}
+                      defaultValue={initial ?? options[0]}
+                    >
+                      {options.map((value) => (
+                        <option key={value} value={value}>
+                          {labels[value] ?? value}
+                        </option>
+                      ))}
+                    </select>
+                  ) : lookup ? (
+                    <select
+                      id={id}
+                      name={field}
+                      data-field={field}
+                      data-lookup={lookup}
+                      required={required}
+                    >
+                      <option value="">انتخاب کنید</option>
+                    </select>
+                  ) : long ? (
+                    <textarea
+                      id={id}
+                      name={field}
+                      data-field={field}
+                      rows={field === 'body' ? 8 : 4}
+                      required={required}
+                      maxLength={max || undefined}
+                    />
+                  ) : (
+                    <input
+                      id={id}
+                      name={field}
+                      data-field={field}
+                      type={
+                        field === 'password'
+                          ? 'password'
+                          : field === 'email'
+                            ? 'email'
+                            : date
+                              ? 'datetime-local'
+                              : numeric
+                                ? 'number'
+                                : 'text'
+                      }
+                      defaultValue={initial ?? (numeric ? '0' : undefined)}
+                      required={required && field !== 'password'}
+                      maxLength={!numeric && !date ? max || undefined : undefined}
+                      min={numeric ? 0 : undefined}
+                      dir={
+                        date ||
+                        numeric ||
+                        ['url', 'slug', 'username', 'email', 'mobile', 'phone'].includes(field)
+                          ? 'ltr'
+                          : undefined
+                      }
+                    />
+                  )}
+                  {json && (
+                    <small>
+                      {field === 'fields_schema'
+                        ? 'تعریف فیلدهای فرم به صورت آرایهٔ JSON'
+                        : 'مقدار را به صورت JSON وارد کنید.'}
+                    </small>
+                  )}
+                </>
+              )}
+            </div>
+          );
+        })}
+      {['slides', 'members', 'contents', 'advertisements'].includes(resource) && (
+        <label className="portal-resource-field portal-resource-wide">
+          بارگذاری تصویر
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            data-media-field={resource === 'contents' ? 'cover_media_id' : 'media_id'}
+          />
+        </label>
+      )}
+    </form>
+  );
+}

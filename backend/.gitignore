@@ -1,0 +1,13 @@
+/vendor/
+/.env
+/.env.testing
+/.phpunit.cache/
+/database/*.sqlite*
+/public/storage
+/bootstrap/cache/*.php
+/storage/**/*.log
+/storage/app/private/*
+/storage/app/public/*
+!/storage/app/private/.gitignore
+!/storage/app/public/.gitignore
+/.setup-credentials

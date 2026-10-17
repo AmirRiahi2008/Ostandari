@@ -1,0 +1,3283 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>پرتال خدمات مردمی | استانداری مازندران</title>
+  <!-- <link rel="stylesheet" href="/assets/css/style.css"> -->
+  <style>
+
+    @font-face {
+    font-family: 'vazirmatn';
+    src: url('/assets/Fonts/Vazirmatn-VariableFont_wght.ttf') format('woff2');
+}
+
+* {
+    box-sizing: border-box;
+    font-family: 'vazirmatn';
+}
+
+body {
+    background: #E4E6ED !important;
+    margin: 0;
+    padding: 0;
+    direction: rtl;
+}
+
+    /* ============================= TOKENS ============================= */
+    :root {
+      --navy-950: #0A2340;
+      --navy-900: #0D2B4E;
+      --navy-800: #123C6D;
+      --navy-700: #164A85;
+      --navy-600: #1F5C9E;
+      --navy-500: #3572B0;
+      --navy-100: #E8EEF6;
+      --navy-050: #F3F6FA;
+      --gold-500: #C9A227;
+      --gold-100: #FBF3DA;
+      --white: #FFFFFF;
+      --ink-900: #17222E;
+      --ink-700: #374357;
+      --ink-500: #5B6B7C;
+      --ink-300: #93A2B3;
+      --border: #E1E7EE;
+      --border-soft: #EEF2F7;
+      --red-600: #C6423F;
+      --red-100: #FBEAE9;
+      --green-600: #2E8F63;
+      --green-100: #E7F5EE;
+      --amber-600: #B4791A;
+      --amber-100: #FBF0DE;
+      --shadow-sm: 0 1px 2px rgba(13, 43, 78, .06);
+      --shadow-md: 0 6px 20px -4px rgba(13, 43, 78, .14);
+      --shadow-lg: 0 20px 45px -12px rgba(13, 43, 78, .28);
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 22px;
+      --font-body: 'Vazirmatn', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    /* * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--navy-050);
+      color: var(--ink-900);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    } */
+
+    button {
+      font-family: inherit;
+    }
+
+    input,
+    textarea,
+    select {
+      font-family: inherit;
+    }
+
+    .num {
+      font-family: var(--font-mono);
+      direction: ltr;
+      unicode-bidi: isolate;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    ::selection {
+      background: var(--navy-600);
+      color: #fff;
+    }
+
+    :focus-visible {
+      outline: 2.5px solid var(--navy-600);
+      outline-offset: 2px;
+      border-radius: 6px;
+    }
+
+    /* respect reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: .001ms !important;
+        transition-duration: .001ms !important;
+      }
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    /* ============================= HORIZON MOTIF (signature element) ============================= */
+    /* Alborz ridge + Caspian shoreline — used as a quiet identity mark, not decoration for its own sake */
+    .horizon {
+      position: absolute;
+      inset-inline: 0;
+      bottom: 0;
+      height: 190px;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .horizon svg {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .horizon .waveA {
+      animation: driftA 22s linear infinite;
+    }
+
+    .horizon .waveB {
+      animation: driftB 30s linear infinite;
+    }
+
+    @keyframes driftA {
+      from {
+        transform: translateX(0)
+      }
+
+      to {
+        transform: translateX(-320px)
+      }
+    }
+
+    @keyframes driftB {
+      from {
+        transform: translateX(0)
+      }
+
+      to {
+        transform: translateX(-420px)
+      }
+    }
+
+
+    /* ============================= LOGIN ============================= */
+    #screen-login {
+      position: relative;
+      min-height: 100vh;
+      background: radial-gradient(1200px 700px at 20% -10%, var(--navy-700) 0%, var(--navy-900) 45%, var(--navy-950) 100%);
+      padding: 32px 20px;
+    }
+
+    #screen-login.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-shell {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 960px;
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+
+    .login-brand {
+      background: linear-gradient(165deg, var(--navy-800) 0%, var(--navy-900) 60%, var(--navy-950) 100%);
+      color: #fff;
+      padding: 44px 40px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .login-brand .horizon {
+      opacity: .5;
+    }
+
+    .brand-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .emblem {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--gold-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--gold-500);
+      flex-shrink: 0;
+    }
+
+    .emblem svg {
+      width: 28px;
+      height: 28px;
+      stroke: var(--navy-800);
+    }
+
+    .brand-top .titles {
+      line-height: 1.5;
+    }
+
+    .brand-top .titles b {
+      display: block;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .brand-top .titles span {
+      display: block;
+      font-size: 12px;
+      color: var(--navy-100);
+      opacity: .85;
+    }
+
+    .login-brand .headline {
+      position: relative;
+      z-index: 2;
+      margin-top: auto;
+      padding-top: 60px;
+    }
+
+    .login-brand .headline h1 {
+      font-size: 26px;
+      line-height: 1.55;
+      font-weight: 800;
+      margin: 0 0 12px;
+    }
+
+    .login-brand .headline p {
+      font-size: 13.5px;
+      color: var(--navy-100);
+      opacity: .9;
+      line-height: 2;
+      margin: 0;
+    }
+
+    .login-brand .stripe {
+      position: relative;
+      z-index: 2;
+      margin-top: 26px;
+      display: flex;
+      gap: 18px;
+      font-size: 12px;
+      color: var(--navy-100);
+    }
+
+    .login-brand .stripe span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .login-brand .stripe svg {
+      width: 14px;
+      height: 14px;
+      stroke: var(--gold-500);
+    }
+
+    .login-form-wrap {
+      padding: 44px 40px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .login-form-wrap h2 {
+      font-size: 20px;
+      font-weight: 800;
+      margin: 0 0 6px;
+      color: var(--navy-900);
+    }
+
+    .login-form-wrap .sub {
+      font-size: 13px;
+      color: var(--ink-500);
+      margin: 0 0 28px;
+      line-height: 1.9;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-700);
+      margin-bottom: 8px;
+    }
+
+    .field .hint {
+      font-size: 11.5px;
+      color: var(--ink-300);
+      margin-top: 6px;
+    }
+
+    .field .err {
+      font-size: 11.5px;
+      color: var(--red-600);
+      margin-top: 6px;
+      display: none;
+      font-weight: 600;
+    }
+
+    .field.invalid .err {
+      display: block;
+    }
+
+    .field.invalid input {
+      border-color: var(--red-600);
+      background: var(--red-100);
+    }
+
+    .input {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      color: var(--ink-900);
+      background: var(--navy-050);
+      transition: border-color .15s, background .15s;
+    }
+
+    .input:focus {
+      border-color: var(--navy-600);
+      background: #fff;
+    }
+
+    .input::placeholder {
+      color: var(--ink-300);
+    }
+
+    .btn {
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform .12s ease, box-shadow .12s ease, background .15s;
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-primary {
+      background: var(--navy-800);
+      color: #fff;
+      padding: 14px 18px;
+      width: 100%;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-primary:hover {
+      background: var(--navy-700);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-primary svg {
+      width: 17px;
+      height: 17px;
+      stroke: #fff;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--navy-700);
+      padding: 10px 6px;
+      font-size: 13px;
+    }
+
+    .btn-ghost:hover {
+      text-decoration: underline;
+    }
+
+    .legal {
+      font-size: 11px;
+      color: var(--ink-300);
+      text-align: center;
+      margin-top: 22px;
+      line-height: 1.8;
+    }
+
+    .otp-boxes {
+      display: flex;
+      gap: 10px;
+      direction: ltr;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .otp-boxes input {
+      width: 52px;
+      height: 56px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--navy-050);
+    }
+
+    .otp-boxes input:focus {
+      border-color: var(--navy-600);
+      background: #fff;
+    }
+
+    .otp-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 14px;
+      font-size: 12.5px;
+      color: var(--ink-500);
+    }
+
+    .otp-meta b {
+      color: var(--navy-700);
+      font-family: var(--font-mono);
+    }
+
+    .step {
+      display: none;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    .back-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      color: var(--ink-500);
+      cursor: pointer;
+      margin-bottom: 18px;
+      width: fit-content;
+    }
+
+    .back-link svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .back-link:hover {
+      color: var(--navy-700);
+    }
+
+    @media (max-width:760px) {
+      .login-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .login-brand {
+        padding: 32px 26px 26px;
+      }
+
+      .login-brand .headline {
+        padding-top: 26px;
+      }
+
+      .login-form-wrap {
+        padding: 32px 26px;
+      }
+    }
+
+    /* ============================= DASHBOARD SHELL ============================= */
+    #screen-dashboard {
+      background: var(--navy-050);
+      min-height: 100vh;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topbar-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .topbar-brand .emblem {
+      width: 42px;
+      height: 42px;
+    }
+
+    .topbar-brand .emblem svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .topbar-brand .titles b {
+      font-size: 14.5px;
+      color: var(--navy-900);
+      display: block;
+      font-weight: 800;
+    }
+
+    .topbar-brand .titles span {
+      font-size: 11.5px;
+      color: var(--ink-500);
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      color: var(--ink-700);
+      transition: background .15s, border-color .15s;
+    }
+
+    .icon-btn:hover {
+      background: var(--navy-100);
+      border-color: var(--navy-100);
+    }
+
+    .icon-btn svg {
+      width: 19px;
+      height: 19px;
+    }
+
+    .badge-dot {
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      min-width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--red-600);
+      color: #fff;
+      font-size: 9.5px;
+      font-family: var(--font-mono);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #fff;
+      font-weight: 700;
+    }
+
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 6px 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      cursor: pointer;
+      background: var(--white);
+      position: relative;
+    }
+
+    .user-chip:hover {
+      background: var(--navy-100);
+    }
+
+    .user-chip .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--navy-800);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12.5px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .user-chip .who {
+      line-height: 1.4;
+    }
+
+    .user-chip .who b {
+      display: block;
+      font-size: 12.5px;
+      color: var(--ink-900);
+    }
+
+    .user-chip .who span {
+      font-size: 10.5px;
+      color: var(--ink-500);
+      font-family: var(--font-mono);
+      direction: ltr;
+      display: block;
+      text-align: right;
+    }
+
+    .user-chip svg.chev {
+      width: 14px;
+      height: 14px;
+      color: var(--ink-500);
+    }
+
+    .dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      inset-inline-end: 0;
+      min-width: 230px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      padding: 8px;
+      display: none;
+      z-index: 60;
+    }
+
+    .dropdown.open {
+      display: block;
+    }
+
+    .dropdown .dd-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--ink-700);
+    }
+
+    .dropdown .dd-item:hover {
+      background: var(--navy-100);
+    }
+
+    .dropdown .dd-item svg {
+      width: 16px;
+      height: 16px;
+      color: var(--navy-700);
+      flex-shrink: 0;
+    }
+
+    .dropdown .dd-item.danger {
+      color: var(--red-600);
+    }
+
+    .dropdown .dd-item.danger svg {
+      color: var(--red-600);
+    }
+
+    .dropdown hr {
+      border: none;
+      border-top: 1px solid var(--border-soft);
+      margin: 6px 4px;
+    }
+
+    .notif-item {
+      padding: 11px 12px;
+      border-radius: 10px;
+    }
+
+    .notif-item:hover {
+      background: var(--navy-100);
+    }
+
+    .notif-item b {
+      display: block;
+      font-size: 12.5px;
+      color: var(--ink-900);
+      margin-bottom: 3px;
+    }
+
+    .notif-item span {
+      font-size: 11px;
+      color: var(--ink-500);
+    }
+
+    .dropdown.wide {
+      min-width: 300px;
+    }
+
+    .dd-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink-500);
+      padding: 6px 12px 8px;
+    }
+
+    /* ============================= LAYOUT: sidebar + content ============================= */
+    .dash-main {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 276px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 88px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: 14px;
+      max-height: calc(100vh - 108px);
+      overflow-y: auto;
+    }
+
+    .nav-group {
+      margin-bottom: 4px;
+    }
+
+    .nav-group-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 12px 6px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .nav-group-head span {
+      font-size: 11px;
+      color: var(--ink-300);
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+
+    .nav-group-head .grp-chev {
+      width: 13px;
+      height: 13px;
+      color: var(--ink-300);
+      transition: transform .2s;
+      flex-shrink: 0;
+    }
+
+    .nav-group.open .nav-group-head .grp-chev {
+      transform: rotate(180deg);
+    }
+
+    .nav-group-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .25s ease;
+    }
+
+    .nav-group.open .nav-group-body {
+      max-height: 400px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 11px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--ink-700);
+      margin-bottom: 2px;
+      transition: background .15s, color .15s;
+    }
+
+    .nav-item svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      color: var(--ink-500);
+      transition: color .15s;
+    }
+
+    .nav-item:hover {
+      background: var(--navy-100);
+    }
+
+    .nav-item.active {
+      background: var(--navy-800);
+      color: #fff;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .nav-item.active svg {
+      color: #fff;
+    }
+
+    .nav-item .nav-count {
+      margin-inline-start: auto;
+      background: var(--navy-100);
+      color: var(--navy-800);
+      font-size: 10.5px;
+      font-family: var(--font-mono);
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    .nav-item.active .nav-count {
+      background: rgba(255, 255, 255, .22);
+      color: #fff;
+    }
+
+    .nav-item.danger {
+      color: var(--red-600);
+    }
+
+    .nav-item.danger svg {
+      color: var(--red-600);
+    }
+
+    .nav-item.danger:hover {
+      background: var(--red-100);
+    }
+
+    .side-divider {
+      height: 1px;
+      background: var(--border-soft);
+      margin: 10px 4px;
+    }
+
+    .sidebar-cta {
+      margin-top: 10px;
+      padding: 16px 14px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(150deg, var(--navy-800), var(--navy-950));
+      color: #fff;
+    }
+
+    .sidebar-cta p {
+      font-size: 12px;
+      line-height: 1.8;
+      margin: 0 0 10px;
+      color: var(--navy-100);
+    }
+
+    .sidebar-cta button {
+      width: 100%;
+      background: var(--gold-500);
+      color: var(--navy-950);
+      padding: 10px;
+      font-size: 12.5px;
+      border-radius: 9px;
+    }
+
+    .sidebar-cta button:hover {
+      background: #dcb534;
+    }
+
+    .content {
+      min-width: 0;
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+      animation: fadeIn .25s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .view-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .view-head h1 {
+      font-size: 21px;
+      font-weight: 800;
+      margin: 0 0 4px;
+      color: var(--navy-900);
+    }
+
+    .view-head p {
+      font-size: 13px;
+      color: var(--ink-500);
+      margin: 0;
+    }
+
+    .greeting-pill {
+      font-size: 11.5px;
+      color: var(--navy-700);
+      background: var(--navy-100);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+
+    /* card grid */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-soft);
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+    }
+
+    .card-head h3 {
+      font-size: 14.5px;
+      font-weight: 700;
+      margin: 0;
+      color: var(--navy-900);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-head h3 svg {
+      width: 17px;
+      height: 17px;
+      color: var(--navy-700);
+    }
+
+    .card-head a {
+      font-size: 12px;
+      color: var(--navy-600);
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .card-head a:hover {
+      text-decoration: underline;
+    }
+
+    .stat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 0;
+    }
+
+    .stat-row span {
+      font-size: 13px;
+      color: var(--ink-700);
+    }
+
+    .stat-row b {
+      font-size: 19px;
+      font-family: var(--font-mono);
+      color: var(--navy-900);
+    }
+
+    .stat-row b.neg {
+      color: var(--red-600);
+    }
+
+    .stat-row b.pos {
+      color: var(--green-600);
+    }
+
+    .stat-row+.stat-row {
+      border-top: 1px dashed var(--border-soft);
+    }
+
+    .quick-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .qa-btn {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      background: #fff;
+      border: 1px solid var(--border);
+      padding: 11px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy-800);
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .qa-btn svg {
+      width: 17px;
+      height: 17px;
+      color: var(--navy-700);
+    }
+
+    .qa-btn:hover {
+      border-color: var(--navy-600);
+      background: var(--navy-100);
+    }
+
+    .qa-btn.primary {
+      background: var(--navy-800);
+      color: #fff;
+    }
+
+    .qa-btn.primary svg {
+      color: #fff;
+    }
+
+    .qa-btn.primary:hover {
+      background: var(--navy-700);
+    }
+
+    /* progress ring */
+    .ring-wrap {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .ring {
+      width: 96px;
+      height: 96px;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .ring svg {
+      transform: rotate(-90deg);
+    }
+
+    .ring .bg {
+      stroke: var(--navy-100);
+    }
+
+    .ring .fg {
+      stroke: var(--navy-700);
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1s ease;
+    }
+
+    .ring-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ring-label b {
+      font-size: 16px;
+      font-family: var(--font-mono);
+      color: var(--navy-900);
+    }
+
+    .ring-label span {
+      font-size: 9.5px;
+      color: var(--ink-500);
+    }
+
+    .ring-info b {
+      display: block;
+      font-size: 13.5px;
+      color: var(--ink-900);
+      margin-bottom: 4px;
+    }
+
+    .ring-info span {
+      font-size: 12px;
+      color: var(--ink-500);
+      line-height: 1.7;
+    }
+
+    .ring-info .status-badge {
+      margin-top: 8px;
+    }
+
+    .list-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+    }
+
+    .list-item+.list-item {
+      border-top: 1px solid var(--border-soft);
+    }
+
+    .list-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--navy-600);
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+
+    .list-item .li-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink-900);
+      margin-bottom: 3px;
+    }
+
+    .list-item .li-sub {
+      font-size: 11.5px;
+      color: var(--ink-500);
+    }
+
+    .li-date {
+      font-size: 10.5px;
+      color: var(--ink-300);
+      font-family: var(--font-mono);
+      white-space: nowrap;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .status-badge svg {
+      width: 11px;
+      height: 11px;
+    }
+
+    .status-review {
+      background: var(--amber-100);
+      color: var(--amber-600);
+    }
+
+    .status-referred {
+      background: var(--navy-100);
+      color: var(--navy-700);
+    }
+
+    .status-resolved {
+      background: var(--green-100);
+      color: var(--green-600);
+    }
+
+    .status-rejected {
+      background: var(--red-100);
+      color: var(--red-600);
+    }
+
+    /* ---- report form ---- */
+    .cat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .cat-card {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px 12px;
+      text-align: center;
+      cursor: pointer;
+      background: #fff;
+      transition: border-color .15s, background .15s, transform .1s;
+    }
+
+    .cat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .cat-card .cico {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--navy-100);
+      margin: 0 auto 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cat-card .cico svg {
+      width: 22px;
+      height: 22px;
+      color: var(--navy-700);
+    }
+
+    .cat-card span {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink-700);
+    }
+
+    .cat-card.selected {
+      border-color: var(--navy-700);
+      background: var(--navy-100);
+    }
+
+    .cat-card.selected .cico {
+      background: var(--navy-800);
+    }
+
+    .cat-card.selected .cico svg {
+      color: #fff;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .form-grid .full {
+      grid-column: 1/-1;
+    }
+
+    textarea.input {
+      resize: vertical;
+      min-height: 110px;
+      line-height: 1.9;
+    }
+
+    .seg {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .seg-opt {
+      padding: 9px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--ink-700);
+      background: #fff;
+    }
+
+    .seg-opt.urgent {
+      color: var(--red-600);
+    }
+
+    .seg-opt.selected {
+      background: var(--navy-800);
+      border-color: var(--navy-800);
+      color: #fff;
+    }
+
+    .seg-opt.urgent.selected {
+      background: var(--red-600);
+      border-color: var(--red-600);
+    }
+
+    .upload-box {
+      border: 1.5px dashed var(--border);
+      border-radius: var(--radius-sm);
+      padding: 26px;
+      text-align: center;
+      color: var(--ink-500);
+      font-size: 12.5px;
+      cursor: pointer;
+      background: var(--navy-050);
+    }
+
+    .upload-box svg {
+      width: 26px;
+      height: 26px;
+      color: var(--navy-500);
+      margin-bottom: 8px;
+    }
+
+    .upload-box b {
+      color: var(--navy-700);
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn-secondary {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      color: var(--ink-700);
+      padding: 12px 20px;
+    }
+
+    .btn-secondary:hover {
+      background: var(--navy-100);
+    }
+
+    .btn-submit {
+      background: var(--navy-800);
+      color: #fff;
+      padding: 12px 26px;
+    }
+
+    .btn-submit:hover {
+      background: var(--navy-700);
+    }
+
+    .btn-submit svg {
+      width: 16px;
+      height: 16px;
+      stroke: #fff;
+    }
+
+    /* ---- tracking table ---- */
+    .filter-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .filter-chip {
+      padding: 8px 15px;
+      border-radius: 999px;
+      border: 1.5px solid var(--border);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink-500);
+      cursor: pointer;
+      background: #fff;
+    }
+
+    .filter-chip.active {
+      background: var(--navy-800);
+      border-color: var(--navy-800);
+      color: #fff;
+    }
+
+    .report-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: box-shadow .15s;
+    }
+
+    .report-card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .report-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .report-id {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-300);
+    }
+
+    .report-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink-900);
+      margin-bottom: 6px;
+    }
+
+    .report-meta {
+      display: flex;
+      gap: 14px;
+      font-size: 11.5px;
+      color: var(--ink-500);
+      flex-wrap: wrap;
+    }
+
+    .report-meta span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .report-meta svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .report-detail {
+      display: none;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--border);
+    }
+
+    .report-card.open .report-detail {
+      display: block;
+    }
+
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .tl-item {
+      display: flex;
+      gap: 12px;
+      padding-bottom: 16px;
+      position: relative;
+    }
+
+    .tl-item:last-child {
+      padding-bottom: 0;
+    }
+
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      right: 5px;
+      top: 16px;
+      bottom: 0;
+      width: 1.5px;
+      background: var(--border);
+    }
+
+    .tl-item:last-child::before {
+      display: none;
+    }
+
+    .tl-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--navy-700);
+      flex-shrink: 0;
+      margin-top: 3px;
+      z-index: 1;
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 1px var(--border);
+    }
+
+    .tl-dot.done {
+      background: var(--green-600);
+    }
+
+    .tl-body b {
+      font-size: 12.5px;
+      color: var(--ink-900);
+      display: block;
+    }
+
+    .tl-body span {
+      font-size: 11px;
+      color: var(--ink-500);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 50px 20px;
+      color: var(--ink-500);
+    }
+
+    .empty-state svg {
+      width: 46px;
+      height: 46px;
+      color: var(--navy-100);
+      margin-bottom: 14px;
+    }
+
+    .empty-state p {
+      font-size: 13px;
+      margin: 0;
+    }
+
+    /* ---- governor contact ---- */
+    .gov-card {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .gov-photo {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--navy-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border: 2px solid var(--navy-100);
+    }
+
+    .gov-photo svg {
+      width: 30px;
+      height: 30px;
+      color: var(--navy-700);
+    }
+
+    .gov-info b {
+      font-size: 14.5px;
+      display: block;
+      color: var(--navy-900);
+    }
+
+    .gov-info span {
+      font-size: 12px;
+      color: var(--ink-500);
+    }
+
+    .info-line {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 12.5px;
+      color: var(--ink-700);
+      padding: 7px 0;
+    }
+
+    .info-line svg {
+      width: 15px;
+      height: 15px;
+      color: var(--navy-600);
+      flex-shrink: 0;
+    }
+
+    /* ---- news / faq ---- */
+    .news-card {
+      display: flex;
+      gap: 14px;
+      padding: 15px 0;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .news-card:last-child {
+      border-bottom: none;
+    }
+
+    .news-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--navy-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .news-icon svg {
+      width: 20px;
+      height: 20px;
+      color: var(--navy-700);
+    }
+
+    .news-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--navy-700);
+      background: var(--navy-100);
+      padding: 3px 9px;
+      border-radius: 999px;
+      margin-bottom: 6px;
+    }
+
+    .news-card h4 {
+      font-size: 13.5px;
+      margin: 0 0 5px;
+      color: var(--ink-900);
+    }
+
+    .news-card p {
+      font-size: 12px;
+      color: var(--ink-500);
+      margin: 0;
+      line-height: 1.8;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .faq-q {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 4px;
+      cursor: pointer;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--ink-900);
+    }
+
+    .faq-q svg {
+      width: 16px;
+      height: 16px;
+      color: var(--navy-600);
+      transition: transform .2s;
+      flex-shrink: 0;
+    }
+
+    .faq-item.open .faq-q svg {
+      transform: rotate(180deg);
+    }
+
+    .faq-a {
+      display: none;
+      padding: 0 4px 16px;
+      font-size: 12.5px;
+      color: var(--ink-500);
+      line-height: 1.9;
+    }
+
+    .faq-item.open .faq-a {
+      display: block;
+    }
+
+    /* ---- directory ---- */
+    .dir-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .dir-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .dir-card .dico {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: var(--red-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .dir-card.util .dico {
+      background: var(--navy-100);
+    }
+
+    .dir-card .dico svg {
+      width: 20px;
+      height: 20px;
+      color: var(--red-600);
+    }
+
+    .dir-card.util .dico svg {
+      color: var(--navy-700);
+    }
+
+    .dir-card b {
+      display: block;
+      font-size: 12.5px;
+      color: var(--ink-900);
+      margin-bottom: 3px;
+    }
+
+    .dir-card .num {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--navy-800);
+    }
+
+    /* ---- poll ---- */
+    .poll-opt {
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 13px 15px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .poll-opt:hover {
+      border-color: var(--navy-500);
+    }
+
+    .poll-fill {
+      position: absolute;
+      inset-inline-start: 0;
+      top: 0;
+      bottom: 0;
+      background: var(--navy-100);
+      width: 0%;
+      transition: width 1s ease;
+      z-index: 0;
+    }
+
+    .poll-opt-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-800);
+    }
+
+    .poll-opt .pct {
+      font-family: var(--font-mono);
+      color: var(--navy-700);
+      font-weight: 700;
+      display: none;
+    }
+
+    .poll-opt.voted .pct {
+      display: inline;
+    }
+
+    .poll-opt.chosen {
+      border-color: var(--navy-800);
+    }
+
+    .poll-note {
+      font-size: 11.5px;
+      color: var(--ink-500);
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .poll-note svg {
+      width: 14px;
+      height: 14px;
+      color: var(--green-600);
+    }
+
+    /* ---- profile ---- */
+    .profile-head {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 22px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .profile-avatar {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: var(--navy-800);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      font-weight: 700;
+    }
+
+    .profile-head h3 {
+      margin: 0 0 4px;
+      font-size: 16px;
+      color: var(--navy-900);
+    }
+
+    .profile-head span {
+      font-size: 12px;
+      color: var(--ink-500);
+    }
+
+    .verified-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--green-100);
+      color: var(--green-600);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-top: 6px;
+    }
+
+    .verified-chip svg {
+      width: 11px;
+      height: 11px;
+    }
+
+    /* toast */
+    #toast-container {
+      position: fixed;
+      bottom: 24px;
+      inset-inline-end: 24px;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      background: var(--navy-900);
+      color: #fff;
+      padding: 14px 18px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: var(--shadow-lg);
+      min-width: 260px;
+      animation: slideIn .3s ease;
+    }
+
+    .toast.success svg {
+      color: #6fdc9c;
+    }
+
+    .toast.error svg {
+      color: #f18b8b;
+    }
+
+    .toast svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    /* mobile */
+    @media (max-width:980px) {
+      .dash-main {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+        max-height: none;
+        order: 2;
+      }
+
+      .content {
+        order: 1;
+      }
+
+      .grid-3,
+      .form-grid,
+      .cat-grid,
+      .dir-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width:600px) {
+
+      .grid-3,
+      .cat-grid,
+      .dir-grid,
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar-brand .titles span {
+        display: none;
+      }
+
+      .user-chip .who {
+        display: none;
+      }
+    }
+
+    svg[fill="none"] {
+  stroke: currentColor;
+}
+  </style>
+</head>
+
+<body>
+
+  <!-- ============================================================= LOGIN ============================================================= -->
+  <section id="screen-login" class="screen active">
+    <div class="horizon">
+      <svg viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path class="waveA" fill="rgba(255,255,255,0.05)"
+          d="M0,140 C120,110 220,170 340,150 C460,130 540,90 660,100 C780,110 860,160 980,150 C1100,140 1180,100 1300,110 C1360,115 1400,130 1440,140 L1440,200 L0,200 Z" />
+        <path class="waveA" fill="rgba(255,255,255,0.05)"
+          d="M0,140 C120,110 220,170 340,150 C460,130 540,90 660,100 C780,110 860,160 980,150 C1100,140 1180,100 1300,110 C1360,115 1400,130 1440,140 L1440,200 L0,200 Z"
+          transform="translate(1440,0)" />
+      </svg>
+      <svg viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path class="waveB" fill="rgba(201,162,39,0.08)"
+          d="M0,170 C100,155 200,185 320,175 C440,165 520,150 640,158 C760,165 840,185 960,178 C1080,170 1160,150 1280,158 C1360,163 1400,168 1440,172 L1440,200 L0,200 Z" />
+        <path class="waveB" fill="rgba(201,162,39,0.08)"
+          d="M0,170 C100,155 200,185 320,175 C440,165 520,150 640,158 C760,165 840,185 960,178 C1080,170 1160,150 1280,158 C1360,163 1400,168 1440,172 L1440,200 L0,200 Z"
+          transform="translate(1440,0)" />
+      </svg>
+    </div>
+
+    <div class="login-shell">
+      <!-- brand panel -->
+      <div class="login-brand">
+        <div class="horizon">
+          <svg viewBox="0 0 700 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill="rgba(255,255,255,0.06)"
+              d="M0,120 L60,80 L110,110 L170,60 L230,105 L300,70 L360,115 L430,90 L500,120 L560,95 L630,118 L700,100 L700,200 L0,200 Z" />
+          </svg>
+        </div>
+        <div class="brand-top">
+          <div class="emblem">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
+          </div>
+          <div class="titles">
+            <b>استانداری مازندران</b>
+            <span>پرتال ارتباط مردمی و خدمات شهروندی</span>
+          </div>
+        </div>
+        <div class="headline">
+          <h1>صدای شما،<br>مسیر پیشرفت مازندران</h1>
+          <p>گزارش مشکلات شهری، ارتباط مستقیم با دفتر استاندار و پیگیری روند رسیدگی — همه در یک پرتال، ویژه شهروندان
+            استان مازندران.</p>
+        </div>
+        <div class="stripe">
+          <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+              <path d="M20 6L9 17l-5-5" />
+            </svg> ثبت گزارش آنی</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+              <path d="M20 6L9 17l-5-5" />
+            </svg> پیگیری شفاف</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+              <path d="M20 6L9 17l-5-5" />
+            </svg> پاسخ‌گویی مستقیم</span>
+        </div>
+      </div>
+
+      <!-- form panel -->
+      <div class="login-form-wrap">
+
+        <!-- STEP 1: identity -->
+        <div class="step active" id="step-identity">
+          <h2>ورود به پرتال</h2>
+          <p class="sub">برای ورود، اطلاعات هویتی خود را با دقت وارد کنید. کد تأیید برای شماره موبایل شما ارسال خواهد
+            شد.</p>
+
+          <div class="field" id="f-name">
+            <label>نام و نام خانوادگی</label>
+            <input class="input" id="in-name" type="text" placeholder="مثال: محمدرضا عزیزی">
+            <div class="err">لطفاً نام و نام خانوادگی را کامل وارد کنید.</div>
+          </div>
+
+          <div class="field" id="f-melli">
+            <label>کد ملی</label>
+            <input class="input" id="in-melli" type="text" inputmode="numeric" maxlength="10"
+              placeholder="مثال: 2091234567" dir="ltr" style="text-align:left">
+            <div class="err">کد ملی وارد شده معتبر نیست.</div>
+          </div>
+
+          <div class="field" id="f-phone">
+            <label>شماره تلفن همراه</label>
+            <input class="input" id="in-phone" type="text" inputmode="numeric" maxlength="11"
+              placeholder="مثال: 09121234567" dir="ltr" style="text-align:left">
+            <div class="err">شماره موبایل باید ۱۱ رقم و با ۰۹ شروع شود.</div>
+          </div>
+
+          <button class="btn btn-primary" onclick="goToOtp()">
+            دریافت کد تأیید
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" style="rotate: 180deg;">
+              <path d="M5 12h14" />
+              <path d="M13 5l7 7-7 7" />
+            </svg>
+          </button>
+          <p class="legal">با ورود به پرتال، «قوانین استفاده از خدمات الکترونیک استانداری مازندران» را می‌پذیرید.</p>
+        </div>
+
+        <!-- STEP 2: otp -->
+        <div class="step" id="step-otp">
+          <div class="back-link" onclick="backToIdentity()">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"  style="rotate: 180deg;">
+              <path d="M19 12H5" />
+              <path d="M12 19l-7-7 7-7" />
+            </svg>
+            بازگشت و ویرایش اطلاعات
+          </div>
+          <h2>کد تأیید را وارد کنید</h2>
+          <p class="sub">کد ۴ رقمی برای شماره <b class="num" id="otp-phone-show" style="color:var(--navy-700)"></b>
+            ارسال شد.</p>
+
+          <div class="field">
+            <div class="otp-boxes">
+              <input maxlength="1" inputmode="numeric" oninput="otpMove(this,0)">
+              <input maxlength="1" inputmode="numeric" oninput="otpMove(this,1)">
+              <input maxlength="1" inputmode="numeric" oninput="otpMove(this,2)">
+              <input maxlength="1" inputmode="numeric" oninput="otpMove(this,3)">
+            </div>
+            <div class="otp-meta">
+              <span id="resend-wrap">ارسال مجدد کد تا <b id="resend-timer" class="num">0:60</b></span>
+              <span class="btn-ghost" id="resend-btn" style="display:none" onclick="resendOtp()">ارسال مجدد کد</span>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" onclick="confirmOtp()" style="margin-top:8px;">
+            ورود به داشبورد
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" style="rotate: 180deg;">
+              <path d="M5 12h14" />
+              <path d="M13 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================= DASHBOARD ============================================================= -->
+  <section id="screen-dashboard" class="screen">
+    <div class="ribbon"></div>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-brand">
+          <div class="emblem">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#123C6D" stroke-width="1.8">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
+          </div>
+          <div class="titles">
+            <b>استانداری مازندران</b>
+            <span>پرتال خدمات مردمی</span>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <div style="position:relative;">
+            <button class="icon-btn" onclick="toggleDD('dd-notif')">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.9">
+                <path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 01-3.46 0" />
+              </svg>
+              <span class="badge-dot">3</span>
+            </button>
+            <div class="dropdown wide" id="dd-notif">
+              <div class="dd-title">اعلان‌ها</div>
+              <div class="notif-item"><b>گزارش شما بررسی شد</b><span>گزارش پسماند در ساری — وضعیت: ارجاع به سازمان
+                  مربوطه</span></div>
+              <div class="notif-item"><b>پاسخ دفتر استاندار</b><span>به پیام شما درباره «کیفیت آب شرب» پاسخ داده
+                  شد</span></div>
+              <div class="notif-item"><b>نظرسنجی جدید</b><span>اولویت‌های توسعه استان — نظر خود را ثبت کنید</span></div>
+            </div>
+          </div>
+
+          <div class="user-chip" onclick="toggleDD('dd-user')" style="position:relative;">
+            <div class="avatar" id="user-avatar-initial">ک</div>
+            <div class="who">
+              <b id="chip-name">محمدرضا عزیزی</b>
+              <span class="num" id="chip-phone">09121234567</span>
+            </div>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="2">
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+            <div class="dropdown" id="dd-user">
+              <div class="dd-item" onclick="showView('profile')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg> پروفایل من</div>
+              <div class="dd-item" onclick="showView('track')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                  <line x1="8" y1="6" x2="21" y2="6" />
+                  <line x1="8" y1="12" x2="21" y2="12" />
+                  <line x1="8" y1="18" x2="21" y2="18" />
+                  <line x1="3" y1="6" x2="3.01" y2="6" />
+                  <line x1="3" y1="12" x2="3.01" y2="12" />
+                  <line x1="3" y1="18" x2="3.01" y2="18" />
+                </svg> گزارش‌های من</div>
+              <hr>
+              <div class="dd-item danger" onclick="logout()"><svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                  <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg> خروج از حساب</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="dash-main">
+
+      <!-- SIDEBAR -->
+      <nav class="sidebar" id="sidebar">
+        <div class="nav-group open" data-group="home">
+          <div class="nav-group-head" onclick="toggleGroup(this)">
+            <span>داشبورد</span>
+            <svg class="grp-chev" viewBox="0 0 24 24" fill="none" stroke-width="2">
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </div>
+          <div class="nav-group-body">
+            <div class="nav-item active" data-view="home" onclick="showView('home')">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                <path d="M9 22V12h6v10" />
+              </svg>
+              خانه
+            </div>
+          </div>
+        </div>
+
+        <div class="nav-group" data-group="report">
+          <div class="nav-group-head" onclick="toggleGroup(this)">
+            <span>گزارش و پیگیری</span>
+            <svg class="grp-chev" viewBox="0 0 24 24" fill="none" stroke-width="2">
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </div>
+          <div class="nav-group-body">
+            <div class="nav-item" data-view="report" onclick="showView('report')">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="16" />
+                <line x1="8" y1="12" x2="16" y2="12" />
+              </svg>
+              ثبت گزارش جدید
+            </div>
+            <div class="nav-item" data-view="track" onclick="showView('track')">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                <line x1="8" y1="6" x2="21" y2="6" />
+                <line x1="8" y1="12" x2="21" y2="12" />
+                <line x1="8" y1="18" x2="21" y2="18" />
+                <line x1="3" y1="6" x2="3.01" y2="6" />
+                <line x1="3" y1="12" x2="3.01" y2="12" />
+                <line x1="3" y1="18" x2="3.01" y2="18" />
+              </svg>
+              پیگیری گزارش‌ها
+              <span class="nav-count" id="count-reports">4</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="nav-group" data-group="comm">
+          <div class="nav-group-head" onclick="toggleGroup(this)">
+            <span>ارتباطات</span>
+            <svg class="grp-chev" viewBox="0 0 24 24" fill="none" stroke-width="2">
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </div>
+          <div class="nav-group-body">
+            <div class="nav-item" data-view="governor" onclick="showView('governor')">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                <path
+                  d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
+              </svg>
+              ارتباط با استاندار
+            </div>
+            <div class="nav-item" data-view="news" onclick="showView('news')">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                <path d="M11 5L6 9H2v6h4l5 4V5z" />
+                <path d="M15.54 8.46a5 5 0 010 7.07" />
+              </svg>
+              اطلاعیه‌ها و اخبار
+            </div>
+            <div class="nav-item" data-view="poll" onclick="showView('poll')">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                <line x1="18" y1="20" x2="18" y2="10" />
+                <line x1="12" y1="20" x2="12" y2="4" />
+                <line x1="6" y1="20" x2="6" y2="14" />
+              </svg>
+              نظرسنجی مردمی
+            </div>
+          </div>
+        </div>
+
+        <div class="nav-group" data-group="help">
+          <div class="nav-group-head" onclick="toggleGroup(this)">
+            <span>راهنما</span>
+            <svg class="grp-chev" viewBox="0 0 24 24" fill="none" stroke-width="2">
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </div>
+          <div class="nav-group-body">
+            <div class="nav-item" data-view="faq" onclick="showView('faq')">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M9.09 9a3 3 0 115.83 1c0 2-3 3-3 3" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+              سوالات متداول
+            </div>
+            <div class="nav-item" data-view="directory" onclick="showView('directory')">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                <path
+                  d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0122 16.92z" />
+              </svg>
+              دفترچه تلفن ادارات
+            </div>
+          </div>
+        </div>
+
+        <div class="side-divider"></div>
+        <div class="nav-item" data-view="profile" onclick="showView('profile')">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          پروفایل من
+        </div>
+        <div class="nav-item danger" onclick="logout()">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+          خروج از حساب کاربری
+        </div>
+
+        <div class="sidebar-cta">
+          <p>مشکلی که با گزینه‌های موجود مطابقت ندارد؟ مستقیماً برای دفتر استاندار پیام بفرستید.</p>
+          <button onclick="showView('governor')">ارسال پیام مستقیم</button>
+        </div>
+      </nav>
+
+      <!-- CONTENT -->
+      <main class="content">
+
+        <!-- HOME -->
+        <div class="view active" id="view-home">
+          <div class="view-head">
+            <div>
+              <h1 id="home-greeting">صبح بخیر، محمدرضا</h1>
+              <p>خلاصه‌ای از فعالیت‌های شما در پرتال خدمات مردمی مازندران</p>
+            </div>
+            <span class="greeting-pill num" id="home-date">1404/04/15</span>
+          </div>
+
+          <div class="quick-actions">
+            <div class="qa-btn primary" onclick="showView('report')">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="16" />
+                <line x1="8" y1="12" x2="16" y2="12" />
+              </svg>
+              ثبت گزارش جدید
+            </div>
+            <div class="qa-btn" onclick="showView('governor')">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                <path
+                  d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
+              </svg>
+              پیام به استاندار
+            </div>
+            <div class="qa-btn" onclick="showView('directory')">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                <path
+                  d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0122 16.92z" />
+              </svg>
+              شماره‌های ضروری
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <div class="card">
+              <div class="card-head">
+                <h3><svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                    <line x1="8" y1="6" x2="21" y2="6" />
+                    <line x1="8" y1="12" x2="21" y2="12" />
+                    <line x1="8" y1="18" x2="21" y2="18" />
+                    <line x1="3" y1="6" x2="3.01" y2="6" />
+                    <line x1="3" y1="12" x2="3.01" y2="12" />
+                    <line x1="3" y1="18" x2="3.01" y2="18" />
+                  </svg> گزارش‌های من</h3>
+                <a onclick="showView('track')">مشاهده</a>
+              </div>
+              <div class="stat-row"><span>در حال بررسی</span><b>2</b></div>
+              <div class="stat-row"><span>بسته‌شده / نتیجه‌دار</span><b class="pos">2</b></div>
+            </div>
+            <div class="card">
+              <div class="card-head">
+                <h3><svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                    <path
+                      d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
+                  </svg> پیام‌های استاندار</h3>
+                <a onclick="showView('governor')">مشاهده</a>
+              </div>
+              <div class="stat-row"><span>در انتظار پاسخ</span><b class="neg">1</b></div>
+              <div class="stat-row"><span>پاسخ‌داده‌شده</span><b class="pos">3</b></div>
+            </div>
+            <div class="card">
+              <div class="card-head">
+                <h3><svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                    <line x1="18" y1="20" x2="18" y2="10" />
+                    <line x1="12" y1="20" x2="12" y2="4" />
+                    <line x1="6" y1="20" x2="6" y2="14" />
+                  </svg> نظرسنجی‌ها</h3>
+                <a onclick="showView('poll')">مشاهده</a>
+              </div>
+              <div class="stat-row"><span>نظرسنجی فعال</span><b>1</b></div>
+              <div class="stat-row"><span>مشارکت‌های شما</span><b>3</b></div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-head">
+                <h3><svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                  </svg> آخرین وضعیت گزارش شما</h3>
+                <a onclick="showView('track')">جزئیات</a>
+              </div>
+              <div class="ring-wrap">
+                <div class="ring">
+                  <svg width="96" height="96" viewBox="0 0 96 96">
+                    <circle class="bg" cx="48" cy="48" r="40" fill="none" stroke-width="9" />
+                    <circle class="fg" cx="48" cy="48" r="40" fill="none" stroke-width="9" stroke-dasharray="251.2"
+                      stroke-dashoffset="90" />
+                  </svg>
+                  <div class="ring-label"><b>روز ۳</b><span>از ۷ روز</span></div>
+                </div>
+                <div class="ring-info">
+                  <b>گزارش پسماند خیابان فرهنگ، ساری</b>
+                  <span>گزارش شما در حال بررسی توسط سازمان مدیریت پسماند شهرداری ساری است. مهلت پاسخ‌گویی استاندارد ۷
+                    روز کاری می‌باشد.</span>
+                  <span class="status-badge status-review"><svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
+                    </svg> در حال بررسی</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head">
+                <h3><svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                    <path d="M11 5L6 9H2v6h4l5 4V5z" />
+                    <path d="M15.54 8.46a5 5 0 010 7.07" />
+                  </svg> آخرین اطلاعیه‌ها</h3>
+                <a onclick="showView('news')">همه اخبار</a>
+              </div>
+              <div class="list-item">
+                <div class="list-dot"></div>
+                <div>
+                  <div class="li-title">افتتاح فاز نخست بازسازی ساحل بابلسر</div>
+                  <div class="li-sub">حوزه عمرانی و گردشگری</div>
+                </div>
+                <div class="li-date num">1404/04/10</div>
+              </div>
+              <div class="list-item">
+                <div class="list-dot"></div>
+                <div>
+                  <div class="li-title">برگزاری جلسه شورای ترافیک استان</div>
+                  <div class="li-sub">حوزه حمل‌ونقل شهری</div>
+                </div>
+                <div class="li-date num">1404/04/06</div>
+              </div>
+              <div class="list-item">
+                <div class="list-dot"></div>
+                <div>
+                  <div class="li-title">فراخوان مشارکت مردمی طرح تفکیک زباله از مبدا</div>
+                  <div class="li-sub">حوزه محیط‌زیست</div>
+                </div>
+                <div class="li-date num">1404/03/29</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- REPORT FORM -->
+        <div class="view" id="view-report">
+          <div class="view-head">
+            <div>
+              <h1>ثبت گزارش جدید</h1>
+              <p>موضوع مورد نظر خود را انتخاب کرده و مشکل را با جزئیات شرح دهید.</p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h3>۱. انتخاب موضوع گزارش</h3>
+            </div>
+            <div class="cat-grid" id="cat-grid">
+              <!-- filled by JS -->
+            </div>
+
+            <div class="card-head">
+              <h3>۲. جزئیات گزارش</h3>
+            </div>
+            <div class="form-grid">
+              <div class="field full">
+                <label>عنوان کوتاه گزارش</label>
+                <input class="input" id="rep-title" placeholder="مثال: تجمع زباله در خیابان فرهنگ">
+              </div>
+              <div class="field">
+                <label>شهرستان</label>
+                <select class="input" id="rep-city">
+                  <option>ساری</option>
+                  <option>بابل</option>
+                  <option>آمل</option>
+                  <option>قائم‌شهر</option>
+                  <option>بهشهر</option>
+                  <option>چالوس</option>
+                  <option>نوشهر</option>
+                  <option>رامسر</option>
+                  <option>تنکابن</option>
+                  <option>بابلسر</option>
+                  <option>محمودآباد</option>
+                  <option>سایر</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>آدرس دقیق یا نشانی محل</label>
+                <input class="input" id="rep-address" placeholder="خیابان، محله، نشانه‌ها...">
+              </div>
+              <div class="field full">
+                <label>شرح کامل مشکل</label>
+                <textarea class="input" id="rep-desc"
+                  placeholder="مثال: پسماند های جمع‌آوری نشده در این منطقه از شهر باعث نارضایتی ساکنین شده و بوی نامطبوع ایجاد کرده است..."></textarea>
+              </div>
+              <div class="field full">
+                <label>سطح اهمیت</label>
+                <div class="seg" id="urgency-seg">
+                  <div class="seg-opt" data-val="کم">کم</div>
+                  <div class="seg-opt selected" data-val="متوسط">متوسط</div>
+                  <div class="seg-opt" data-val="زیاد">زیاد</div>
+                  <div class="seg-opt urgent" data-val="فوری">فوری / خطرساز</div>
+                </div>
+              </div>
+              <div class="field full">
+                <label>افزودن عکس (اختیاری)</label>
+                <div class="upload-box">
+                  <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                  </svg>
+                  <div><b>برای انتخاب تصویر کلیک کنید</b> یا فایل را بکشید و رها کنید</div>
+                </div>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-secondary" onclick="resetReportForm()">پاک کردن فرم</button>
+              <button class="btn btn-submit" onclick="submitReport()">
+                ثبت و ارسال گزارش
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                  <line x1="22" y1="2" x2="11" y2="13" />
+                  <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TRACK -->
+        <div class="view" id="view-track">
+          <div class="view-head">
+            <div>
+              <h1>پیگیری گزارش‌ها</h1>
+              <p>وضعیت گزارش‌های ثبت‌شده توسط شما</p>
+            </div>
+          </div>
+          <div class="filter-row" id="filter-row">
+            <div class="filter-chip active" data-f="all">همه</div>
+            <div class="filter-chip" data-f="review">در حال بررسی</div>
+            <div class="filter-chip" data-f="referred">ارجاع‌شده</div>
+            <div class="filter-chip" data-f="resolved">حل‌شده</div>
+            <div class="filter-chip" data-f="rejected">رد‌شده</div>
+          </div>
+          <div id="reports-list"></div>
+        </div>
+
+        <!-- GOVERNOR -->
+        <div class="view" id="view-governor">
+          <div class="view-head">
+            <div>
+              <h1>ارتباط با استاندار</h1>
+              <p>پیام خود را مستقیماً برای دفتر استاندار مازندران ارسال کنید.</p>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-head">
+                <h3>ارسال پیام جدید</h3>
+              </div>
+              <div class="field">
+                <label>موضوع پیام</label>
+                <input class="input" id="gov-subject" placeholder="مثال: پیگیری وضعیت آب شرب روستای ... ">
+              </div>
+              <div class="field">
+                <label>متن پیام</label>
+                <textarea class="input" id="gov-msg"
+                  placeholder="پیام خود را با احترام و به‌طور شفاف شرح دهید..."></textarea>
+              </div>
+              <div class="form-actions" style="justify-content:flex-start;">
+                <button class="btn btn-submit" onclick="submitGovMsg()">
+                  ارسال پیام
+                  <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                    <line x1="22" y1="2" x2="11" y2="13" />
+                    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="card">
+              <div class="gov-card">
+                <div class="gov-photo"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg></div>
+                <div class="gov-info"><b>دفتر استاندار مازندران</b><span>واحد ارتباطات مردمی و سرکشی</span></div>
+              </div>
+              <div class="info-line"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg> میانگین زمان پاسخ‌گویی: ۳ تا ۵ روز کاری</div>
+              <div class="info-line"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                  <path
+                    d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0122 16.92z" />
+                </svg> تلفن دفتر ارتباطات مردمی: <span class="num" style="direction:ltr;">011-33333333</span></div>
+              <div class="info-line"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1118 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg> آدرس: ساری، خیابان پاسداران، ساختمان مرکزی استانداری</div>
+              <div class="side-divider"></div>
+              <div class="card-head" style="border-bottom:none;margin-bottom:10px;">
+                <h3>پیام‌های پیشین شما</h3>
+              </div>
+              <div class="list-item">
+                <div class="list-dot"></div>
+                <div>
+                  <div class="li-title">وضعیت آسفالت جاده روستایی</div>
+                  <div class="li-sub">پاسخ داده شد</div>
+                </div><span class="status-badge status-resolved">پاسخ‌داده‌شد</span>
+              </div>
+              <div class="list-item">
+                <div class="list-dot"></div>
+                <div>
+                  <div class="li-title">کیفیت آب شرب منطقه</div>
+                  <div class="li-sub">پاسخ داده شد</div>
+                </div><span class="status-badge status-resolved">پاسخ‌داده‌شد</span>
+              </div>
+              <div class="list-item">
+                <div class="list-dot"></div>
+                <div>
+                  <div class="li-title">درخواست بازدید میدانی</div>
+                  <div class="li-sub">در انتظار بررسی</div>
+                </div><span class="status-badge status-review">در انتظار</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NEWS -->
+        <div class="view" id="view-news">
+          <div class="view-head">
+            <div>
+              <h1>اطلاعیه‌ها و اخبار استان</h1>
+              <p>آخرین رویدادها و تصمیمات استانداری مازندران</p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="news-card">
+              <div class="news-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                  <path d="M3 21h18" />
+                  <path d="M5 21V7l7-4 7 4v14" />
+                  <path d="M9 9h1M9 13h1M14 9h1M14 13h1" />
+                </svg></div>
+              <div><span class="news-tag num">1404/04/10 · عمرانی</span>
+                <h4>افتتاح فاز نخست بازسازی ساحل بابلسر</h4>
+                <p>پروژه بازسازی خط ساحلی بابلسر با هدف توسعه گردشگری و ایمن‌سازی سواحل، با حضور مسئولان استانی افتتاح
+                  شد.</p>
+              </div>
+            </div>
+            <div class="news-card">
+              <div class="news-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                  <rect x="1" y="3" width="15" height="13" />
+                  <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                  <circle cx="5.5" cy="18.5" r="2.5" />
+                  <circle cx="18.5" cy="18.5" r="2.5" />
+                </svg></div>
+              <div><span class="news-tag num">1404/04/06 · حمل‌ونقل</span>
+                <h4>برگزاری جلسه شورای ترافیک استان</h4>
+                <p>در این جلسه، طرح‌های کاهش بار ترافیکی محورهای گردشگری استان در فصل تابستان بررسی و تصویب شد.</p>
+              </div>
+            </div>
+            <div class="news-card">
+              <div class="news-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                  <path d="M11 20A7 7 0 019.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z" />
+                  <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
+                </svg></div>
+              <div><span class="news-tag num">1404/03/29 · محیط‌زیست</span>
+                <h4>فراخوان مشارکت مردمی طرح تفکیک زباله از مبدا</h4>
+                <p>شهروندان مازندرانی می‌توانند با ثبت‌نام در طرح تفکیک زباله از مبدا، در کاهش آلودگی محیط‌زیست استان
+                  سهیم باشند.</p>
+              </div>
+            </div>
+            <div class="news-card">
+              <div class="news-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                  <path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z" />
+                </svg></div>
+              <div><span class="news-tag num">1404/03/18 · آب و فاضلاب</span>
+                <h4>آغاز عملیات آبرسانی به روستاهای کوهستانی</h4>
+                <p>عملیات اجرایی آبرسانی پایدار به ۱۲ روستای کوهستانی استان با اعتبار ملی آغاز شد.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- POLL -->
+        <div class="view" id="view-poll">
+          <div class="view-head">
+            <div>
+              <h1>نظرسنجی مردمی</h1>
+              <p>در تصمیم‌گیری‌های استان مشارکت کنید</p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h3>به نظر شما مهم‌ترین اولویت توسعه استان مازندران در سال جاری چیست؟</h3>
+            </div>
+            <div id="poll-options">
+              <div class="poll-opt" data-opt="road" data-pct="38">
+                <div class="poll-fill"></div>
+                <div class="poll-opt-inner"><span>زیرساخت و راه‌های ارتباطی</span><span class="pct num">38%</span></div>
+              </div>
+              <div class="poll-opt" data-opt="waste" data-pct="29">
+                <div class="poll-fill"></div>
+                <div class="poll-opt-inner"><span>مدیریت پسماند و محیط‌زیست</span><span class="pct num">29%</span></div>
+              </div>
+              <div class="poll-opt" data-opt="tourism" data-pct="22">
+                <div class="poll-fill"></div>
+                <div class="poll-opt-inner"><span>گردشگری و اشتغال‌زایی</span><span class="pct num">22%</span></div>
+              </div>
+              <div class="poll-opt" data-opt="health" data-pct="11">
+                <div class="poll-fill"></div>
+                <div class="poll-opt-inner"><span>بهداشت و درمان</span><span class="pct num">11%</span></div>
+              </div>
+            </div>
+            <div class="poll-note" id="poll-note" style="display:none;">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
+                <polyline points="22 4 12 14.01 9 11.01" />
+              </svg>
+              رای شما ثبت شد — از مشارکت شما در تصمیم‌سازی استان سپاسگزاریم.
+            </div>
+          </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="view" id="view-faq">
+          <div class="view-head">
+            <div>
+              <h1>سوالات متداول</h1>
+              <p>پیش از ارسال تیکت، پاسخ سوال خود را اینجا جست‌وجو کنید</p>
+            </div>
+          </div>
+          <div class="card" id="faq-list">
+            <div class="faq-item open">
+              <div class="faq-q" onclick="toggleFaq(this)">چطور می‌توانم گزارش خودم را پیگیری کنم؟<svg
+                  viewBox="0 0 24 24" fill="none" stroke-width="2">
+                  <path d="M6 9l6 6 6-6" />
+                </svg></div>
+              <div class="faq-a">از منوی سمت راست وارد بخش «پیگیری گزارش‌ها» شوید. تمامی گزارش‌های ثبت‌شده به همراه
+                وضعیت لحظه‌ای آن‌ها در این بخش نمایش داده می‌شود.</div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q" onclick="toggleFaq(this)">زمان پاسخ‌گویی به گزارش‌ها چقدر است؟<svg viewBox="0 0 24 24"
+                  fill="none" stroke-width="2">
+                  <path d="M6 9l6 6 6-6" />
+                </svg></div>
+              <div class="faq-a">بازه استاندارد بررسی و پاسخ‌گویی به گزارش‌های عمومی ۷ روز کاری و برای پیام‌های ارسالی
+                به دفتر استاندار بین ۳ تا ۵ روز کاری است. گزارش‌های با اولویت «فوری» در اولویت رسیدگی قرار می‌گیرند.
+              </div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q" onclick="toggleFaq(this)">آیا اطلاعات هویتی من محرمانه باقی می‌ماند؟<svg
+                  viewBox="0 0 24 24" fill="none" stroke-width="2">
+                  <path d="M6 9l6 6 6-6" />
+                </svg></div>
+              <div class="faq-a">اطلاعات هویتی شما تنها برای احراز هویت و پیگیری گزارش استفاده می‌شود و در اختیار اشخاص
+                ثالث قرار نمی‌گیرد.</div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q" onclick="toggleFaq(this)">چگونه می‌توانم گزارش اشتباه ثبت‌شده را ویرایش یا حذف کنم؟<svg
+                  viewBox="0 0 24 24" fill="none" stroke-width="2">
+                  <path d="M6 9l6 6 6-6" />
+                </svg></div>
+              <div class="faq-a">در حال حاضر ویرایش گزارش پس از ثبت امکان‌پذیر نیست؛ در صورت ثبت اشتباه، لطفاً از طریق
+                بخش «ارتباط با استاندار» موضوع را اطلاع دهید تا گزارش اصلاح یا مسدود شود.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DIRECTORY -->
+        <div class="view" id="view-directory">
+          <div class="view-head">
+            <div>
+              <h1>دفترچه تلفن ادارات و شماره‌های ضروری</h1>
+              <p>در شرایط اضطراری با شماره‌های زیر تماس بگیرید</p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h3>شماره‌های اضطراری</h3>
+            </div>
+            <div class="dir-grid">
+              <a class="dir-card" href="tel:110">
+                <div class="dico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  </svg></div>
+                <div><b>پلیس ۱۱۰</b><span class="num">110</span></div>
+              </a>
+              <a class="dir-card" href="tel:125">
+                <div class="dico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                  </svg></div>
+                <div><b>آتش‌نشانی</b><span class="num">125</span></div>
+              </a>
+              <a class="dir-card" href="tel:115">
+                <div class="dico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                  </svg></div>
+                <div><b>اورژانس</b><span class="num">115</span></div>
+              </a>
+              <a class="dir-card" href="tel:112">
+                <div class="dico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg></div>
+                <div><b>هلال‌احمر</b><span class="num">112</span></div>
+              </a>
+            </div>
+          </div>
+          <div class="card" style="margin-top:16px;">
+            <div class="card-head">
+              <h3>ادارات و سازمان‌های استانی</h3>
+            </div>
+            <div class="dir-grid">
+              <div class="dir-card util">
+                <div class="dico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                    <path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z" />
+                  </svg></div>
+                <div><b>شرکت آب و فاضلاب مازندران</b><span class="num">011-33067000</span></div>
+              </div>
+              <div class="dir-card util">
+                <div class="dico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                  </svg></div>
+                <div><b>برق منطقه‌ای مازندران</b><span class="num">011-33251000</span></div>
+              </div>
+              <div class="dir-card util">
+                <div class="dico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                    <rect x="1" y="3" width="15" height="13" />
+                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                    <circle cx="5.5" cy="18.5" r="2.5" />
+                    <circle cx="18.5" cy="18.5" r="2.5" />
+                  </svg></div>
+                <div><b>راهداری و حمل‌ونقل جاده‌ای</b><span class="num">141</span></div>
+              </div>
+              <div class="dir-card util">
+                <div class="dico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                    <path d="M3 6l9 6 9-6" />
+                    <rect x="3" y="4" width="18" height="16" rx="2" />
+                  </svg></div>
+                <div><b>سازمان مدیریت پسماند</b><span class="num">011-33440022</span></div>
+              </div>
+              <div class="dir-card util">
+                <div class="dico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                    <path d="M11 20A7 7 0 019.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z" />
+                  </svg></div>
+                <div><b>اداره کل حفاظت محیط‌زیست</b><span class="num">011-33291080</span></div>
+              </div>
+              <div class="dir-card util">
+                <div class="dico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                    <path
+                      d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0122 16.92z" />
+                  </svg></div>
+                <div><b>دفتر ارتباطات مردمی استانداری</b><span class="num">011-33333333</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROFILE -->
+        <div class="view" id="view-profile">
+          <div class="view-head">
+            <div>
+              <h1>پروفایل من</h1>
+              <p>مشاهده و ویرایش اطلاعات هویتی و تماس</p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="profile-head">
+              <div class="profile-avatar" id="profile-avatar-initial">ک</div>
+              <div>
+                <h3 id="profile-name-show">محمدرضا عزیزی</h3>
+                <span class="num" id="profile-phone-show">09121234567</span>
+                <div class="verified-chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg> هویت تأیید شده</div>
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="field"><label>نام و نام خانوادگی</label><input class="input" id="prof-name" readonly></div>
+              <div class="field"><label>کد ملی</label><input class="input num" id="prof-melli" readonly
+                  style="direction:ltr;text-align:left;"></div>
+              <div class="field"><label>شماره موبایل</label><input class="input num" id="prof-phone" readonly
+                  style="direction:ltr;text-align:left;"></div>
+              <div class="field"><label>شهرستان محل سکونت</label><select class="input">
+                  <option>ساری</option>
+                  <option>بابل</option>
+                  <option>آمل</option>
+                  <option>سایر</option>
+                </select></div>
+              <div class="field full"><label>آدرس محل سکونت (اختیاری)</label><input class="input"
+                  placeholder="برای دریافت خدمات محلی دقیق‌تر، آدرس خود را ثبت کنید"></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-submit" onclick="toast('اطلاعات پروفایل ذخیره شد','success')">ذخیره
+                تغییرات</button>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </section>
+
+  <div id="toast-container"></div>
+
+  <!-- SVG symbol defs used dynamically -->
+  <script>
+    /* ============================= STATE ============================= */
+    const state = {
+      name: '', melli: '', phone: '',
+      reports: [
+        { id: 'MZ-1042', title: 'تجمع پسماند در خیابان فرهنگ', cat: 'پسماند', city: 'ساری', date: '1404/04/12', status: 'review' },
+        { id: 'MZ-1038', title: 'چاله خطرناک در جاده کمربندی', cat: 'جاده و حمل‌ونقل', city: 'بابل', date: '1404/04/05', status: 'referred' },
+        { id: 'MZ-1021', title: 'قطعی مکرر آب شرب', cat: 'آب و فاضلاب', city: 'آمل', date: '1404/03/20', status: 'resolved' },
+        { id: 'MZ-0998', title: 'روشنایی معابر خراب', cat: 'برق', city: 'قائم‌شهر', date: '1404/03/02', status: 'rejected' }
+      ],
+      nextId: 1043,
+      category: null, urgency: 'متوسط',
+      pollVoted: false
+    };
+
+    const categories = [
+      { key: 'پسماند', label: 'پسماند', icon: 'trash' },
+      { key: 'جاده و حمل‌ونقل', label: 'جاده و حمل‌ونقل', icon: 'truck' },
+      { key: 'آب و فاضلاب', label: 'آب و فاضلاب', icon: 'drop' },
+      { key: 'برق', label: 'برق', icon: 'zap' },
+      { key: 'فضای سبز', label: 'فضای سبز', icon: 'leaf' },
+      { key: 'بهداشت و درمان', label: 'بهداشت و درمان', icon: 'pulse' },
+      { key: 'امنیت و انتظامی', label: 'امنیت و انتظامی', icon: 'shield' },
+      { key: 'سایر', label: 'سایر موارد', icon: 'more' }
+    ];
+    const catIcons = {
+      trash: '<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a2 2 0 012-2h2a2 2 0 012 2v2"/>',
+      truck: '<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>',
+      drop: '<path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/>',
+      zap: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+      leaf: '<path d="M11 20A7 7 0 019.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>',
+      pulse: '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
+      shield: '<path d="M12 2l8 3v6c0 6-8 11-8 11S4 17 4 11V5l8-3z"/>',
+      more: '<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>'
+    };
+
+    function renderCatGrid() {
+      const grid = document.getElementById('cat-grid');
+      grid.innerHTML = categories.map(c => `
+    <div class="cat-card" data-key="${c.key}" onclick="selectCategory('${c.key}', this)">
+      <div class="cico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">${catIcons[c.icon]}</svg></div>
+      <span>${c.label}</span>
+    </div>`).join('');
+    }
+    function selectCategory(key, el) {
+      state.category = key;
+      document.querySelectorAll('#cat-grid .cat-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    /* ============================= LOGIN LOGIC ============================= */
+    function validateMelli(code) {
+      if (!/^\d{10}$/.test(code)) return false;
+      if (/^(\d)\1{9}$/.test(code)) return false;
+      const digits = code.split('').map(Number);
+      const check = digits[9];
+      let sum = 0;
+      for (let i = 0; i < 9; i++) sum += digits[i] * (10 - i);
+      const remainder = sum % 11;
+      return remainder < 2 ? check === remainder : check === (11 - remainder);
+    }
+    function setFieldError(fieldId, invalid) {
+      document.getElementById(fieldId).classList.toggle('invalid', invalid);
+    }
+
+    function goToOtp() {
+      const name = document.getElementById('in-name').value.trim();
+      const melli = document.getElementById('in-melli').value.trim();
+      const phone = document.getElementById('in-phone').value.trim();
+
+      const nameOk = name.length >= 3 && name.split(' ').filter(Boolean).length >= 2;
+      const melliOk = validateMelli(melli);
+      const phoneOk = /^09\d{9}$/.test(phone);
+
+      setFieldError('f-name', !nameOk);
+      setFieldError('f-melli', !melliOk);
+      setFieldError('f-phone', !phoneOk);
+
+      if (!nameOk || !melliOk || !phoneOk) return;
+
+      state.name = name; state.melli = melli; state.phone = phone;
+      document.getElementById('otp-phone-show').textContent = phone;
+      document.getElementById('step-identity').classList.remove('active');
+      document.getElementById('step-otp').classList.add('active');
+      startResendTimer();
+      toast('کد تأیید ارسال شد (نمایشی): ۱۲۳۴', 'success');
+    }
+    function backToIdentity() {
+      document.getElementById('step-otp').classList.remove('active');
+      document.getElementById('step-identity').classList.add('active');
+      clearInterval(window._resendTimer);
+    }
+    function otpMove(el, idx) {
+      el.value = el.value.replace(/[^0-9]/g, '');
+      const boxes = document.querySelectorAll('.otp-boxes input');
+      if (el.value && idx < boxes.length - 1) boxes[idx + 1].focus();
+    }
+    let resendSeconds = 60;
+    function startResendTimer() {
+      resendSeconds = 60;
+      document.getElementById('resend-wrap').style.display = 'inline';
+      document.getElementById('resend-btn').style.display = 'none';
+      clearInterval(window._resendTimer);
+      window._resendTimer = setInterval(() => {
+        resendSeconds--;
+        const m = Math.floor(resendSeconds / 60), s = resendSeconds % 60;
+        document.getElementById('resend-timer').textContent = m + ':' + String(s).padStart(2, '0');
+        if (resendSeconds <= 0) {
+          clearInterval(window._resendTimer);
+          document.getElementById('resend-wrap').style.display = 'none';
+          document.getElementById('resend-btn').style.display = 'inline';
+        }
+      }, 1000);
+    }
+    function resendOtp() { startResendTimer(); toast('کد تأیید مجدداً ارسال شد', 'success'); }
+
+    function confirmOtp() {
+      const boxes = document.querySelectorAll('.otp-boxes input');
+      const code = Array.from(boxes).map(b => b.value).join('');
+      if (code.length < 4) { toast('کد تأیید را کامل وارد کنید', 'error'); return; }
+      enterDashboard();
+    }
+    function enterDashboard() {
+      const initial = state.name.trim().charAt(0) || 'ک';
+      document.getElementById('user-avatar-initial').textContent = initial;
+      document.getElementById('profile-avatar-initial').textContent = initial;
+      document.getElementById('chip-name').textContent = state.name;
+      document.getElementById('chip-phone').textContent = state.phone;
+      document.getElementById('profile-name-show').textContent = state.name;
+      document.getElementById('profile-phone-show').textContent = state.phone;
+      document.getElementById('prof-name').value = state.name;
+      document.getElementById('prof-melli').value = state.melli;
+      document.getElementById('prof-phone').value = state.phone;
+
+      const firstName = state.name.trim().split(' ')[0] || '';
+      const hour = new Date().getHours();
+      const greet = hour < 12 ? 'صبح بخیر' : hour < 18 ? 'ظهر بخیر' : 'عصر بخیر';
+      document.getElementById('home-greeting').textContent = `${greet}${firstName ? '، ' + firstName : ''}`;
+
+      document.getElementById('screen-login').classList.remove('active');
+      document.getElementById('screen-dashboard').classList.add('active');
+      renderCatGrid();
+      renderReports();
+    }
+    function logout() {
+      document.getElementById('screen-dashboard').classList.remove('active');
+      document.getElementById('screen-login').classList.add('active');
+      document.getElementById('step-otp').classList.remove('active');
+      document.getElementById('step-identity').classList.add('active');
+      document.querySelectorAll('.otp-boxes input').forEach(b => b.value = '');
+      closeAllDD();
+    }
+
+    /* ============================= NAV / VIEWS ============================= */
+    function showView(name) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById('view-' + name).classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      const target = document.querySelector(`.nav-item[data-view="${name}"]`);
+      if (target) {
+        target.classList.add('active');
+        const grp = target.closest('.nav-group');
+        if (grp) {
+          document.querySelectorAll('.nav-group').forEach(g => g.classList.remove('open'));
+          grp.classList.add('open');
+        }
+      }
+      closeAllDD();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleGroup(headEl) {
+      const group = headEl.closest('.nav-group');
+      const wasOpen = group.classList.contains('open');
+      document.querySelectorAll('.nav-group').forEach(g => g.classList.remove('open'));
+      if (!wasOpen) group.classList.add('open');
+    }
+
+    function toggleDD(id) {
+      const dd = document.getElementById(id);
+      const isOpen = dd.classList.contains('open');
+      closeAllDD();
+      if (!isOpen) dd.classList.add('open');
+    }
+    function closeAllDD() { document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open')); }
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.user-chip') && !e.target.closest('.icon-btn')) closeAllDD();
+    });
+
+    /* urgency segment */
+    document.getElementById('urgency-seg').addEventListener('click', (e) => {
+      const opt = e.target.closest('.seg-opt');
+      if (!opt) return;
+      document.querySelectorAll('#urgency-seg .seg-opt').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+      state.urgency = opt.dataset.val;
+    });
+
+    /* ============================= REPORT SUBMIT ============================= */
+    function resetReportForm() {
+      document.getElementById('rep-title').value = '';
+      document.getElementById('rep-address').value = '';
+      document.getElementById('rep-desc').value = '';
+      document.querySelectorAll('#cat-grid .cat-card').forEach(c => c.classList.remove('selected'));
+      state.category = null;
+    }
+    function submitReport() {
+      const title = document.getElementById('rep-title').value.trim();
+      const desc = document.getElementById('rep-desc').value.trim();
+      const city = document.getElementById('rep-city').value;
+
+      if (!state.category) { toast('لطفاً موضوع گزارش را انتخاب کنید', 'error'); return; }
+      if (!title) { toast('لطفاً عنوان گزارش را وارد کنید', 'error'); return; }
+      if (!desc || desc.length < 10) { toast('لطفاً شرح کامل‌تری از مشکل بنویسید', 'error'); return; }
+
+      const newReport = {
+        id: 'MZ-' + (state.nextId++),
+        title, cat: state.category, city,
+        date: '1404/04/15', status: 'review'
+      };
+      state.reports.unshift(newReport);
+      resetReportForm();
+      renderReports();
+      document.getElementById('count-reports').textContent = state.reports.length;
+      toast('گزارش شما با موفقیت ثبت شد', 'success');
+      showView('track');
+    }
+
+    /* ============================= REPORTS LIST ============================= */
+    const statusMap = {
+      review: { label: 'در حال بررسی', cls: 'status-review', icon: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>' },
+      referred: { label: 'ارجاع به سازمان مربوطه', cls: 'status-referred', icon: '<path d="M9 18l6-6-6-6"/>' },
+      resolved: { label: 'حل شده', cls: 'status-resolved', icon: '<polyline points="20 6 9 17 4 12"/>' },
+      rejected: { label: 'رد شده', cls: 'status-rejected', icon: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>' }
+    };
+    let currentFilter = 'all';
+    function renderReports() {
+      const wrap = document.getElementById('reports-list');
+      const list = state.reports.filter(r => currentFilter === 'all' || r.status === currentFilter);
+      if (list.length === 0) {
+        wrap.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg><p>گزارشی با این وضعیت یافت نشد.</p></div>`;
+        return;
+      }
+      wrap.innerHTML = list.map(r => {
+        const s = statusMap[r.status];
+        return `
+    <div class="report-card" onclick="this.classList.toggle('open')">
+      <div class="report-top">
+        <span class="report-id num">#${r.id}</span>
+        <span class="status-badge ${s.cls}"><svg viewBox="0 0 24 24" fill="none" stroke-width="2">${s.icon}</svg>${s.label}</span>
+      </div>
+      <div class="report-title">${r.title}</div>
+      <div class="report-meta">
+        <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1118 0z"/><circle cx="12" cy="10" r="3"/></svg>${r.city}</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/></svg>${r.cat}</span>
+        <span class="num"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${r.date}</span>
+      </div>
+      <div class="report-detail">
+        <div class="timeline">
+          <div class="tl-item"><div class="tl-dot done"></div><div class="tl-body"><b>ثبت گزارش</b><span class="num">${r.date} — گزارش شما با موفقیت در سامانه ثبت شد</span></div></div>
+          <div class="tl-item"><div class="tl-dot ${r.status !== 'review' ? 'done' : ''}"></div><div class="tl-body"><b>بررسی اولیه</b><span>گزارش توسط کارشناسان حوزه مربوطه بررسی شد</span></div></div>
+          <div class="tl-item"><div class="tl-dot ${(r.status === 'resolved' || r.status === 'rejected') ? 'done' : ''}"></div><div class="tl-body"><b>ارجاع به سازمان اجرایی</b><span>پرونده برای اقدام به سازمان یا اداره مربوطه ارجاع شد</span></div></div>
+          <div class="tl-item"><div class="tl-dot ${r.status === 'resolved' ? 'done' : ''}"></div><div class="tl-body"><b>${r.status === 'rejected' ? 'رد گزارش' : 'نتیجه نهایی'}</b><span>${r.status === 'resolved' ? 'مشکل رفع شده و گزارش بسته شد' : r.status === 'rejected' ? 'با توجه به بررسی، این مورد فاقد شرایط پذیرش تشخیص داده شد' : 'در انتظار نتیجه نهایی'}</span></div></div>
+        </div>
+      </div>
+    </div>`;
+      }).join('');
+    }
+    document.getElementById('filter-row').addEventListener('click', (e) => {
+      const chip = e.target.closest('.filter-chip');
+      if (!chip) return;
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      currentFilter = chip.dataset.f;
+      renderReports();
+    });
+
+    /* ============================= GOVERNOR MSG ============================= */
+    function submitGovMsg() {
+      const subject = document.getElementById('gov-subject').value.trim();
+      const msg = document.getElementById('gov-msg').value.trim();
+      if (!subject || !msg) { toast('لطفاً موضوع و متن پیام را کامل وارد کنید', 'error'); return; }
+      document.getElementById('gov-subject').value = '';
+      document.getElementById('gov-msg').value = '';
+      toast('پیام شما برای دفتر استاندار ارسال شد', 'success');
+    }
+
+    /* ============================= FAQ ============================= */
+    function toggleFaq(el) {
+      const item = el.closest('.faq-item');
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(f => f.classList.remove('open'));
+      if (!wasOpen) item.classList.add('open');
+    }
+
+    /* ============================= POLL ============================= */
+    document.getElementById('poll-options').addEventListener('click', (e) => {
+      const opt = e.target.closest('.poll-opt');
+      if (!opt || state.pollVoted) return;
+      state.pollVoted = true;
+      opt.classList.add('chosen');
+      document.querySelectorAll('.poll-opt').forEach(o => {
+        o.classList.add('voted');
+        o.querySelector('.poll-fill').style.width = o.dataset.pct + '%';
+      });
+      document.getElementById('poll-note').style.display = 'flex';
+      toast('رای شما با موفقیت ثبت شد', 'success');
+    });
+
+    /* ============================= TOAST ============================= */
+    function toast(msg, type = 'success') {
+      const c = document.getElementById('toast-container');
+      const el = document.createElement('div');
+      el.className = 'toast ' + type;
+      const icon = type === 'success'
+        ? '<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
+        : '<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+      el.innerHTML = icon + '<span>' + msg + '</span>';
+      c.appendChild(el);
+      setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; setTimeout(() => el.remove(), 300); }, 3200);
+    }
+
+    /* set home date on load */
+    document.getElementById('home-date').textContent = '۱۴۰۴/۰۴/۱۵';
+  </script>
+</body>
+
+</html>
