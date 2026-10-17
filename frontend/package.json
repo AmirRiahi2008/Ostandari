@@ -17,7 +17,7 @@
     "test:integration": "node --import tsx tests/api-live.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "postbuild": "node scripts/prepare-standalone.mjs",
+"postbuild": "node -e \"if (process.env.VERCEL !== '1') import('./scripts/prepare-standalone.mjs')\"",
     "audit:links": "node --import tsx scripts/audit-pages.ts"
   },
   "dependencies": {
