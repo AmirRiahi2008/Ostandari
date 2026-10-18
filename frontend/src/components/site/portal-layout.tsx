@@ -4,17 +4,20 @@ import { SiteFooter } from './site-footer';
 import { PageFrame } from '@/components/template/page-frame';
 import { templates } from '@/lib/templates';
 import { templatePreview } from '@/lib/config';
+import type { NavigationItem } from '@/data/official-navigation';
 
 export function PortalLayout({
   children,
   title,
   path = '/',
   breadcrumbs = true,
+  headerItems,
 }: {
   children: ReactNode;
   title?: string;
   path?: string;
   breadcrumbs?: boolean;
+  headerItems?: NavigationItem[];
 }) {
   const page = {
     ...templates.find((page) => page.path === '/')!,
@@ -27,7 +30,7 @@ export function PortalLayout({
       <link rel="stylesheet" href={page.css} precedence="design" />
       <PageFrame page={page} preview={templatePreview()} path={path}>
         <div className="container-asli">
-          <SiteHeader />
+          <SiteHeader items={headerItems} />
           <main id="main-content" className="portal-main">
             {title && breadcrumbs && (
               <div className="portal-breadcrumb">

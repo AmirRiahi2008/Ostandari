@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import React from 'react';
+import React, { act } from 'react';
+import { createRoot } from 'react-dom/client';
+import { SiteHeader } from '../src/components/site/site-header';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { JSDOM } from 'jsdom';
 import { templates } from '../src/lib/templates';
@@ -85,19 +87,52 @@ test('existing modal controls open, cancel and dispatch save through the same so
   abort.abort();
 });
 
-test('provided mobile accordion, app overlay and language dropdown preserve their original CSS states', () => {
-  const { root, page } = pageRoot('/');
-  const abort = new AbortController();
-  const controller = siteController({ root, page, preview: true, signal: abort.signal, path: '/' });
-  const button = root.querySelector<HTMLElement>('[data-command=mmToggle]')!;
-  controller.dispatch('mmToggle', button, []);
-  assert.equal(button.closest('.mm-item')?.classList.contains('is-open'), true);
-  controller.init();
-  (root.querySelector('#installAppBtn') as HTMLElement).click();
-  assert.equal(root.querySelector('#installAppOverlay')?.classList.contains('open'), true);
-  (root.querySelector('#flagSwitcher') as HTMLElement).click();
-  assert.equal(root.querySelector('#flagDropdown')?.classList.contains('active'), true);
-  abort.abort();
+test('public header supports mobile open, Escape, focus return and desktop submenu state', async () => {
+  const container = window.document.createElement('div');
+  window.document.body.replaceChildren(container);
+  Object.defineProperty(globalThis, 'IS_REACT_ACT_ENVIRONMENT', {
+    value: true,
+    configurable: true,
+  });
+  const root = createRoot(container);
+  await act(async () => root.render(React.createElement(SiteHeader)));
+  const toggle = container.querySelector<HTMLButtonElement>('.public-menu-toggle')!;
+  await act(async () => toggle.click());
+  assert.equal(toggle.getAttribute('aria-expanded'), 'true');
+  const drawer = container.querySelector<HTMLElement>('[role=dialog]')!;
+  assert.ok(drawer.textContent?.includes('مدیران روابط عمومی استان'));
+  assert.ok(drawer.textContent?.includes('مدیریت فناوری اطلاعات'));
+  assert.equal(window.document.body.style.overflow, 'hidden');
+  assert.equal(window.document.activeElement?.getAttribute('aria-label'), 'بستن منو');
+  await act(async () =>
+    drawer.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true })),
+  );
+  assert.equal(container.querySelector('[role=dialog]'), null);
+  assert.equal(window.document.body.style.overflow, '');
+  assert.equal(window.document.activeElement, toggle);
+  const submenu = [
+    ...container.querySelectorAll<HTMLButtonElement>('.public-nav-label button'),
+  ].find((button) => button.getAttribute('aria-label')?.includes('شرح وظایف'))!;
+  await act(async () => submenu.click());
+  assert.equal(submenu.getAttribute('aria-expanded'), 'true');
+  assert.equal(
+    container.querySelector<HTMLElement>('#' + submenu.getAttribute('aria-controls'))?.hidden,
+    false,
+  );
+  await act(async () =>
+    submenu.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true })),
+  );
+  assert.equal(submenu.getAttribute('aria-expanded'), 'false');
+  await act(async () => submenu.click());
+  const firstLink = container.querySelector<HTMLElement>(
+    '#' + submenu.getAttribute('aria-controls') + ' a',
+  )!;
+  firstLink.focus();
+  await act(async () =>
+    firstLink.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true })),
+  );
+  assert.equal(window.document.activeElement, submenu);
+  await act(async () => root.unmount());
 });
 
 test('UI data handlers normalize Persian digits and never execute copied inline JavaScript', () => {

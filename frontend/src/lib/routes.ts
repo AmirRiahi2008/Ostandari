@@ -21,6 +21,20 @@ export function knownRoute(href: string): boolean {
   return Boolean(
     adminExtraPages[url.pathname] ||
     isPublicRoute(url.pathname) ||
+    /^\/section\/[a-z0-9-]+$/.test(url.pathname) ||
+    [
+      '/sitemap',
+      '/districts',
+      '/units',
+      '/accessibility',
+      '/rss',
+      '/forum',
+      '/performance',
+      '/participation',
+      '/about/general',
+      '/service-agreement/statement',
+      '/polls/site',
+    ].includes(url.pathname) ||
     resolveTemplate(url.pathname) ||
     routeAlias(url.pathname, url.searchParams) ||
     ['/admin/login', '/admin/account', '/admin/reports', '/admin/logout'].includes(url.pathname),
