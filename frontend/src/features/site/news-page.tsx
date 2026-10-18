@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { PortalLayout, Panel, EmptyState } from '@/components/site/portal-layout';
+import { PortalLayout, Panel, EmptyState, loadPortalChrome } from '@/components/site/portal-layout';
 import { NewsCard } from '@/components/site/news-card';
 import { SafeRichText } from '@/components/site/safe-rich-text';
 import { ArticleActions, CommentForm } from '@/components/site/public-forms';
@@ -16,6 +16,7 @@ import { templatePreview } from '@/lib/config';
 import { CountyNavigation, officeIdentity } from './office-page';
 import { first, type Search } from './search-params';
 export async function NewsPage({ search }: { search: Search }) {
+  const chrome = loadPortalChrome();
   const slug = first(search.name),
     county = slug ? findCounty(slug) : undefined;
   if (slug && !county) notFound();
@@ -41,7 +42,7 @@ export async function NewsPage({ search }: { search: Search }) {
   );
   const title = county ? 'اخبار فرمانداری ' + county.name : 'اخبار و اطلاعیه‌ها';
   return (
-    <PortalLayout path="/news" title={title}>
+    <PortalLayout path="/news" title={title} chrome={chrome}>
       {county && <CountyNavigation county={county} />}
       <Panel title={title}>
         <SearchForm action="/news" query={query} county={county?.slug} />
@@ -62,6 +63,7 @@ export async function NewsPage({ search }: { search: Search }) {
 }
 
 export async function ArticlePage({ id, search }: { id: string; search: Search }) {
+  const chrome = loadPortalChrome();
   const sample = designNews.find((item) => String(item.id) === id);
   const result = await publicData<{
     content?: PublicRecord;
@@ -85,15 +87,21 @@ export async function ArticlePage({ id, search }: { id: string; search: Search }
   }
   const image = recordImage(article?.cover ?? article?.image);
   return (
-    <PortalLayout path="/news/article" title={article?.title ?? 'جزئیات خبر'} breadcrumbs={false}>
+    <PortalLayout
+      path="/news/article"
+      title={article?.title ?? 'جزئیات خبر'}
+      breadcrumbs={false}
+      designPath="/news"
+      chrome={chrome}
+    >
       <nav className="portal-breadcrumb" aria-label="مسیر صفحه">
         <a href="/">صفحه اصلی</a>
         <span aria-hidden="true">/</span>
         <a href={'/news' + countyQuery(county)}>اخبار</a>
       </nav>
       {county && <CountyNavigation county={county} />}
-      <div className="portal-article-layout">
-        <article className="portal-panel portal-article">
+      <div className="source-article-grid">
+        <article className="card p-4">
           {article ? (
             <>
               <span className="portal-eyebrow">
@@ -105,7 +113,7 @@ export async function ArticlePage({ id, search }: { id: string; search: Search }
                   {new Date(String(article.published_at)).toLocaleDateString('fa-IR')}
                 </time>
               )}
-              {image && <img className="portal-article-cover" src={image} alt="" />}
+              {image && <img className="img-fluid radius10 inews" src={image} alt="" />}
               {article.excerpt && <p className="portal-lead">{article.excerpt}</p>}
               <SafeRichText html={String(article.body ?? '')} text={plainText(article.body)} />
               <ArticleActions />
@@ -137,7 +145,9 @@ export async function ArticlePage({ id, search }: { id: string; search: Search }
           )}
         </article>
         <aside>
-          <Panel title="اخبار مرتبط" href={'/news' + countyQuery(county)}>
+          <section className="card p-3">
+            <h2>اخبار مرتبط</h2>
+            <a href={'/news' + countyQuery(county)}>همهٔ اخبار</a>
             {related.length ? (
               related.map((item) => (
                 <NewsCard key={String(item.id)} item={item} county={county?.slug} />
@@ -145,7 +155,7 @@ export async function ArticlePage({ id, search }: { id: string; search: Search }
             ) : (
               <EmptyState />
             )}
-          </Panel>
+          </section>
         </aside>
       </div>
     </PortalLayout>

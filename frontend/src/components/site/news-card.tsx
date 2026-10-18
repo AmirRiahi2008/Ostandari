@@ -1,9 +1,10 @@
-import { recordImage, type PublicRecord } from '@/lib/public-content';
+import { recordImage, plainText, type PublicRecord } from '@/lib/public-content';
 export function NewsCard({ item, county }: { item: PublicRecord; county?: string }) {
   const image = recordImage(item.cover ?? item.image);
   return (
-    <article className="portal-news-card">
+    <article className="portal-news-card source-news-card">
       <a
+        className="akhbar-container"
         href={
           '/news/' +
           encodeURIComponent(String(item.id)) +
@@ -11,7 +12,7 @@ export function NewsCard({ item, county }: { item: PublicRecord; county?: string
         }
       >
         {image && <img src={image} alt="" loading="lazy" />}
-        <div>
+        <div className="akhbar-left">
           <span className="portal-eyebrow">
             {String(
               typeof item.category === 'object'
@@ -19,8 +20,8 @@ export function NewsCard({ item, county }: { item: PublicRecord; county?: string
                 : (item.category ?? 'اخبار'),
             )}
           </span>
-          <h3>{item.title}</h3>
-          {item.excerpt && <p>{item.excerpt}</p>}
+          <h3 className="akhbar-onvan">{item.title}</h3>
+          {item.excerpt && <p className="akhbar-date">{plainText(item.excerpt)}</p>}
           {Boolean(item.published_at) && (
             <time dateTime={String(item.published_at)}>
               {new Date(String(item.published_at)).toLocaleDateString('fa-IR')}

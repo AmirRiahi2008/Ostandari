@@ -1,3 +1,5 @@
+import { transparencyPages } from '@/data/transparency';
+import { findCounty } from '@/data/counties';
 import { cache } from 'react';
 import snapshot from '@/data/official-site.json';
 import { publicData, recordImage, type PublicRecord } from '@/lib/public-content';
@@ -19,12 +21,31 @@ export interface OfficialSection {
 }
 
 export const officialSite = snapshot;
-export const officialSections = snapshot.pages as OfficialSection[];
+export const officialSections: OfficialSection[] = [...snapshot.pages, ...transparencyPages];
 export const sectionById = new Map(officialSections.map((item) => [item.id, item]));
 
 export function resolveOfficialSection(path: string, search: Search = {}) {
   if (['/', '/office', '/counties', '/contact', '/track', '/register', '/en'].includes(path))
     return undefined;
+  const countyName = Array.isArray(search.name) ? search.name[0] : search.name;
+  const decorate = (section: OfficialSection | undefined) => {
+    const county = countyName ? findCounty(countyName) : undefined;
+    return section && county && section.kind === 'managers'
+      ? {
+          ...section,
+          title: section.title + ' شهرستان ' + county.name,
+          href: section.href + (section.href.includes('?') ? '&' : '?') + 'name=' + county.slug,
+        }
+      : section;
+  };
+  const memberKind = Array.isArray(search.kind) ? search.kind[0] : search.kind;
+  if (path === '/managers' && ['district_head', 'village_head'].includes(memberKind ?? ''))
+    return decorate({
+      ...sectionById.get('managers')!,
+      title: memberKind === 'district_head' ? 'بخشداران' : 'دهیاران',
+      children: [],
+      href: '/managers?kind=' + memberKind,
+    });
   const group = Array.isArray(search.group) ? search.group[0] : search.group;
   const legacyManagers: Record<string, string> = {
     '1': '61',
@@ -35,17 +56,19 @@ export function resolveOfficialSection(path: string, search: Search = {}) {
     '6': '109',
   };
   if (path === '/managers' && group && legacyManagers[group])
-    return sectionById.get('menu-' + legacyManagers[group]);
-  if (path === '/deputies') return sectionById.get('menu-64');
-  return officialSections.find((section) => {
-    const url = new URL(section.href, 'https://portal.invalid');
-    if (url.pathname !== path) return false;
-    if (['/news', '/gallery', '/contact'].includes(path) && search.name) return false;
-    return [...url.searchParams].every(([key, expected]) => {
-      const actual = Array.isArray(search[key]) ? search[key]![0] : search[key];
-      return actual === expected;
-    });
-  });
+    return decorate(sectionById.get('menu-' + legacyManagers[group]));
+  if (path === '/deputies') return decorate(sectionById.get('menu-64'));
+  return decorate(
+    officialSections.find((section) => {
+      const url = new URL(section.href, 'https://portal.invalid');
+      if (url.pathname !== path) return false;
+      if (['/news', '/gallery', '/contact'].includes(path) && search.name) return false;
+      return [...url.searchParams].every(([key, expected]) => {
+        const actual = Array.isArray(search[key]) ? search[key]![0] : search[key];
+        return actual === expected;
+      });
+    }),
+  );
 }
 
 export const officialRead = cache(async (endpoint: string) =>

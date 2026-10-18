@@ -82,8 +82,9 @@ export function siteController(context: PageContext) {
   }
 
   function openGallery(item: HTMLElement) {
-    selectedGallery = item;
     const source = item.querySelector('img,video,svg')?.cloneNode(true);
+    if (!source) return;
+    selectedGallery = item;
     const content = one(root, '#lightboxMedia');
     if (content && source) content.replaceChildren(source);
     one(root, '#lightboxOverlay')?.classList.add('active');
@@ -127,6 +128,7 @@ export function siteController(context: PageContext) {
       root,
       '.header-container .search,.header-container .logo-wrapper,.header-container .hum-logo,.name-btn,.login-google',
     ).forEach((control) => {
+      if (control.closest('[data-react-header]')) return;
       control.setAttribute('role', 'button');
       control.tabIndex = 0;
       control.setAttribute(
@@ -149,6 +151,7 @@ export function siteController(context: PageContext) {
     });
     const categoryState = (event: Event) => {
       const target = event.target as HTMLElement;
+      if (target.closest('[data-react-header]')) return;
       const item = target.closest<HTMLElement>(
         '.categories li[data-target],.nested-categories li[data-target]',
       );
@@ -206,6 +209,7 @@ export function siteController(context: PageContext) {
       'click',
       (event) => {
         const target = event.target as HTMLElement;
+        if (target.closest('[data-react-header]')) return;
         if (target.closest('.header-container .search')) window.location.assign('/search');
         if (target.closest('.header-container .logo-wrapper,.header-container .hum-logo'))
           window.location.assign('/');
@@ -275,6 +279,7 @@ export function siteController(context: PageContext) {
       'mouseover',
       (event) => {
         const target = event.target as HTMLElement;
+        if (target.closest('[data-react-header]')) return;
         const category = target.closest<HTMLElement>(
           '.categories li[data-target],.nested-categories li[data-target]',
         );
@@ -330,7 +335,7 @@ export function siteController(context: PageContext) {
       void Promise.all([contentReady, import('swiper'), import('swiper/modules')])
         .then(([, { default: Swiper }, { Navigation, Pagination, Autoplay }]) => {
           if (signal.aborted) return;
-          all<HTMLElement>(root, '.swiper').forEach((element) => {
+          all<HTMLElement>(root, '.swiper:not([data-react-slider])').forEach((element) => {
             const slider = new Swiper(element, {
               modules: [Navigation, Pagination, Autoplay],
               loop: element.querySelectorAll('.swiper-slide').length > 1,
