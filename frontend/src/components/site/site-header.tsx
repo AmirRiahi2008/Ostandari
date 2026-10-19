@@ -363,6 +363,21 @@ export function SiteHeader({
                     }}
                   >
                     خدمات
+                    <svg
+                      className="source-mega-chevron"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                      focusable="false"
+                    >
+                      <path d="m6 9 6 6 6-6" />
+                    </svg>
                   </button>
                 </div>
                 <div
@@ -440,8 +455,10 @@ export function SiteHeader({
               </div>
               <div className="menu-item install-app-menu-item">
                 <div className="rast">
-                  <OriginalIcon name="app" />
-                  <a href="/install">نصب اپلیکیشن</a>
+                  <a href="/install">
+                    <OriginalIcon name="app" className="source-install-icon" />
+                    <span>نصب اپلیکیشن</span>
+                  </a>
                 </div>
               </div>
               {navItem('/polls', 'poll')}

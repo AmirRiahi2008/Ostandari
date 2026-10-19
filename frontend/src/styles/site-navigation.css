@@ -1,9 +1,16 @@
 [data-section='site'] [data-react-header] .header-box {
+  position: relative;
+  z-index: 2;
   overflow: visible;
   isolation: isolate;
   transition:
     border-radius 180ms ease,
     box-shadow 180ms ease;
+}
+[data-section='site'] [data-react-header] .header-paen {
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
 }
 [data-section='site'] [data-react-header] .header-box[data-mega-open='true'] {
   border-end-start-radius: 0;
@@ -263,25 +270,30 @@
   gap: 8px;
 }
 [data-react-header] .source-mega #khadmat::after {
-  content: '';
-  width: 5px;
-  height: 5px;
-  margin: 0;
-  border: 0;
-  border-inline-end: 1.5px solid currentColor;
-  border-bottom: 1.5px solid currentColor;
-  transform: translateY(-2px) rotate(45deg);
+  content: none;
+  display: none;
+}
+[data-react-header] .source-mega #khadmat > .source-mega-chevron {
+  display: block;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  transform: translateY(0);
   transition: transform 180ms ease;
 }
-[data-react-header] .source-mega #khadmat[aria-expanded='true']::after {
-  transform: translateY(1px) rotate(225deg);
+[data-react-header] .source-mega #khadmat[aria-expanded='true'] > .source-mega-chevron {
+  transform: translateY(3px);
 }
-[data-react-header] .install-app-menu-item > .rast {
+[data-react-header] .install-app-menu-item > .rast > a {
+  display: inline-flex;
+  align-items: center;
   gap: 7px;
 }
-[data-react-header] .install-app-menu-item > .rast > svg {
+[data-react-header] .install-app-menu-item .source-install-icon {
+  display: block;
   width: 18px;
   height: 18px;
+  flex: 0 0 18px;
   margin: 0;
   color: white;
 }
