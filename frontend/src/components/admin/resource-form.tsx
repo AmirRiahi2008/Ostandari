@@ -1,4 +1,5 @@
 import schemas from '@/data/admin/resource-schema.json';
+import { lookupResource, resourceScope } from '@/features/admin/resources';
 
 type FieldRules = Record<string, string[]>;
 export const fieldLabels: Record<string, string> = {
@@ -75,6 +76,10 @@ export const fieldLabels: Record<string, string> = {
   visibility: 'سطح انتشار فایل',
   assigned_to: 'کارشناس رسیدگی',
   message: 'متن پیام',
+  fields: 'فیلدهای فرم',
+  author: 'گوینده',
+  text: 'متن سخن',
+  personnel_code: 'کد پرسنلی',
 };
 const labels: Record<string, string> = {
   fa: 'فارسی',
@@ -101,6 +106,8 @@ const labels: Record<string, string> = {
   subtree: 'واحد و زیرمجموعه',
   citizen: 'شهروند',
   staff: 'کارمند',
+  employee: 'کارمند',
+  expert: 'کارشناس',
   low: 'کم',
   medium: 'متوسط',
   high: 'زیاد',
@@ -127,9 +134,9 @@ const extra: Record<string, FieldRules> = {
     password: ['nullable', 'string'],
     role_id: ['required', 'exists:roles,id'],
     organization_id: ['nullable', 'exists:organizations,id'],
-    county_id: ['nullable', 'exists:counties,id'],
-    person_type: ['required', 'in:"staff","citizen"'],
-    access_scope: ['required', 'in:"all","organization","subtree"'],
+    personnel_code: ['nullable', 'string', 'max:60'],
+    person_type: ['required', 'in:"staff","citizen","employee","expert"'],
+    access_scope: ['required', 'in:"organization","all"'],
     is_active: ['boolean'],
   },
   roles: {
@@ -172,6 +179,7 @@ export function AdminResourceForm({
   defaults?: Record<string, string>;
 }) {
   const fields = resourceFields(resource);
+  const initialValues = { ...resourceScope(resource), ...defaults };
   return (
     <form className="cbn-flex-form portal-resource-form" data-form="true">
       {Object.entries(fields)
@@ -204,7 +212,7 @@ export function AdminResourceForm({
             'seo_description',
           ].includes(field);
           const initial =
-            defaults[field] ??
+            initialValues[field] ??
             (field === 'locale' ? 'fa' : field === 'status' ? 'draft' : undefined);
           const max = Number(rules.find((rule) => rule.startsWith('max:'))?.split(':')[1]);
           const date = rules.includes('date');
@@ -236,6 +244,7 @@ export function AdminResourceForm({
                       name={field}
                       data-field={field}
                       data-json="true"
+                      required={required}
                       rows={5}
                       dir="ltr"
                       placeholder={field === 'permissions' ? '["content.manage"]' : '[]'}
@@ -246,6 +255,10 @@ export function AdminResourceForm({
                       name={field}
                       data-field={field}
                       required={required}
+                      disabled={
+                        Boolean(initialValues[field]) &&
+                        ['type', 'kind', 'person_type'].includes(field)
+                      }
                       defaultValue={initial ?? options[0]}
                     >
                       {options.map((value) => (
@@ -259,7 +272,7 @@ export function AdminResourceForm({
                       id={id}
                       name={field}
                       data-field={field}
-                      data-lookup={lookup}
+                      data-lookup={lookupResource(lookup)}
                       required={required}
                     >
                       <option value="">انتخاب کنید</option>
@@ -319,7 +332,7 @@ export function AdminResourceForm({
           بارگذاری تصویر
           <input
             type="file"
-            accept="image/jpeg,image/png,image/webp,image/gif"
+            accept="image/jpeg,image/png,image/webp"
             data-media-field={resource === 'contents' ? 'cover_media_id' : 'media_id'}
           />
         </label>

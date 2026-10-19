@@ -52,12 +52,14 @@ const callouts: Record<string, readonly [number, number]> = {
 };
 
 export const counties: County[] = records.map(([slug, name, index, x, y]) => {
-  const sourceImage = shapes[index].image.startsWith('/design/') ? shapes[index].image : '';
+  // The legacy Abbasabad entry points to a photo bearing Babol's name.
+  const sourceImage =
+    slug !== 'abbasabad' && shapes[index].image.startsWith('/design/') ? shapes[index].image : '';
   return {
     slug,
     name,
     shape: shapes[index].d,
-    image: sourceImage || '/design/site/assets/image/baner.png',
+    image: sourceImage || countyPreviewTemplate,
     previewImage: sourceImage || countyPreviewTemplate,
     usesPreviewTemplate: !sourceImage,
     label: [x, y],

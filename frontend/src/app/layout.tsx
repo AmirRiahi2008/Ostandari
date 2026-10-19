@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import '@/styles/globals.css';
 import '@/styles/public-site.css';
+import '@/styles/county-office.css';
 
 export const metadata: Metadata = {
   title: 'استانداری مازندران',

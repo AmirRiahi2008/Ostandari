@@ -39,12 +39,18 @@ class FormController
 
     public function index(Request $r)
     {
-        $r->validate(['per_page' => 'sometimes|integer|min:1|max:100', 'status' => 'sometimes|in:pending,review,accepted,rejected', 'form_id' => 'sometimes|integer']);
+        $r->validate(['per_page' => 'sometimes|integer|min:1|max:100', 'status' => 'sometimes|in:pending,review,accepted,rejected', 'form_id' => 'sometimes|integer', 'q' => 'sometimes|string|max:100']);
         $q = $this->query($r)->with('form:id,title,slug', 'owner');
         if ($r->filled('status')) {
             $q->where('status', $r->input('status'));
         } if ($r->filled('form_id')) {
             $q->where('dynamic_form_id', $r->input('form_id'));
+        }
+        if ($r->filled('q')) {
+            $term = '%'.$r->input('q').'%';
+            $q->where(fn ($query) => $query->where('reference', 'like', $term)
+                ->orWhereHas('form', fn ($form) => $form->where('title', 'like', $term))
+                ->orWhereHas('owner', fn ($owner) => $owner->where('name', 'like', $term)));
         }
 
         return Api::page($q->latest('id')->paginate((int) $r->input('per_page', 20)));

@@ -38,7 +38,7 @@ export async function CountyGallery({ search }: { search: Search }) {
       designPath="/gallery"
       chrome={chrome}
     >
-      <CountyNavigation county={county} />
+      <CountyNavigation county={county} active="gallery" />
       <div className="gal-wrap">
         <div className="gal-head">
           <h2>گالری تصاویر</h2>

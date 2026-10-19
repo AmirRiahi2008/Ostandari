@@ -131,7 +131,7 @@ export async function PublicPage({ path, search }: { path: string; search: Searc
     if (slug && !county) notFound();
     content = (
       <>
-        {county && <CountyNavigation county={county} />}
+        {county && <CountyNavigation county={county} active="contact" />}
         <Panel title={county ? 'ارتباط با فرمانداری ' + county.name : title}>
           <ContactForm
             county={county}

@@ -2,6 +2,7 @@
 
 import { useId, useState } from 'react';
 import { counties, countyPreviewTemplate, officeHref } from '@/data/counties';
+import { CountyArtwork } from './county-artwork';
 
 export function CountyMap() {
   const [selected, setSelected] = useState(counties.find((county) => county.slug === 'sari')!);
@@ -17,27 +18,18 @@ export function CountyMap() {
     <div className="container-naghshe portal-counties source-county-map" id="counties">
       <div className="wrapper">
         <div className="lefttt portal-county-preview" data-preview-county={selected.slug}>
-          <div className="portal-county-photo">
-            <img
-              key={selected.slug + '-' + String(useTemplate)}
-              id="cityImage"
-              src={image}
-              alt={'طرح فرمانداری شهرستان ' + selected.name}
-              width={1536}
-              height={1024}
-              loading="lazy"
-              onError={() =>
-                setFailedImages((previous) =>
-                  previous.includes(selected.slug) ? previous : [...previous, selected.slug],
-                )
-              }
-            />
-            {useTemplate && (
-              <div className="portal-county-nameplate" aria-hidden="true">
-                فرمانداری {selected.name}
-              </div>
-            )}
-          </div>
+          <CountyArtwork
+            key={selected.slug + '-' + String(useTemplate)}
+            id="cityImage"
+            county={selected}
+            image={image}
+            template={useTemplate}
+            onError={() =>
+              setFailedImages((previous) =>
+                previous.includes(selected.slug) ? previous : [...previous, selected.slug],
+              )
+            }
+          />
           <div className="portal-county-preview-body">
             <div
               className="portal-county-caption"

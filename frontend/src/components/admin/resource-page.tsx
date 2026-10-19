@@ -48,7 +48,13 @@ export function AdminResourcePage({ path }: { path: string }) {
                             ? 'نام'
                             : 'عنوان'}
                         </th>
-                        <th>وضعیت</th>
+                        <th>
+                          {['counties', 'services'].includes(config.resource)
+                            ? 'فعال'
+                            : ['gallery-items', 'poll-options'].includes(config.resource)
+                              ? 'ترتیب نمایش'
+                              : 'وضعیت'}
+                        </th>
                         <th>عملیات</th>
                       </tr>
                     </thead>

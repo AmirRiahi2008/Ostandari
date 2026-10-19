@@ -76,17 +76,33 @@ export function fillFields(root: ParentNode, record: RecordData): void {
         date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
         input.value = Number.isNaN(date.valueOf()) ? '' : date.toISOString().slice(0, 16);
       } else if (input instanceof HTMLSelectElement && value === undefined)
-        input.value = input.options[0]?.value ?? '';
+        input.value =
+          Array.from(input.options).find((option) => option.defaultSelected)?.value ??
+          input.options[0]?.value ??
+          '';
       else input.value = value === null || value === undefined ? '' : String(value);
     }
   }
 }
 
-export function fieldForColumn(label: string): string {
+export function fieldForColumn(label: string, resource = ''): string {
+  if (resource === 'roles' && label.includes('نام نقش')) return 'label';
+  if (resource === 'roles' && label.includes('نوع نقش')) return 'name';
+  if (resource === 'polls' && /عنوان|نام/.test(label)) return 'question';
+  if (resource === 'quotes' && label.includes('گوینده')) return 'author';
+  if (resource === 'quotes' && label.includes('متن')) return 'text';
+  if (resource === 'settings' && label.includes('عنوان')) return 'key';
+  if (resource === 'menus' && label.includes('گروه')) return 'name';
+  if (resource === 'submissions' && label.includes('نام فرم')) return '_form_title';
   const mapping: [string[], string][] = [
     [['ردیف'], '_index'],
     [['عملیات'], '_actions'],
     [['غیرفعال'], '_inactive'],
+    [['تاریخ شروع'], 'starts_at'],
+    [['تاریخ پایان'], 'ends_at'],
+    [['کد پیگیری'], 'reference'],
+    [['کد ملی'], 'national_code'],
+    [['کد پرسنلی'], 'personnel_code'],
     [['نمایش', 'فعال'], 'is_active'],
     [['شناسه', 'کد'], 'id'],
     [['زبان'], 'locale'],
@@ -94,19 +110,22 @@ export function fieldForColumn(label: string): string {
     [['پدر'], 'parent_id'],
     [['عنوان اصلی'], 'title'],
     [['عنوان فرعی'], 'subtitle'],
-    [['سوال', 'سؤال'], 'question'],
+    [['سوال', 'سؤال', 'پرسش'], 'question'],
     [['جواب', 'پاسخ'], 'answer'],
     [['نام کاربری'], 'username'],
     [['همراه', 'موبایل'], 'mobile'],
     [['ایمیل'], 'email'],
     [['فکس'], 'fax'],
     [['تلفن'], 'phone'],
+    [['آدرس لینک', 'آدرس تبلیغ', 'آدرس اینترنتی'], 'url'],
     [['آدرس'], 'address'],
     [['تاریخ'], 'created_at'],
     [['تصویر', 'عکس'], 'image'],
     [['سمت'], 'position'],
     [['نام خانوادگی'], 'name'],
     [['موضوع'], 'subject'],
+    [['توصیف', 'توضیح', 'خلاصه'], 'description'],
+    [['نوع کاربری'], 'person_type'],
     [['وضعیت'], 'status'],
     [['نام'], 'name'],
     [['عنوان'], 'title'],

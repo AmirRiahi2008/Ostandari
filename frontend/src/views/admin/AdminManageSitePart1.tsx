@@ -1,6 +1,7 @@
 import AdminHeader7f990 from '@/components/template/parts/AdminHeader7f990';
 import AdminRail2b463 from '@/components/template/parts/AdminRail2b463';
 import AdminNavigation8ad11 from '@/components/template/parts/AdminNavigation8ad11';
+import { AdminResourceForm } from '@/components/admin/resource-form';
 export default function AdminManageSitePart1() {
   return (
     <>
@@ -43,6 +44,9 @@ export default function AdminManageSitePart1() {
               <section>
                 <header className="d-9de9ed288dc0a2">
                   <h6>{'گروه های منو'}</h6>
+                  <button type="button" className="button-designv1" id="cbnOpenCreateMenuModalBtn">
+                    افزودن گروه منو
+                  </button>
                 </header>
                 <div className="main-content-section-bottom">
                   <div className="education-table-wrapper">
@@ -50,15 +54,33 @@ export default function AdminManageSitePart1() {
                       <thead>
                         <tr>
                           <th>{'گروه منو'}</th>
-                          <th>{'مشاهده'}</th>
+                          <th>{'عملیات'}</th>
                         </tr>
                       </thead>
                       <tbody id="educationTableBody">
                         <tr>
                           <td>{'افقی'}</td>
                           <td>
-                            <button className="button-designv1" data-navigate="/admin/menu-items">
+                            <a
+                              className="button-designv1"
+                              href="/admin/menu-items"
+                              data-related-resource="menu-items"
+                            >
                               {'مشاهده منوهای گروه'}
+                            </a>
+                            <button
+                              type="button"
+                              className="button-designv2"
+                              data-command="editRecord"
+                            >
+                              ویرایش
+                            </button>
+                            <button
+                              type="button"
+                              className="button-designv2"
+                              data-command="deleteRecord"
+                            >
+                              حذف
                             </button>
                           </td>
                         </tr>
@@ -66,10 +88,10 @@ export default function AdminManageSitePart1() {
                     </table>
                   </div>
                 </div>
-                <div className="top-modal-overlay" id="editCommitmentModal">
+                <div className="top-modal-overlay" id="cbnCreateMenuModalOverlay">
                   <div className="top-modal-container">
                     <div className="top-modal-header">
-                      <h3>{'ویرایش استان ها '}</h3>
+                      <h3>{'گروه منو'}</h3>
                       <div
                         className="top-modal-close"
                         data-command="closeEditCommitmentModal"
@@ -93,51 +115,7 @@ export default function AdminManageSitePart1() {
                       </div>
                     </div>
                     <div className="top-modal-body">
-                      <form action="#" data-form="true">
-                        <div className="upload-item">
-                          <label>{'کد استان:'}</label>
-                          <input
-                            type="text"
-                            id="commitmentTitle"
-                            placeholder="عنوان را تایپ کنید"
-                          />
-                        </div>
-                        <div className="upload-item">
-                          <label>{'نام استان:'}</label>
-                          <input
-                            type="text"
-                            id="commitmentTitle"
-                            placeholder="عنوان را تایپ کنید"
-                          />
-                        </div>
-                        <div className="upload-item">
-                          <div className="engineer-input-field d-48ab9a3869e4b3">
-                            <label>{'نام کشور:'}</label>
-                            <select className="search-field-select-country">
-                              <option value="2">{'ایران'}</option>
-                              <option value="3">{'افغانستان'}</option>
-                              <option value="4">{'ترکیه'}</option>
-                              <option value="5">{'امارات'}</option>
-                            </select>
-                          </div>
-                        </div>
-                        <div className="upload-item">
-                          <label>{'کد استان در نظام مهندسی:'}</label>
-                          <input
-                            type="text"
-                            id="commitmentTitle"
-                            placeholder="عنوان را تایپ کنید"
-                          />
-                        </div>
-                        <div className="upload-item">
-                          <label>{'ترتیب نمایش:'}</label>
-                          <input
-                            type="text"
-                            id="commitmentTitle"
-                            placeholder="عنوان را تایپ کنید"
-                          />
-                        </div>
-                      </form>
+                      <AdminResourceForm resource="menus" />
                     </div>
                     <div className="top-modal-footer">
                       <button
@@ -148,7 +126,9 @@ export default function AdminManageSitePart1() {
                       >
                         {'برگشت'}
                       </button>
-                      <button className="button-designv1">{'ذخیره'}</button>
+                      <button type="button" className="button-designv1" data-command="saveRecord">
+                        {'ذخیره'}
+                      </button>
                     </div>
                   </div>
                 </div>

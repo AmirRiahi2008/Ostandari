@@ -1,14 +1,15 @@
+import type { ReactNode } from 'react';
+import { notFound, redirect } from 'next/navigation';
 import { OriginalCountyNews, type OriginalNewsItem } from '@/components/site/original-news';
-import { articleHref, officialDate } from './official-data';
-import { findCounty, officeHref, countyQuery, type County } from '@/data/counties';
+import { counties, findCounty, officeHref, countyQuery, type County } from '@/data/counties';
 import { PortalLayout, EmptyState, loadPortalChrome } from '@/components/site/portal-layout';
+import { CountyArtwork } from '@/components/site/county-artwork';
 import { NewsletterForm } from '@/components/site/public-forms';
-import { HomeSlider } from '@/components/site/home-slider';
 import { OriginalManagerCards } from '@/components/site/original-content';
-import { officialSite } from './official-data';
 import { SafeRichText } from '@/components/site/safe-rich-text';
 import { publicData, recordImage, plainText, type PublicRecord } from '@/lib/public-content';
-import { notFound, redirect } from 'next/navigation';
+import { safeDestination } from '@/lib/urls';
+import { articleHref, officialDate } from './official-data';
 
 export async function officeIdentity(slug: string | undefined) {
   const county = findCounty(slug);
@@ -22,7 +23,7 @@ export async function officeIdentity(slug: string | undefined) {
   const record = countyResult.data.county;
   const organizations = countyResult.data.organizations ?? [];
   const organization = organizations.find((org) => org.type === 'county') ?? organizations[0];
-  // Never show a different county's news or governor when its data is absent.
+  // A missing county organization must never fall back to records from another county.
   return {
     county,
     record,
@@ -34,9 +35,10 @@ export async function officeIdentity(slug: string | undefined) {
     unavailable: countyResult.unavailable,
   };
 }
+
 export async function officeContent(slug: string | undefined) {
   const identity = await officeIdentity(slug);
-  const { county, organization } = identity;
+  const { organization } = identity;
   const filter = organization?.id ? '&organization_id=' + organization.id : '';
   const [news, announcements, galleries, links] = await Promise.all([
     organization
@@ -52,26 +54,180 @@ export async function officeContent(slug: string | undefined) {
   ]);
   return { ...identity, news, announcements, galleries, links };
 }
-export function CountyNavigation({ county }: { county: County }) {
+
+type OfficeSection = 'home' | 'about' | 'news' | 'gallery' | 'contact';
+export function CountyNavigation({ county, active }: { county: County; active?: OfficeSection }) {
   const q = countyQuery(county);
+  const links = [
+    { key: 'home', title: 'صفحه فرمانداری', href: officeHref(county) },
+    { key: 'about', title: 'معرفی شهرستان', href: officeHref(county, 'about') },
+    { key: 'news', title: 'اخبار فرمانداری', href: '/news' + q },
+    { key: 'gallery', title: 'گالری تصاویر', href: '/gallery' + q },
+    { key: 'contact', title: 'ارتباط با فرماندار', href: '/contact-us' + q + '&type=normal' },
+    { key: 'counties', title: 'همه فرمانداری‌ها', href: '/counties' },
+  ];
   return (
-    <nav className="portal-office-nav" aria-label={'بخش‌های فرمانداری ' + county.name}>
-      <a href={officeHref(county)}>صفحه فرمانداری</a>
-      <a href={officeHref(county, 'about')}>معرفی شهرستان</a>
-      <a href={'/news' + q}>اخبار فرمانداری</a>
-      <a href={'/gallery' + q}>گالری تصاویر</a>
-      <a href={'/contact-us' + q + '&type=normal'}>ارتباط با فرماندار</a>
-      <a href="/counties">همه فرمانداری‌ها</a>
+    <nav
+      className="portal-office-nav portal-county-navigation"
+      aria-label={'بخش‌های فرمانداری ' + county.name}
+    >
+      {links.map((link) => (
+        <a key={link.key} href={link.href} aria-current={active === link.key ? 'page' : undefined}>
+          {link.title}
+        </a>
+      ))}
     </nav>
   );
 }
+
+function OfficePanel({
+  title,
+  href,
+  children,
+  className = '',
+}: {
+  title: string;
+  href?: string;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <section className={'portal-office-panel ' + className}>
+      <header className="portal-office-panel-head">
+        <h2>{title}</h2>
+        {href && (
+          <a href={href}>
+            مشاهده همه <span aria-hidden="true">←</span>
+          </a>
+        )}
+      </header>
+      <div className="portal-office-panel-body">{children}</div>
+    </section>
+  );
+}
+
+function OfficeGovernor({ county, governor }: { county: County; governor?: PublicRecord }) {
+  const photo = recordImage(governor?.image);
+  return (
+    <aside className="portal-office-governor" aria-label={'فرماندار شهرستان ' + county.name}>
+      <span className="portal-office-eyebrow">فرمانداری شهرستان {county.name}</span>
+      <div className={'portal-office-portrait' + (!photo ? ' is-seal' : '')}>
+        <img
+          src={photo ?? '/design/site/assets/image/logo.png'}
+          alt={
+            photo
+              ? String(governor?.name ?? 'فرماندار شهرستان ' + county.name)
+              : 'نشان استانداری مازندران'
+          }
+          width={144}
+          height={168}
+        />
+      </div>
+      <h2>{String(governor?.name ?? 'فرمانداری ' + county.name)}</h2>
+      <p>
+        {governor?.name
+          ? 'فرماندار شهرستان ' + county.name
+          : 'پرتال اطلاع‌رسانی شهرستان ' + county.name}
+      </p>
+      <div className="portal-office-actions">
+        <a
+          className="portal-office-button"
+          href={'/contact-us' + countyQuery(county) + '&type=normal'}
+        >
+          ارتباط با فرماندار
+        </a>
+        <a className="portal-office-button is-outline" href={officeHref(county, 'about')}>
+          معرفی شهرستان
+        </a>
+      </div>
+    </aside>
+  );
+}
+
+function CountyLocator({ county, record }: { county: County; record?: PublicRecord }) {
+  const image = recordImage(record?.map_image);
+  return (
+    <section className="portal-office-locator" aria-label={county.name + ' در یک نگاه'}>
+      <div className="portal-office-location-copy">
+        <span className="portal-office-eyebrow">استان مازندران</span>
+        <h2>
+          {county.name} <span>در یک نگاه</span>
+        </h2>
+        {Boolean(record?.description) && <p>{plainText(record?.description)}</p>}
+        <a className="portal-office-button" href={officeHref(county, 'about')}>
+          دربارهٔ شهرستان {county.name}
+          <span aria-hidden="true">←</span>
+        </a>
+      </div>
+      <div className="portal-office-location-map">
+        {image ? (
+          <img src={image} alt={'نقشهٔ شهرستان ' + county.name} loading="lazy" />
+        ) : (
+          <svg
+            viewBox="0 -20 650 315"
+            role="img"
+            aria-label={'موقعیت شهرستان ' + county.name + ' در استان مازندران'}
+          >
+            {counties.map((region) => (
+              <path
+                key={region.slug}
+                d={region.shape}
+                fill={region.slug === county.slug ? '#00477a' : '#e5edf5'}
+                stroke={region.slug === county.slug ? '#003353' : '#a9bed0'}
+                strokeWidth={region.slug === county.slug ? 1.7 : 0.8}
+                vectorEffect="non-scaling-stroke"
+                data-selected={region.slug === county.slug ? 'true' : undefined}
+              />
+            ))}
+            {county.labelAnchor && (
+              <path
+                d={
+                  'M' +
+                  county.labelAnchor.join(' ') +
+                  ' L' +
+                  county.label[0] +
+                  ' ' +
+                  (county.label[1] + 8)
+                }
+                stroke="#00477a"
+                strokeWidth="1.2"
+                fill="none"
+                vectorEffect="non-scaling-stroke"
+              />
+            )}
+            <text
+              x={county.label[0]}
+              y={county.label[1]}
+              fill="#003e68"
+              stroke="#fff"
+              strokeWidth="4"
+              paintOrder="stroke"
+              fontSize="15"
+              fontWeight="800"
+              textAnchor="middle"
+              dominantBaseline="middle"
+              direction="rtl"
+            >
+              {county.name}
+            </text>
+          </svg>
+        )}
+        <p>
+          <span aria-hidden="true" />
+          موقعیت شهرستان {county.name}
+        </p>
+      </div>
+    </section>
+  );
+}
+
 export async function OfficePage({ slug, section }: { slug?: string; section?: string }) {
   const chrome = loadPortalChrome();
   const { county, record, governor, news, announcements, galleries, links, members, unavailable } =
     await officeContent(slug);
   const q = countyQuery(county);
-  const photo = recordImage(governor?.image);
-  const mapImage = recordImage(record?.map_image);
+  const about = section === 'about';
+  const people = members.filter((person) => person.kind !== 'county_governor');
   const newsItems = (items: PublicRecord[], type: string): OriginalNewsItem[] =>
     items.map((item) => ({
       id: String(item.id),
@@ -83,7 +239,6 @@ export async function OfficePage({ slug, section }: { slug?: string; section?: s
       href:
         articleHref(item) + (articleHref(item).includes('?') ? '&' : '?') + 'name=' + county.slug,
     }));
-  const people = members.filter((person) => person.kind !== 'county_governor');
   return (
     <PortalLayout
       path="/office"
@@ -91,185 +246,139 @@ export async function OfficePage({ slug, section }: { slug?: string; section?: s
       designPath="/county"
       chrome={chrome}
     >
-      <CountyNavigation county={county} />
-      {section === 'about' ? (
-        <div className="source-article">
-          <h2>دربارهٔ شهرستان {county.name}</h2>
-          {record?.description || record?.body ? (
-            <SafeRichText
-              html={String(record.body ?? record.description)}
-              text={plainText(record.body ?? record.description)}
-            />
-          ) : (
-            <EmptyState unavailable={unavailable}>
-              معرفی شهرستان {county.name} هنوز در پرتال ثبت نشده است.
-            </EmptyState>
-          )}
-          <a href={officeHref(county)}>بازگشت به صفحه فرمانداری</a>
-        </div>
-      ) : (
-        <div className="source-office">
-          <div className="container-body">
-            <div className="container-body-right">
-              <HomeSlider
-                slides={officialSite.slides.map((slide, index) => ({
-                  id: 'county-slide-' + index,
-                  title: slide.title,
-                  image: slide.image ?? undefined,
-                  href: '/news' + q,
-                }))}
-              />
-            </div>
-            <div className="container-body-left">
-              {photo ? (
-                <img src={photo} alt={String(governor?.name ?? 'فرماندار')} />
-              ) : (
-                <img
-                  src="/design/site/assets/image/logo.png"
-                  alt="نشان استانداری"
-                  className="source-seal"
-                />
-              )}
-              <div className="name">
-                <span>{String(governor?.name ?? 'فرمانداری ' + county.name)}</span>
-                <p>
-                  {governor?.name
-                    ? 'فرماندار شهرستان ' + county.name
-                    : 'پرتال اطلاع‌رسانی شهرستان ' + county.name}
-                </p>
-              </div>
-              <a className="name-btn" href={'/contact-us' + q + '&type=normal'}>
-                ارتباط با فرماندار
-              </a>
-              <a className="name-btn2" href={officeHref(county, 'about')}>
-                معرفی شهرستان
+      <div
+        className="source-office portal-county-office"
+        data-county-office={county.slug}
+        data-office-view={about ? 'about' : 'home'}
+      >
+        <CountyNavigation county={county} active={about ? 'about' : 'home'} />
+        <div className="portal-office-lead">
+          <section className="portal-office-identity" aria-label={'معرفی فرمانداری ' + county.name}>
+            <div className="portal-office-intro">
+              <span className="portal-office-eyebrow">پرتال اطلاع‌رسانی شهرستان</span>
+              <h2>
+                فرمانداری شهرستان <strong>{county.name}</strong>
+              </h2>
+              <p>اخبار، اطلاعیه‌ها و راه‌های ارتباط با فرمانداری شهرستان {county.name}</p>
+              <a className="portal-office-button" href={'/news' + q}>
+                اخبار شهرستان<span aria-hidden="true">←</span>
               </a>
             </div>
-          </div>
-          <div className="cb2-wrapper">
-            <aside className="cb2-left">
-              <div className="cb2-card">
-                <div className="cb2-card-head">
-                  <h3>عضویت در خبرنامه</h3>
-                </div>
-                <div className="newsletter-body">
-                  <p>از طریق ایمیل از آخرین اخبار و اطلاعیه‌ها مطلع شوید.</p>
-                  <NewsletterForm />
-                </div>
-              </div>
-              <div className="cb2-card gallery-card">
-                <div className="cb2-card-head">
-                  <h3>گالری چندرسانه‌ای</h3>
-                </div>
-                <div className="gallery-card-body">
-                  {galleries.data.map((album) => (
-                    <a
-                      key={String(album.id)}
-                      className="gallery-img-wrap"
-                      href={'/gallery' + q + '&album=' + album.id}
-                    >
-                      {recordImage(
-                        album.cover ?? (album.items as PublicRecord[] | undefined)?.[0]?.image,
-                      ) && (
-                        <img
-                          src={recordImage(
-                            album.cover ?? (album.items as PublicRecord[] | undefined)?.[0]?.image,
-                          )}
-                          alt=""
-                          loading="lazy"
-                        />
-                      )}
-                      <span>{album.title}</span>
-                    </a>
-                  ))}
-                  {!galleries.data.length && (
-                    <a href={'/gallery' + q}>گالری فرمانداری {county.name}</a>
-                  )}
-                </div>
-              </div>
-            </aside>
-            <div>
-              <OriginalCountyNews
-                news={newsItems(news.data, 'news')}
-                announcements={newsItems(announcements.data, 'announcement')}
-                county={county.name}
-              />
-              <a href={'/news' + q}>همهٔ اخبار فرمانداری</a>
-            </div>
-            <aside className="cb2-right">
-              <div className="cb2-card">
-                <div className="cb2-card-head">
-                  <h3>مدیران شهرستان {county.name}</h3>
-                </div>
-                {people.length ? (
-                  <OriginalManagerCards
-                    people={people}
-                    profilePath={'/managers' + q}
-                    contactHref={'/contact-us' + q}
-                  />
-                ) : (
-                  <EmptyState>مشخصات مدیران شهرستان هنوز منتشر نشده است.</EmptyState>
-                )}
-              </div>
-              <div className="cb2-card">
-                <div className="cb2-card-head">
-                  <h3>پیوندهای مرتبط</h3>
-                </div>
-                <ul className="portal-link-list">
-                  {links.data.map((item) => (
-                    <li key={String(item.id)}>
-                      <a href={String(item.url ?? '/links')}>{String(item.title ?? item.name)}</a>
-                    </li>
-                  ))}
-                  <li>
-                    <a href="/services">میز خدمت الکترونیکی</a>
-                  </li>
-                  <li>
-                    <a href={'/contact-us' + q}>ارتباط با فرمانداری</a>
-                  </li>
-                  <li>
-                    <a href="/citizen">پیگیری درخواست‌ها</a>
-                  </li>
-                </ul>
-              </div>
-            </aside>
-          </div>
-          <section className="qs-map-section">
-            <div className="qs-map-inner">
-              <div className="qs-map-text">
-                <h2 className="qs-map-title">
-                  {county.name} <span>در یک نگاه</span>
-                </h2>
-                {Boolean(record?.description) && (
-                  <p className="qs-map-desc">{plainText(record?.description)}</p>
-                )}
-                <a className="qs-map-btn" href={officeHref(county, 'about')}>
-                  دربارهٔ شهرستان {county.name}
-                </a>
-              </div>
-              <div className="qs-map-visual">
-                <div className="qs-map-frame">
-                  {mapImage ? (
-                    <img
-                      src={mapImage}
-                      alt={'نقشهٔ شهرستان ' + county.name}
-                      className="qs-map-img"
-                    />
-                  ) : (
-                    <svg
-                      viewBox="0 0 655 360"
-                      role="img"
-                      aria-label={'محدودهٔ شهرستان ' + county.name + ' در نقشهٔ طرح'}
-                    >
-                      <path d={county.shape} fill="#00477a" stroke="#ffffff" strokeWidth="1" />
-                    </svg>
-                  )}
-                </div>
-              </div>
+            <div className="portal-office-hero-art">
+              <CountyArtwork county={county} loading="eager" />
             </div>
           </section>
+          <OfficeGovernor county={county} governor={governor} />
         </div>
-      )}
+        <div className="portal-office-content-grid">
+          <div className="portal-office-main-column">
+            {about ? (
+              <OfficePanel title={'دربارهٔ شهرستان ' + county.name} className="portal-office-about">
+                {record?.description || record?.body ? (
+                  <SafeRichText
+                    html={String(record.body ?? record.description)}
+                    text={plainText(record.body ?? record.description)}
+                  />
+                ) : (
+                  <EmptyState unavailable={unavailable}>
+                    معرفی شهرستان {county.name} هنوز در پرتال ثبت نشده است.
+                  </EmptyState>
+                )}
+              </OfficePanel>
+            ) : (
+              <OfficePanel
+                title="اخبار و اطلاعیه‌ها"
+                href={'/news' + q}
+                className="portal-office-news"
+              >
+                <OriginalCountyNews
+                  news={newsItems(news.data, 'news')}
+                  announcements={newsItems(announcements.data, 'announcement')}
+                  county={county.name}
+                  newsUnavailable={unavailable || news.unavailable}
+                  announcementsUnavailable={unavailable || announcements.unavailable}
+                />
+              </OfficePanel>
+            )}
+            <OfficePanel title="گالری تصاویر" href={'/gallery' + q}>
+              {galleries.data.length ? (
+                <div className="portal-office-gallery">
+                  {galleries.data.map((album) => {
+                    const image = recordImage(
+                      album.cover ?? (album.items as PublicRecord[] | undefined)?.[0]?.image,
+                    );
+                    return (
+                      <a key={String(album.id)} href={'/gallery' + q + '&album=' + album.id}>
+                        <div className="portal-office-gallery-image">
+                          {image ? (
+                            <img src={image} alt="" loading="lazy" width={420} height={270} />
+                          ) : (
+                            <span aria-hidden="true">گالری تصاویر</span>
+                          )}
+                        </div>
+                        <h3>{String(album.title ?? 'گالری فرمانداری ' + county.name)}</h3>
+                      </a>
+                    );
+                  })}
+                </div>
+              ) : (
+                <EmptyState unavailable={unavailable || galleries.unavailable}>
+                  تصویری برای فرمانداری {county.name} منتشر نشده است.
+                </EmptyState>
+              )}
+            </OfficePanel>
+          </div>
+          <aside
+            className="portal-office-sidebar"
+            aria-label={'اطلاعات و خدمات فرمانداری ' + county.name}
+          >
+            <OfficePanel title={'مدیران شهرستان ' + county.name}>
+              {people.length ? (
+                <OriginalManagerCards
+                  people={people}
+                  profilePath={'/managers' + q}
+                  contactHref={'/contact-us' + q}
+                />
+              ) : (
+                <EmptyState unavailable={unavailable}>
+                  مشخصات مدیران شهرستان هنوز منتشر نشده است.
+                </EmptyState>
+              )}
+            </OfficePanel>
+            <OfficePanel title="دسترسی سریع">
+              <div className="portal-office-shortcuts">
+                <a href="/services">
+                  میز خدمت الکترونیکی<span aria-hidden="true">←</span>
+                </a>
+                <a href={'/contact-us' + q}>
+                  ارتباط با فرمانداری<span aria-hidden="true">←</span>
+                </a>
+                <a href="/citizen">
+                  پیگیری درخواست‌ها<span aria-hidden="true">←</span>
+                </a>
+              </div>
+            </OfficePanel>
+            <OfficePanel title="عضویت در خبرنامه" className="portal-office-newsletter">
+              <p>از طریق ایمیل از آخرین اخبار و اطلاعیه‌ها مطلع شوید.</p>
+              <NewsletterForm />
+            </OfficePanel>
+            {links.data.length > 0 && (
+              <OfficePanel title="پیوندهای مرتبط">
+                <ul className="portal-office-links">
+                  {links.data.map((item) => (
+                    <li key={String(item.id)}>
+                      <a href={safeDestination(item.url, '/links')}>
+                        {String(item.title ?? item.name)}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </OfficePanel>
+            )}
+          </aside>
+        </div>
+        <CountyLocator county={county} record={record} />
+      </div>
     </PortalLayout>
   );
 }

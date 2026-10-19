@@ -57,11 +57,11 @@ export default function AdminMoteghaziFormPart1() {
                     <table className="education-table" id="educationTable">
                       <thead>
                         <tr>
-                          <th>{'شناسه'}</th>
+                          <th>{'کد پیگیری'}</th>
                           <th>{'نام فرم'}</th>
-                          <th>{'توصیف'}</th>
-                          <th>{'تاریخ ایجاد فرم'}</th>
-                          <th>{'مشاهده'}</th>
+                          <th>{'وضعیت'}</th>
+                          <th>{'تاریخ ثبت'}</th>
+                          <th>{'عملیات'}</th>
                         </tr>
                       </thead>
                       <tbody id="educationTableBody">
@@ -75,8 +75,12 @@ export default function AdminMoteghaziFormPart1() {
                             {' 13:04:57'}
                           </td>
                           <td>
-                            <button className="button-designv1">
-                              {'مشاهده لیست متقاضیان فرم'}
+                            <button
+                              type="button"
+                              className="button-designv1"
+                              data-command="editRecord"
+                            >
+                              {'مشاهده و بررسی درخواست'}
                             </button>
                           </td>
                         </tr>
@@ -87,7 +91,7 @@ export default function AdminMoteghaziFormPart1() {
                 <div className="cbn-modal-overlay" id="cbnCreateMenuModalOverlay">
                   <div className="cbn-modal d-6beaeb4d3f3d07">
                     <div className="cbn-modal-header">
-                      <h3>{'ایجاد گروه فرم جدید'}</h3>
+                      <h3>{'بررسی درخواست فرم'}</h3>
                       <div className="cbn-modal-close" id="cbnCloseCreateMenuModalBtn">
                         <svg
                           width="16"

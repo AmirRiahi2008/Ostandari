@@ -66,10 +66,14 @@ export function OriginalCountyNews({
   news,
   announcements,
   county,
+  newsUnavailable = false,
+  announcementsUnavailable = false,
 }: {
   news: OriginalNewsItem[];
   announcements: OriginalNewsItem[];
   county: string;
+  newsUnavailable?: boolean;
+  announcementsUnavailable?: boolean;
 }) {
   const [active, setActive] = useState(0);
   const items = active === 0 ? news : announcements;
@@ -115,7 +119,11 @@ export function OriginalCountyNews({
           </a>
         ))}
         {!items.length && (
-          <p className="source-empty">مطلبی برای فرمانداری {county} در این بخش منتشر نشده است.</p>
+          <p className="source-empty">
+            {(active === 0 ? newsUnavailable : announcementsUnavailable)
+              ? 'ارتباط با سرویس اطلاعات برقرار نشد. لطفاً دوباره تلاش کنید.'
+              : 'مطلبی برای فرمانداری ' + county + ' در این بخش منتشر نشده است.'}
+          </p>
         )}
       </div>
     </div>
