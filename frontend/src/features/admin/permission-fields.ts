@@ -3,6 +3,8 @@ import { adminPermissions } from '@/data/admin/permissions';
 
 export function mountPermissionFields(root: HTMLElement, signal: AbortSignal): void {
   for (const source of all<HTMLTextAreaElement>(root, 'textarea[data-permissions]')) {
+    const initialRequired = source.required;
+    const initialHidden = source.hidden;
     const choices = document.createElement('fieldset');
     choices.className = 'portal-permission-choices';
     const legend = document.createElement('legend');
@@ -11,6 +13,15 @@ export function mountPermissionFields(root: HTMLElement, signal: AbortSignal): v
     source.before(choices);
     source.hidden = true;
     source.required = false;
+    signal.addEventListener(
+      'abort',
+      () => {
+        choices.remove();
+        source.required = initialRequired;
+        source.hidden = initialHidden;
+      },
+      { once: true },
+    );
     for (const [key, title] of Object.entries(adminPermissions)) {
       const label = document.createElement('label');
       const input = document.createElement('input');

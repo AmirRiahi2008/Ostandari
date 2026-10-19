@@ -72,6 +72,9 @@ export function mountPortal(root: HTMLElement, input: ContextInput): () => void 
     if (cancelled) return;
     instance = Alpine;
     Alpine.mutateDom(() => {
+      // Alpine's observer may mark React's new DOM before this effect adds x-data.
+      // Reset that earlier scan so page navigation still initializes portalPage.
+      Alpine.destroyTree(root);
       root.setAttribute('x-data', 'portalPage');
       Alpine.initTree(root);
     });

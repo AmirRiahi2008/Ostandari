@@ -6,12 +6,23 @@ export function closeOverlays(root: HTMLElement): void {
     root,
     '.cbn-modal-overlay,.top-modal-overlay,.cbn-actions-menu,.install-app-overlay,#panel,#panelOverlay,#lightboxOverlay,#flagDropdown',
   ).forEach((element) =>
-    element.classList.remove('active', 'show', 'open', 'cbn-actions-menu-open'),
+    element.classList.remove(
+      'active',
+      'show',
+      'open',
+      'cbn-modal-overlay-open',
+      'cbn-actions-menu-open',
+    ),
   );
 }
 
 export function toggleModal(root: HTMLElement, open: boolean): void {
-  one(root, '#cbnCreateMenuModalOverlay,#editCommitmentModal')?.classList.toggle('active', open);
+  const modal = one(root, '#cbnCreateMenuModalOverlay,#editCommitmentModal');
+  if (!modal) return;
+  modal.classList.toggle('active', open);
+  // The supplied admin designs use this class to switch the overlay from display:none.
+  if (modal.classList.contains('cbn-modal-overlay'))
+    modal.classList.toggle('cbn-modal-overlay-open', open);
 }
 
 export function bindUi(

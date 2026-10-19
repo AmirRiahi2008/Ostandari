@@ -31,6 +31,7 @@ function action(label: string, run: () => void): HTMLButtonElement {
 
 export function mountFormBuilder(root: HTMLElement, signal: AbortSignal): void {
   for (const source of all<HTMLTextAreaElement>(root, 'textarea[data-form-builder]')) {
+    const initialRequired = source.required;
     const wrapper = document.createElement('div');
     wrapper.className = 'portal-form-builder';
     const list = document.createElement('div');
@@ -44,6 +45,14 @@ export function mountFormBuilder(root: HTMLElement, signal: AbortSignal): void {
     wrapper.append(list, message, advanced);
     advanced.append(source);
     source.required = false;
+    signal.addEventListener(
+      'abort',
+      () => {
+        if (wrapper.contains(source)) wrapper.replaceWith(source);
+        source.required = initialRequired;
+      },
+      { once: true },
+    );
     let fields: FormField[] = [];
     const sync = () => {
       source.value = JSON.stringify(fields);

@@ -91,6 +91,8 @@ function button(label: string, action: () => void): HTMLButtonElement {
 
 export function mountRichText(root: HTMLElement, signal: AbortSignal, preview: boolean): void {
   for (const source of all<HTMLTextAreaElement>(root, 'textarea[data-rich-text]')) {
+    const initialRequired = source.required;
+    const initialHidden = source.hidden;
     const wrapper = document.createElement('div');
     wrapper.className = 'portal-cms';
     const toolbar = document.createElement('div');
@@ -109,6 +111,15 @@ export function mountRichText(root: HTMLElement, signal: AbortSignal, preview: b
     source.hidden = true;
     source.before(wrapper);
     wrapper.append(toolbar, surface, source);
+    signal.addEventListener(
+      'abort',
+      () => {
+        if (wrapper.contains(source)) wrapper.replaceWith(source);
+        source.required = initialRequired;
+        source.hidden = initialHidden;
+      },
+      { once: true },
+    );
     const tools = document.createElement('div');
     tools.className = 'portal-cms-tools';
     tools.hidden = true;
