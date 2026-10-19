@@ -120,9 +120,9 @@ export async function OfficialSectionPage({
     unavailable = result.unavailable;
   }
 
-  const person = first(search.person);
-  if (person && ['managers', 'governors'].includes(kind))
-    items = items.filter((item) => String(item.id ?? item.name) === person);
+  const selectedPerson = first(search.person);
+  if (selectedPerson && ['managers', 'governors'].includes(kind))
+    items = items.filter((item) => String(item.id ?? item.name) === selectedPerson);
   const source = safeDestination(
     metadata(article ?? {}).source_url ?? section.source_url,
     'https://ostan-mz.ir/',
@@ -198,7 +198,7 @@ export async function OfficialSectionPage({
         <div className="advar-head">
           <h2>استانداران مازندران</h2>
         </div>
-        <div className="advar-grid">
+        <div className={'advar-grid' + (selectedPerson ? ' portal-official-profile' : '')}>
           {items.map((person) => (
             <article
               className={
@@ -223,6 +223,9 @@ export async function OfficialSectionPage({
               <span className="advar-badge">{String(person.position ?? 'استاندار مازندران')}</span>
               <div className="advar-divider" />
               {Boolean(person.bio) && <p className="advar-desc">{plainText(person.bio)}</p>}
+              {selectedPerson && Boolean(person.body) && (
+                <SafeRichText html={String(person.body)} text={plainText(person.body)} />
+              )}
               <div className="advar-actions">
                 <a
                   className="btn-profile"
@@ -280,6 +283,9 @@ export async function OfficialSectionPage({
           <EmptyState unavailable={unavailable}>
             مشخصات مدیران این گروه هنوز منتشر نشده است.
           </EmptyState>
+        )}
+        {selectedPerson && items[0]?.body && (
+          <SafeRichText html={String(items[0].body)} text={plainText(items[0].body)} />
         )}
       </div>
     );

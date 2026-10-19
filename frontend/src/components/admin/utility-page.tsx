@@ -5,6 +5,9 @@ import { PageFrame } from '@/components/template/page-frame';
 import { templatePreview } from '@/lib/config';
 import { AdminAccount, LogoutButton } from './account';
 import { ReportsPanel } from './reports/reports-panel';
+import { SiteSettings } from './site-settings';
+import { AuditLog } from './audit-log';
+import { adminUtilityTitles } from '@/data/admin/utility-pages';
 export function AdminUtilityPage({ path }: { path: string }) {
   const page = {
     ...templates.find((page) => page.path === '/admin')!,
@@ -12,12 +15,7 @@ export function AdminUtilityPage({ path }: { path: string }) {
     path,
     resource: '',
   };
-  const title =
-    path === '/admin/account'
-      ? 'حساب کاربری'
-      : path === '/admin/logout'
-        ? 'خروج از مدیریت'
-        : 'گزارش‌های مردمی';
+  const title = adminUtilityTitles[path];
   return (
     <>
       <link rel="stylesheet" href={page.css} precedence="design" />
@@ -35,6 +33,10 @@ export function AdminUtilityPage({ path }: { path: string }) {
                   <AdminAccount preview={templatePreview()} />
                 ) : path === '/admin/logout' ? (
                   <LogoutButton preview={templatePreview()} />
+                ) : path === '/admin/settings' ? (
+                  <SiteSettings preview={templatePreview()} />
+                ) : path === '/admin/audit-logs' ? (
+                  <AuditLog preview={templatePreview()} />
                 ) : (
                   <ReportsPanel preview={templatePreview()} />
                 )}

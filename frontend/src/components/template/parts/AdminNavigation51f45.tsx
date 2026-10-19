@@ -4,7 +4,7 @@ export default function AdminNavigation51f45() {
       <div className="sidebar-extended">
         <div className="sidebar-extended-top">
           <a
-            href="/unit?name=%D9%85%D8%AF%DB%8C%D8%B1%DB%8C%D8%AA%20%D8%B3%D8%A7%DB%8C%D8%AA%20Manage%20Site%20%D8%B3%D8%A7%DB%8C%D8%AA"
+            href="/admin/menu-groups"
             className="nav-item av-item-active nav-item-new-mail remove-border"
           >
             <svg

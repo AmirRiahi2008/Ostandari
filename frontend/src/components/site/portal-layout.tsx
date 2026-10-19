@@ -50,6 +50,8 @@ export async function PortalLayout({
     banner: recordImage(settings['site.banner']),
     logo: recordImage(settings['site.logo']),
     sloganImage: recordImage(settings['site.slogan']),
+    sloganText:
+      typeof settings['site.slogan_text'] === 'string' ? settings['site.slogan_text'] : undefined,
     name: typeof settings['site.name'] === 'string' ? settings['site.name'] : undefined,
     ...branding,
   };

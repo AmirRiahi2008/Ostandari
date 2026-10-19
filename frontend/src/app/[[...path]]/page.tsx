@@ -16,13 +16,16 @@ import { AdminResourcePage } from '@/components/admin/resource-page';
 import { HomePage } from '@/features/site/home-page';
 import { OfficialSectionPage } from '@/features/site/official-section-page';
 import { resolveOfficialSection } from '@/features/site/official-data';
+import { adminUtilityTitles } from '@/data/admin/utility-pages';
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
 type Props = { params: Promise<{ path?: string[] }>; searchParams: Promise<Search> };
 
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const path = '/' + ((await params).path ?? []).join('/');
-  if (path === '/admin/reports') return { title: 'گزارش‌های مردمی | استانداری مازندران' };
+  if (adminUtilityTitles[path])
+    return { title: adminUtilityTitles[path] + ' | استانداری مازندران' };
   const page = resolveTemplate(path);
   const officialSection = resolveOfficialSection(path, await searchParams);
   if (officialSection) return { title: officialSection.title };
@@ -56,7 +59,7 @@ export default async function TemplateRoute({ params, searchParams }: Props) {
     await requireAdmin(path);
     return <AdminResourcePage path={path} />;
   }
-  if (['/admin/account', '/admin/reports', '/admin/logout'].includes(path)) {
+  if (adminUtilityTitles[path]) {
     await requireAdmin(path);
     return <AdminUtilityPage path={path} />;
   }

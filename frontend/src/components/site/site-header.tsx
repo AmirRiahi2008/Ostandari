@@ -4,7 +4,13 @@ import { useEffect, useRef, useState } from 'react';
 import { officialNavigation, type NavigationItem } from '@/data/official-navigation';
 import { OriginalIcon, type OriginalIconName } from './original-icons';
 
-export type SiteBranding = { banner?: string; logo?: string; sloganImage?: string; name?: string };
+export type SiteBranding = {
+  banner?: string;
+  logo?: string;
+  sloganImage?: string;
+  sloganText?: string;
+  name?: string;
+};
 
 function MenuTile({ item }: { item: NavigationItem }) {
   return (
@@ -537,7 +543,7 @@ export function SiteHeader({
         <div className="header-paen">
           <div className="marquee">
             <div className="marquee-content">
-              <span>اقتصاد مقاومتی در سایه وحدت ملی و امنیت ملی</span>
+              <span>{branding.sloganText || 'اقتصاد مقاومتی در سایه وحدت ملی و امنیت ملی'}</span>
             </div>
           </div>
         </div>

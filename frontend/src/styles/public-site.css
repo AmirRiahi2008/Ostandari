@@ -1299,3 +1299,33 @@
     transform: none;
   }
 }
+.portal-rich-text :is(td, th) {
+  border: 1px solid #cfd9e3;
+  padding: 10px 14px;
+  text-align: start;
+}
+.portal-rich-text table {
+  border-collapse: collapse;
+  margin-block: 18px;
+}
+.portal-rich-text ul {
+  list-style: disc;
+  padding-inline-start: 28px;
+}
+.portal-rich-text ol {
+  list-style: decimal;
+  padding-inline-start: 28px;
+}
+.portal-rich-text blockquote {
+  border-inline-start: 3px solid #2477a5;
+  padding: 10px 18px;
+  margin-block: 18px;
+}
+.portal-official-profile {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+.portal-official-profile .advar-card {
+  width: 100%;
+  max-width: 960px;
+  margin-inline: auto;
+}

@@ -1,6 +1,7 @@
 import { adminExtraPages } from '@/data/admin/extra-pages';
 import { publicTitles } from '@/data/public-navigation';
 import { resolveTemplate } from '@/lib/templates';
+import { adminUtilityTitles } from '@/data/admin/utility-pages';
 
 export function isPublicRoute(path: string): boolean {
   return Boolean(publicTitles[path] || /^\/(?:news|service|content)\/[^/]+$/.test(path));
@@ -20,6 +21,7 @@ export function knownRoute(href: string): boolean {
   const url = new URL(href, 'http://127.0.0.1:3000');
   return Boolean(
     adminExtraPages[url.pathname] ||
+    adminUtilityTitles[url.pathname] ||
     isPublicRoute(url.pathname) ||
     /^\/section\/[a-z0-9-]+$/.test(url.pathname) ||
     [
@@ -37,6 +39,6 @@ export function knownRoute(href: string): boolean {
     ].includes(url.pathname) ||
     resolveTemplate(url.pathname) ||
     routeAlias(url.pathname, url.searchParams) ||
-    ['/admin/login', '/admin/account', '/admin/reports', '/admin/logout'].includes(url.pathname),
+    url.pathname === '/admin/login',
   );
 }

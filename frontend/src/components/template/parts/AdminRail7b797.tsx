@@ -50,10 +50,7 @@ export default function AdminRail7b797() {
                 </div>
                 <div className="nav-item-text-2">{' داشبورد'}</div>
               </a>
-              <a
-                href="/unit?name=%D9%85%D8%AF%DB%8C%D8%B1%DB%8C%D8%AA%20%D8%B3%D8%A7%DB%8C%D8%AA%20Manage%20Site%20%D8%B3%D8%A7%DB%8C%D8%AA"
-                className="nav-item"
-              >
+              <a href="/admin/menu-groups" className="nav-item">
                 <svg
                   width="16"
                   height="16"

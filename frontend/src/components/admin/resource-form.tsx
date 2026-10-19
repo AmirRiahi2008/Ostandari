@@ -65,7 +65,7 @@ export const fieldLabels: Record<string, string> = {
   fields_schema: 'فیلدهای فرم',
   settings: 'تنظیمات',
   reply: 'متن پاسخ',
-  note: 'یادداشت داخلی',
+  note: 'توضیح تغییر وضعیت',
   urgency: 'اولویت رسیدگی',
   metadata: 'اطلاعات تکمیلی',
   seo_title: 'عنوان موتور جستجو',
@@ -80,6 +80,14 @@ export const fieldLabels: Record<string, string> = {
   author: 'گوینده',
   text: 'متن سخن',
   personnel_code: 'کد پرسنلی',
+  tag_ids: 'برچسب‌ها',
+  media_ids: 'پیوست‌های عمومی',
+  map_key: 'شناسهٔ شهرستان در نقشه',
+  latitude: 'عرض جغرافیایی',
+  longitude: 'طول جغرافیایی',
+  video_url: 'نشانی ویدیو',
+  name_en: 'نام انگلیسی',
+  sms_number: 'شمارهٔ پیامک',
 };
 const labels: Record<string, string> = {
   fa: 'فارسی',
@@ -101,6 +109,19 @@ const labels: Record<string, string> = {
   governor: 'استاندار',
   county_governor: 'فرماندار',
   advisor: 'مشاور',
+  district_head: 'بخشدار',
+  village_head: 'دهیار',
+  governorate: 'استانداری',
+  county: 'فرمانداری',
+  district: 'بخشداری',
+  village: 'دهیاری',
+  department: 'اداره یا سازمان',
+  _self: 'همین صفحه',
+  _blank: 'پنجرهٔ جدید',
+  useful: 'پیوندهای مفید',
+  footer: 'پاورقی',
+  banner: 'بنر',
+  quick: 'دسترسی سریع',
   all: 'همهٔ واحدها',
   organization: 'واحد سازمانی',
   subtree: 'واحد و زیرمجموعه',
@@ -165,6 +186,7 @@ const extra: Record<string, FieldRules> = {
   'moderation/forum-topics': {
     status: ['required', 'in:"pending","approved","rejected","closed"'],
   },
+  'moderation/forum-replies': { status: ['required', 'in:"pending","approved","rejected"'] },
 };
 export function resourceFields(resource: string): FieldRules {
   return (
@@ -189,6 +211,9 @@ export function AdminResourceForm({
           const id = 'editor-' + resource.replaceAll('/', '-') + '-' + field;
           const required = rules.includes('required');
           const json = rules.includes('array');
+          const list = ['requirements', 'steps'].includes(field);
+          const multipleLookup =
+            field === 'tag_ids' ? 'tags' : field === 'media_ids' ? 'media' : '';
           const flag = rules.includes('boolean');
           const options = rules
             .find((rule) => rule.startsWith('in:'))
@@ -228,7 +253,12 @@ export function AdminResourceForm({
                     type="checkbox"
                     name={field}
                     data-field={field}
-                    defaultChecked={field === 'is_active' || field === 'comments_enabled'}
+                    defaultChecked={
+                      field === 'is_active' ||
+                      field === 'comments_enabled' ||
+                      (field === 'is_current' &&
+                        ['governor', 'county_governor'].includes(defaults.kind))
+                    }
                   />
                   {label}
                 </label>
@@ -238,16 +268,34 @@ export function AdminResourceForm({
                     {label}
                     {required && <span aria-hidden="true"> *</span>}
                   </label>
-                  {json ? (
+                  {multipleLookup ? (
+                    <select
+                      id={id}
+                      name={field}
+                      data-field={field}
+                      data-lookup={multipleLookup}
+                      multiple
+                      aria-describedby={id + '-help'}
+                    />
+                  ) : json ? (
                     <textarea
                       id={id}
                       name={field}
                       data-field={field}
-                      data-json="true"
+                      data-json={list ? undefined : 'true'}
+                      data-lines={list ? 'true' : undefined}
+                      data-form-builder={field === 'fields' ? 'true' : undefined}
+                      data-permissions={field === 'permissions' ? 'true' : undefined}
                       required={required}
                       rows={5}
-                      dir="ltr"
-                      placeholder={field === 'permissions' ? '["content.manage"]' : '[]'}
+                      dir={list ? 'rtl' : 'ltr'}
+                      placeholder={
+                        list
+                          ? 'هر مورد در یک خط جداگانه'
+                          : field === 'permissions'
+                            ? '["content.manage"]'
+                            : '[]'
+                      }
                     />
                   ) : options ? (
                     <select
@@ -285,6 +333,11 @@ export function AdminResourceForm({
                       rows={field === 'body' ? 8 : 4}
                       required={required}
                       maxLength={max || undefined}
+                      data-rich-text={
+                        ['body', 'bio', 'description', 'answer'].includes(field)
+                          ? 'true'
+                          : undefined
+                      }
                     />
                   ) : (
                     <input
@@ -315,7 +368,12 @@ export function AdminResourceForm({
                       }
                     />
                   )}
-                  {json && (
+                  {multipleLookup && (
+                    <small id={id + '-help'}>
+                      برای انتخاب چند مورد، کلید Ctrl یا Command را نگه دارید.
+                    </small>
+                  )}
+                  {json && !list && !multipleLookup && (
                     <small>
                       {field === 'fields_schema'
                         ? 'تعریف فیلدهای فرم به صورت آرایهٔ JSON'
@@ -327,14 +385,22 @@ export function AdminResourceForm({
             </div>
           );
         })}
-      {['slides', 'members', 'contents', 'advertisements'].includes(resource) && (
+      {(['slides', 'members', 'contents', 'advertisements', 'links', 'gallery-items'].includes(
+        resource,
+      ) ||
+        (schemas as Record<string, { table: string }>)[resource]?.table === 'contents') && (
         <label className="portal-resource-field portal-resource-wide">
           بارگذاری تصویر
           <input
             type="file"
             accept="image/jpeg,image/png,image/webp"
-            data-media-field={resource === 'contents' ? 'cover_media_id' : 'media_id'}
+            data-media-field={
+              (schemas as Record<string, { table: string }>)[resource]?.table === 'contents'
+                ? 'cover_media_id'
+                : 'media_id'
+            }
           />
+          <small>تصاویر هنگام بارگذاری کوچک می‌شوند. حداکثر حجم فایل ۴ مگابایت است.</small>
         </label>
       )}
     </form>

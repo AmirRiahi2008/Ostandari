@@ -27,6 +27,13 @@ export function AdminResourcePage({ path }: { path: string }) {
                 <h1>{config.title}</h1>
               </div>
               <div className="portal-admin-content">
+                {path === '/admin/governors' && (
+                  <p className="portal-admin-help">
+                    برای نمایش در صفحهٔ اصلی، «مسئول فعلی» و «فعال» را انتخاب کنید و تصویر را
+                    بارگذاری کنید. فقط یک استاندار فعلی فعال مجاز است. برای تغییر عکس یا مشخصات،
+                    رکورد موجود را ویرایش کنید.
+                  </p>
+                )}
                 <div className="portal-admin-toolbar">
                   <button className="portal-button" id="cbnOpenCreateMenuModalBtn">
                     افزودن مورد جدید
@@ -43,24 +50,35 @@ export function AdminResourcePage({ path }: { path: string }) {
                     <thead>
                       <tr>
                         <th>ردیف</th>
+                        {config.resource === 'members' && <th>تصویر</th>}
                         <th>
-                          {config.resource === 'counties' || config.resource === 'services'
+                          {['counties', 'services', 'members', 'categories'].includes(
+                            config.resource,
+                          )
                             ? 'نام'
                             : 'عنوان'}
                         </th>
                         <th>
-                          {['counties', 'services'].includes(config.resource)
+                          {['counties', 'services', 'members', 'categories'].includes(
+                            config.resource,
+                          )
                             ? 'فعال'
                             : ['gallery-items', 'poll-options'].includes(config.resource)
                               ? 'ترتیب نمایش'
                               : 'وضعیت'}
                         </th>
                         <th>عملیات</th>
+                        {config.resource === 'members' && <th>مسئول فعلی</th>}
                       </tr>
                     </thead>
                     <tbody>
                       <tr className="portal-record-prototype">
                         <td>۱</td>
+                        {config.resource === 'members' && (
+                          <td>
+                            <img className="portal-image-preview" alt="تصویر مسئول" hidden />
+                          </td>
+                        )}
                         <td></td>
                         <td></td>
                         <td>
@@ -71,6 +89,7 @@ export function AdminResourcePage({ path }: { path: string }) {
                             حذف
                           </button>
                         </td>
+                        {config.resource === 'members' && <td></td>}
                       </tr>
                     </tbody>
                   </table>

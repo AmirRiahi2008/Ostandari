@@ -212,11 +212,34 @@ export async function PublicPage({ path, search }: { path: string; search: Searc
         };
     content = (
       <Panel title={data.data?.name ?? id}>
-        <p>
-          {plainText(
+        <SafeRichText
+          html={String(
             data.data?.description ?? 'توضیحات این خدمت در داده‌های فعلی پرتال ثبت نشده است.',
           )}
-        </p>
+          text={plainText(
+            data.data?.description ?? 'توضیحات این خدمت در داده‌های فعلی پرتال ثبت نشده است.',
+          )}
+        />
+        {Array.isArray(data.data?.requirements) && data.data.requirements.length > 0 && (
+          <section>
+            <h2>مدارک موردنیاز</h2>
+            <ul>
+              {data.data.requirements.map((item) => (
+                <li key={String(item)}>{String(item)}</li>
+              ))}
+            </ul>
+          </section>
+        )}
+        {Array.isArray(data.data?.steps) && data.data.steps.length > 0 && (
+          <section>
+            <h2>مراحل انجام خدمت</h2>
+            <ol>
+              {data.data.steps.map((item) => (
+                <li key={String(item)}>{String(item)}</li>
+              ))}
+            </ol>
+          </section>
+        )}
         {data.data?.url ? (
           <a className="portal-button" href={data.data.url}>
             ورود به سامانه خدمت

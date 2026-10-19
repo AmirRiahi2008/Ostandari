@@ -4,15 +4,25 @@ import { closeOverlays, rowActions, toggleModal } from '@/lib/alpine/ui';
 import { collectFields, fieldForColumn, fillFields } from './fields';
 import { lookupRecords, lookupResource, resourceRows, resourceScope } from './resources';
 import type { PageContext, RecordData } from '@/types/portal';
+import { mountRichText, validateRichText } from './rich-text';
+import { prepareUpload } from './uploads';
+import { mountFormBuilder, validateFormBuilder } from './form-builder';
+import { mountPermissionFields } from './permission-fields';
+import { contextualFilters, relatedAdminLinks } from './relations';
+import { ticketTransitions } from '@/data/ticket-status';
 
 export function adminController(context: PageContext) {
   const { root, page, signal, preview } = context;
   let records: RecordData[] = [];
   let editing: RecordData | null = null;
   let busy = false;
+  let uploaded: { file: File; id: number } | null = null;
   let currentQuery = '';
   let currentPage = 1;
   let loadVersion = 0;
+  let editVersion = 0;
+  let optionsReady = Promise.resolve();
+  const filters = contextualFilters(window.location.search);
   const tbody = one<HTMLTableSectionElement>(
     root,
     '#educationTableBody, .main-content table tbody',
@@ -51,7 +61,21 @@ export function adminController(context: PageContext) {
         );
       all<HTMLTableCellElement>(row, 'td').forEach((cell, i) => {
         const key = headers[i];
-        if (key === '_actions' || cell.querySelector('[data-command]')) return;
+        if (key === '_actions' || cell.querySelector('[data-command]')) {
+          const links = relatedAdminLinks(page.resource, record);
+          if (links.length) {
+            const navigation = document.createElement('span');
+            navigation.className = 'portal-admin-related';
+            for (const item of links) {
+              const link = document.createElement('a');
+              link.href = item.href;
+              link.textContent = item.label;
+              navigation.append(link);
+            }
+            cell.append(navigation);
+          }
+          return;
+        }
         if (key === '_inactive' || cell.querySelector('input[type=checkbox]')) {
           const input = one<HTMLInputElement>(cell, 'input');
           if (input) {
@@ -76,7 +100,7 @@ export function adminController(context: PageContext) {
         }
         const data =
           key === '_index'
-            ? index + 1
+            ? (currentPage - 1) * 100 + index + 1
             : key === '_form_title'
               ? (record.form as RecordData | undefined)?.title
               : key === 'created_at'
@@ -90,7 +114,26 @@ export function adminController(context: PageContext) {
                       : 'غیرفعال'
                     : key === 'name' && page.resource === 'media'
                       ? record.original_name
-                      : record[key];
+                      : key === 'status'
+                        ? ({
+                            draft: 'پیش‌نویس',
+                            published: 'منتشرشده',
+                            archived: 'بایگانی',
+                            pending: 'در انتظار',
+                            review: 'در حال بررسی',
+                            referred: 'ارجاع‌شده',
+                            resolved: 'پاسخ داده‌شده',
+                            closed: 'بسته‌شده',
+                            rejected: 'ردشده',
+                            accepted: 'پذیرفته‌شده',
+                            approved: 'تأییدشده',
+                            active: 'فعال',
+                          }[String(record.status)] ?? record.status)
+                        : key === 'is_current'
+                          ? record.is_current
+                            ? 'بله'
+                            : 'خیر'
+                          : record[key];
         cell.textContent =
           data === null || data === undefined || typeof data === 'object' ? '' : String(data);
       });
@@ -140,7 +183,7 @@ export function adminController(context: PageContext) {
   async function load(query = currentQuery, selectedPage = currentPage) {
     if (preview || !page.resource) return;
     const version = ++loadVersion;
-    const params = new URLSearchParams({ ...page.defaults, per_page: '100' });
+    const params = new URLSearchParams({ ...filters, ...page.defaults, per_page: '100' });
     params.set('page', String(selectedPage));
     if (page.resource === 'menu-items') {
       const menu = new URLSearchParams(window.location.search).get('menu_id');
@@ -172,6 +215,7 @@ export function adminController(context: PageContext) {
       role_id: 'roles',
       assigned_to: 'users',
     };
+    const requests = new Map<string, Promise<RecordData[]>>();
     await Promise.all(
       all<HTMLSelectElement>(node, 'select[data-field]').map(async (select) => {
         const key = select.dataset.field ?? '';
@@ -179,7 +223,31 @@ export function adminController(context: PageContext) {
         const resource = lookup ? lookupResource(lookup) : '';
         if (!resource) return;
         try {
-          const records = await lookupRecords(resource, signal);
+          const lookupFilters: Record<string, string> = {};
+          const family =
+            page.resource === 'categories'
+              ? page.defaults.type
+              : page.resource === 'members'
+                ? 'member'
+                : page.resource === 'services'
+                  ? 'service'
+                  : page.resource === 'forms'
+                    ? 'form'
+                    : page.resource === 'galleries'
+                      ? 'gallery'
+                      : page.resource === 'slides' || page.resource === 'advertisements'
+                        ? 'slide'
+                        : page.defaults.type === 'news' || page.resource === 'news'
+                          ? 'news'
+                          : ['contents', 'calls', 'publications'].includes(page.resource)
+                            ? 'document'
+                            : '';
+          if (resource === 'categories' && family) lookupFilters.type = family;
+          if (resource === 'menu-items' && filters.menu_id) lookupFilters.menu_id = filters.menu_id;
+          const requestKey = resource + '?' + new URLSearchParams(lookupFilters);
+          if (!requests.has(requestKey))
+            requests.set(requestKey, lookupRecords(resource, signal, lookupFilters));
+          const records = await requests.get(requestKey)!;
           setOptions(
             select,
             records,
@@ -202,11 +270,26 @@ export function adminController(context: PageContext) {
     writeable();
     const node = modal();
     if (!node || busy) return;
+    validateRichText(node);
+    validateFormBuilder(node);
     const form = one<HTMLFormElement>(node, 'form');
-    if (form && !form.reportValidity()) return;
+    const fileInput = one<HTMLInputElement>(
+      node,
+      'input[type=file][data-media-field], input[type=file]:not([data-cms-file])',
+    );
+    const file = fileInput?.files?.[0];
+    const choice = fileInput?.dataset.mediaField
+      ? one<HTMLSelectElement>(node, 'select[data-field="' + fileInput.dataset.mediaField + '"]')
+      : null;
+    const required = choice?.required ?? false;
+    if (file && choice) choice.required = false;
+    const valid = !form || form.reportValidity();
+    if (choice) choice.required = required;
+    if (!valid) return;
     busy = true;
     try {
       let data: RecordData = {
+        ...filters,
         ...page.defaults,
         ...collectFields(node),
         ...resourceScope(page.resource),
@@ -231,10 +314,11 @@ export function adminController(context: PageContext) {
       if (page.resource === 'members' && !data.kind) data.kind = 'manager';
       if (['calls', 'publications'].includes(page.resource) && !data.body)
         data.body = String(data.description ?? '');
-      const file = one<HTMLInputElement>(node, 'input[type=file]')?.files?.[0];
-      if (file)
-        data[one<HTMLInputElement>(node, 'input[type=file]')?.dataset.mediaField ?? 'media_id'] =
-          await upload(file, 'public');
+      if (file) {
+        if (uploaded?.file !== file)
+          uploaded = { file, id: await upload(await prepareUpload(file), 'public', signal) };
+        data[fileInput?.dataset.mediaField ?? 'media_id'] = uploaded.id;
+      }
       if (page.resource === 'media') {
         if (!file) throw new Error('فایل را انتخاب کنید.');
         closeOverlays(root);
@@ -242,6 +326,8 @@ export function adminController(context: PageContext) {
         return;
       }
       if (editing) delete data.password_confirmation;
+      if (editing && page.resource === 'roles' && editing.is_system)
+        throw new Error('نقش‌های سیستمی قابل تغییر نیستند. یک نقش جدید بسازید.');
       if (
         ['tickets', 'submissions', 'subscribers'].includes(page.resource) ||
         page.resource.startsWith('moderation/')
@@ -249,20 +335,23 @@ export function adminController(context: PageContext) {
         if (!editing) throw new Error('ابتدا یک مورد را از فهرست برای بررسی انتخاب کنید.');
       }
       const key = editing ? String(editing.reference ?? editing.id) : '';
-      const reply = page.resource === 'tickets' ? String(data.reply ?? '') : '';
-      if (page.resource === 'tickets') delete data.reply;
+      if (page.resource === 'tickets' && !String(data.reply ?? '').trim()) delete data.reply;
       await api(endpoint + (page.resource === 'settings' ? '' : editing ? '/' + key : ''), {
         method: page.resource === 'settings' ? 'PUT' : editing ? 'PATCH' : 'POST',
         body: jsonBody(data),
+        signal,
       });
-      if (reply.trim())
-        await api(endpoint + '/' + key + '/messages', {
-          method: 'POST',
-          body: jsonBody({ body: reply }),
-        });
       closeOverlays(root);
       editing = null;
-      await load();
+      feedback(root, 'اطلاعات با موفقیت ذخیره شد.');
+      try {
+        await load();
+      } catch {
+        feedback(
+          root,
+          'اطلاعات ذخیره شد؛ دریافت دوبارهٔ فهرست انجام نشد. فهرست را تازه‌سازی کنید.',
+        );
+      }
     } finally {
       busy = false;
     }
@@ -281,20 +370,27 @@ export function adminController(context: PageContext) {
         return;
       }
       if (['closeModal', 'closeEditCommitmentModal'].includes(command)) {
+        editVersion++;
         closeOverlays(root);
         return;
       }
       if (['openEditCommitmentModal', 'editRecord'].includes(command)) {
-        editing = record ?? null;
+        if (busy) return;
+        if (!record) throw new Error('این مورد دیگر در فهرست نیست. فهرست را تازه‌سازی کنید.');
+        const version = ++editVersion;
+        uploaded = null;
+        let next = record;
+        await optionsReady;
         if (
-          editing &&
           !preview &&
           !['roles', 'settings', 'subscribers'].includes(page.resource) &&
           !page.resource.startsWith('moderation/')
         )
-          editing = (
-            await api<RecordData>(endpoint + '/' + String(editing.reference ?? editing.id))
+          next = (
+            await api<RecordData>(endpoint + '/' + String(next.reference ?? next.id), { signal })
           ).data;
+        if (signal.aborted || version !== editVersion) return;
+        editing = next;
         if (modal()) {
           fillFields(
             modal()!,
@@ -308,7 +404,21 @@ export function adminController(context: PageContext) {
                 }
               : (editing ?? {}),
           );
-          if (editing && ['tickets', 'submissions'].includes(page.resource)) {
+          if (editing && page.resource === 'tickets') {
+            const status = one<HTMLSelectElement>(modal()!, 'select[data-field="status"]');
+            const current = String(editing.status) as keyof typeof ticketTransitions;
+            for (const option of Array.from(status?.options ?? []))
+              option.disabled =
+                option.value !== current &&
+                !(ticketTransitions[current] as readonly string[] | undefined)?.includes(
+                  option.value,
+                );
+          }
+          if (
+            editing &&
+            (['tickets', 'submissions'].includes(page.resource) ||
+              page.resource.startsWith('moderation/'))
+          ) {
             let details = one<HTMLElement>(modal()!, '[data-record-detail]');
             if (!details) {
               details = document.createElement('div');
@@ -319,7 +429,10 @@ export function adminController(context: PageContext) {
             details.textContent =
               String(editing.subject ?? editing.reference ?? '') +
               '\n' +
-              String(editing.body ?? JSON.stringify(editing.data ?? ''));
+              String(editing.body ?? '') +
+              (page.resource === 'submissions'
+                ? '\n' + JSON.stringify(editing.data ?? {}, null, 2)
+                : '');
             const attachments = (parent: HTMLElement, media: unknown) => {
               if (!Array.isArray(media)) return;
               for (const file of media as RecordData[]) {
@@ -356,6 +469,7 @@ export function adminController(context: PageContext) {
         return;
       }
       if (command === 'deleteRecord' && record) {
+        if (busy) return;
         if (
           ['tickets', 'submissions', 'settings'].includes(page.resource) ||
           page.resource.startsWith('moderation/')
@@ -363,8 +477,16 @@ export function adminController(context: PageContext) {
           throw new Error('این بخش از طریق بررسی و تغییر وضعیت مدیریت می‌شود.');
         writeable();
         if (!window.confirm('این مورد حذف شود؟')) return;
-        await api(endpoint + '/' + String(record.reference ?? record.id), { method: 'DELETE' });
-        await load();
+        busy = true;
+        try {
+          await api(endpoint + '/' + String(record.reference ?? record.id), {
+            method: 'DELETE',
+            signal,
+          });
+          await load();
+        } finally {
+          busy = false;
+        }
       }
     } catch (error) {
       const editor = modal();
@@ -374,6 +496,9 @@ export function adminController(context: PageContext) {
   }
 
   function init() {
+    mountRichText(root, signal, preview);
+    mountFormBuilder(root, signal);
+    mountPermissionFields(root, signal);
     if (page.resource && tbody && modal()) {
       if (reviewOnly)
         one<HTMLElement>(root, '#cbnOpenCreateMenuModalBtn')?.setAttribute('hidden', '');
@@ -488,7 +613,9 @@ export function adminController(context: PageContext) {
     one(root, '#cbnOpenCreateMenuModalBtn')?.addEventListener(
       'click',
       () => {
+        editVersion++;
         editing = null;
+        uploaded = null;
         const node = modal();
         if (node)
           fillFields(
@@ -505,6 +632,9 @@ export function adminController(context: PageContext) {
                   locale: 'fa',
                   priority: 0,
                   is_active: true,
+                  ...Object.fromEntries(
+                    Object.entries(filters).map(([key, value]) => [key, Number(value)]),
+                  ),
                   ...resourceScope(page.resource),
                   ...page.defaults,
                 },
@@ -575,8 +705,10 @@ export function adminController(context: PageContext) {
     );
     if (!preview && page.resource) {
       tableMessage('در حال دریافت اطلاعات…');
-      void Promise.all([load(), relatedOptions()]).catch((error) => {
+      optionsReady = relatedOptions();
+      void Promise.all([load(), optionsReady]).catch((error) => {
         tableMessage('دریافت اطلاعات انجام نشد. دوباره تلاش کنید.');
+        root.dataset.ready = 'true';
         if (error instanceof ApiError && error.status === 401)
           window.location.assign('/admin/login?return=' + encodeURIComponent(page.path));
         else feedback(root, error.message);

@@ -37,4 +37,29 @@ export const adminExtraPages: Record<
   '/admin/galleries': { title: 'مدیریت گالری‌ها', resource: 'galleries', defaults: {} },
   '/admin/gallery-items': { title: 'تصاویر گالری', resource: 'gallery-items', defaults: {} },
   '/admin/poll-options': { title: 'گزینه‌های نظرسنجی', resource: 'poll-options', defaults: {} },
+  '/admin/governors': {
+    title: 'استاندار فعلی و استانداران ادوار',
+    resource: 'members',
+    defaults: { kind: 'governor' },
+  },
+  '/admin/county-governors': {
+    title: 'مدیریت فرمانداران',
+    resource: 'members',
+    defaults: { kind: 'county_governor' },
+  },
+  '/admin/advisors': {
+    title: 'مدیریت مشاوران',
+    resource: 'members',
+    defaults: { kind: 'advisor' },
+  },
+  '/admin/form-categories': {
+    title: 'گروه‌بندی فرم‌ها',
+    resource: 'categories',
+    defaults: { type: 'form' },
+  },
+  '/admin/forum-replies': {
+    title: 'بررسی پاسخ‌های تالار گفتگو',
+    resource: 'moderation/forum-replies',
+    defaults: {},
+  },
 };

@@ -28,6 +28,12 @@ export function collectFields(root: ParentNode): RecordData {
     )
       continue;
     if (input instanceof HTMLInputElement && input.type === 'file') continue;
+    if (input instanceof HTMLSelectElement && input.multiple) {
+      record[key] = Array.from(input.selectedOptions)
+        .map((option) => Number(option.value))
+        .filter(Number.isFinite);
+      continue;
+    }
     if (input instanceof HTMLInputElement && input.type === 'checkbox') {
       record[key] = input.checked;
       continue;
@@ -39,7 +45,12 @@ export function collectFields(root: ParentNode): RecordData {
           : input.value.trim()
         : (input as HTMLElement).innerHTML;
     if (raw === '' && ['password', 'password_confirmation'].includes(key)) continue;
-    if (input.dataset.json) {
+    if (input.dataset.lines) {
+      record[key] = raw
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean);
+    } else if (input.dataset.json) {
       if (!raw) {
         record[key] = [];
         continue;
@@ -57,6 +68,7 @@ export function collectFields(root: ParentNode): RecordData {
 }
 
 export function fillFields(root: ParentNode, record: RecordData): void {
+  for (const file of all<HTMLInputElement>(root, 'input[type="file"]')) file.value = '';
   for (const input of all<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
     root,
     '[data-field]',
@@ -69,7 +81,22 @@ export function fillFields(root: ParentNode, record: RecordData): void {
     if (input instanceof HTMLInputElement && input.type === 'checkbox')
       input.checked = value === undefined ? input.defaultChecked : Boolean(value);
     else if ('value' in input) {
-      if (input.dataset.json)
+      if (input instanceof HTMLSelectElement && input.multiple) {
+        const values = Array.isArray(value)
+          ? value
+          : input.dataset.field === 'tag_ids' && Array.isArray(record.tags)
+            ? (record.tags as RecordData[]).map((tag) => tag.id)
+            : input.dataset.field === 'media_ids' && Array.isArray(record.media)
+              ? (record.media as RecordData[]).map((file) => file.id)
+              : [];
+        if (input.dataset.lookup)
+          for (const value of values)
+            if (!Array.from(input.options).some((option) => option.value === String(value)))
+              input.add(new Option('گزینهٔ فعلی — ' + value, String(value)));
+        for (const option of Array.from(input.options))
+          option.selected = values.map(String).includes(option.value);
+      } else if (input.dataset.lines) input.value = Array.isArray(value) ? value.join('\n') : '';
+      else if (input.dataset.json)
         input.value = value === undefined || value === null ? '' : JSON.stringify(value, null, 2);
       else if (input instanceof HTMLInputElement && input.type === 'datetime-local' && value) {
         const date = new Date(String(value));
@@ -80,12 +107,25 @@ export function fillFields(root: ParentNode, record: RecordData): void {
           Array.from(input.options).find((option) => option.defaultSelected)?.value ??
           input.options[0]?.value ??
           '';
-      else input.value = value === null || value === undefined ? '' : String(value);
+      else {
+        if (
+          input instanceof HTMLSelectElement &&
+          input.dataset.lookup &&
+          value !== null &&
+          value !== undefined &&
+          value !== '' &&
+          !Array.from(input.options).some((option) => option.value === String(value))
+        )
+          input.add(new Option('گزینهٔ فعلی — ' + value, String(value)));
+        input.value = value === null || value === undefined ? '' : String(value);
+      }
     }
   }
+  root.dispatchEvent(new window.CustomEvent('portal:fields-filled', { bubbles: true }));
 }
 
 export function fieldForColumn(label: string, resource = ''): string {
+  if (label.includes('مسئول فعلی')) return 'is_current';
   if (resource === 'roles' && label.includes('نام نقش')) return 'label';
   if (resource === 'roles' && label.includes('نوع نقش')) return 'name';
   if (resource === 'polls' && /عنوان|نام/.test(label)) return 'question';

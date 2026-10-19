@@ -4,7 +4,7 @@ export default function AdminNavigation35211() {
       <div className="sidebar-extended">
         <div className="sidebar-extended-top">
           <a
-            href="/unit?name=%D9%85%D8%AF%DB%8C%D8%B1%DB%8C%D8%AA%20%DA%A9%D8%A7%D8%B1%D8%A8%D8%B1%D8%A7%D9%86%20Manage%20Users%20%D8%B3%D8%A7%DB%8C%D8%AA"
+            href="/admin/internal-users"
             className="nav-item av-item-active nav-item-new-mail remove-border"
           >
             <svg
