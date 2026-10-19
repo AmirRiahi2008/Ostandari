@@ -5,6 +5,7 @@ import { OriginalNews, type OriginalNewsItem } from '@/components/site/original-
 import { OriginalTabs } from '@/components/site/original-tabs';
 import { OriginalManagerCards } from '@/components/site/original-content';
 import { OriginalIcon } from '@/components/site/original-icons';
+import { managerGroups, membersForGroup } from '@/data/manager-groups';
 import { safeDestination } from '@/lib/urls';
 import { plainText, type PublicRecord } from '@/lib/public-content';
 import {
@@ -86,33 +87,14 @@ export async function HomePage() {
     : realRecords(documentResult.data);
   const notices = [...announcements, ...resolutions, ...documents].slice(0, 6);
   const members = (home.members ?? {}) as Record<string, PublicRecord[]>;
-  const managerTabs = [
-    { title: 'مدیران ستادی', href: '/managers?group=1', people: realRecords(members.manager) },
-    {
-      title: 'استانداران',
-      href: '/governors',
-      people: realRecords(members.governor).length
-        ? realRecords(members.governor)
-        : governorRecord || usingSnapshot
-          ? [governor]
-          : [],
-    },
-    {
-      title: 'فرمانداران',
-      href: '/managers?group=4',
-      people: realRecords(members.county_governor),
-    },
-    {
-      title: 'بخشداران',
-      href: '/managers?kind=district_head',
-      people: realRecords(members.district_head),
-    },
-    {
-      title: 'دهیاران',
-      href: '/managers?kind=village_head',
-      people: realRecords(members.village_head),
-    },
-  ];
+  const allMembers = Object.entries(members).flatMap(([kind, people]) =>
+    realRecords(people).map((person) => ({ ...person, kind: person.kind ?? kind })),
+  );
+  const managerTabs = managerGroups.map((group) => ({
+    title: group.title,
+    href: '/managers?group=' + group.group,
+    people: membersForGroup(allMembers, group.group),
+  }));
   const galleriesFromApi = realRecords(home.galleries).map((item) => ({
     id: String(item.id),
     title: String(item.title),
@@ -145,9 +127,6 @@ export async function HomePage() {
       chrome={home}
       breadcrumbs={false}
       headerItems={navigationFromMenus(home.menus)}
-      headlines={news
-        .slice(0, 5)
-        .map((item) => ({ title: String(item.title), href: articleHref(item) }))}
     >
       <h1 className="source-sr-only">درگاه الکترونیکی استانداری مازندران</h1>
       <section>
@@ -248,11 +227,7 @@ export async function HomePage() {
                     profilePath={tab.href}
                     key={tab.href}
                   />
-                ) : (
-                  <p className="source-empty" key={tab.href}>
-                    مشخصات {tab.title} هنوز منتشر نشده است.
-                  </p>
-                ),
+                ) : null,
               )}
             </OriginalTabs>
           </div>

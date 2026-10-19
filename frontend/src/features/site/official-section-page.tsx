@@ -1,4 +1,5 @@
 import { TransparencyContent } from './transparency-page';
+import { membersForGroup } from '@/data/manager-groups';
 import { officeIdentity } from './office-page';
 import { PortalLayout, EmptyState, loadPortalChrome } from '@/components/site/portal-layout';
 import { SafeRichText } from '@/components/site/safe-rich-text';
@@ -101,16 +102,7 @@ export async function OfficialSectionPage({
     );
     if (kind === 'services' && id !== 'services')
       items = items.filter((item) => item.slug === 'official-' + id);
-    if (kind === 'managers' && ['2', '3', '5'].includes(section.group ?? '')) {
-      const terms: Record<string, string[]> = {
-        '2': ['معاون'],
-        '3': ['دستگاه', 'ادارات'],
-        '5': ['روابط عمومی'],
-      };
-      items = items.filter((item) =>
-        terms[section.group!].some((term) => String(item.position ?? '').includes(term)),
-      );
-    }
+    if (kind === 'managers') items = membersForGroup(items, section.group);
     if (!items.length && canUseSnapshot(result.unavailable) && kind === 'news')
       items = officialSite.news.filter((item) => item.type === 'news');
     if (!items.length && canUseSnapshot(result.unavailable) && kind === 'documents')

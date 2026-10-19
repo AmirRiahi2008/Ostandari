@@ -1,45 +1,83 @@
-import { officialNavigation } from '@/data/official-navigation';
 import { OriginalIcon } from './original-icons';
 import type { PublicRecord } from '@/lib/public-content';
 import { officialSite } from '@/features/site/official-data';
 
+function ContactIcon({ kind }: { kind: 'address' | 'email' | 'phone' }) {
+  return (
+    <svg
+      className="icx-footer-icon"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {kind === 'address' ? (
+        <>
+          <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z" />
+          <circle cx="12" cy="10" r="2.5" />
+        </>
+      ) : kind === 'email' ? (
+        <>
+          <rect x="3" y="5" width="18" height="14" rx="2" />
+          <path d="m3 6 9 7 9-7" />
+        </>
+      ) : (
+        <path d="m7 3 3 5-3 3c2 3 3 4 6 6l3-3 5 3c-1 4-3 5-6 4C8 19 5 16 3 9 2 6 3 4 7 3Z" />
+      )}
+    </svg>
+  );
+}
+
+const columns = [
+  {
+    title: 'سایت',
+    items: [
+      { title: 'نظرسنجی دستگاه‌های اجرایی', href: '/polls' },
+      { title: 'سامانه شفافیت', href: '/transparency' },
+      { title: 'معرفی ما', href: '/about' },
+    ],
+  },
+  {
+    title: 'صفحات',
+    items: [
+      { title: 'صفحه اصلی', href: '/' },
+      { title: 'تماس با ما', href: '/contact' },
+    ],
+  },
+  {
+    title: 'سرویس‌ها',
+    items: [
+      { title: 'عملکرد دستگاه', href: '/performance' },
+      { title: 'بیانیه حریم خصوصی', href: '/privacy' },
+      { title: 'بیانیه راهبرد مشارکت', href: '/participation' },
+      { title: 'بیانیه سطح توافق خدمات', href: '/service-agreement/statement' },
+    ],
+  },
+];
+
 export function SiteFooter({ contact }: { contact?: PublicRecord } = {}) {
-  const field = (key: keyof typeof officialSite.contact) =>
-    typeof contact?.[key] === 'string' ? String(contact[key]) : String(officialSite.contact[key]);
-  const columns = [
-    { title: 'سایت', items: officialNavigation.footer },
-    {
-      title: 'صفحات',
-      items: [
-        { id: 'news', title: 'اخبار و اطلاعیه‌ها', href: '/news' },
-        { id: 'counties', title: 'فرمانداری‌ها', href: '/counties' },
-        { id: 'managers', title: 'مدیران استان', href: '/managers' },
-      ],
-    },
-    {
-      title: 'خدمات',
-      items: [
-        { id: 'services', title: 'خدمات الکترونیکی', href: '/services' },
-        { id: 'sitemap', title: 'نقشه سایت', href: '/sitemap' },
-        { id: 'access', title: 'بیانیه دسترس‌پذیری', href: '/accessibility' },
-        { id: 'rss', title: 'خوراک اخبار RSS', href: '/rss' },
-      ],
-    },
-  ];
+  const field = (key: keyof typeof officialSite.contact) => {
+    const value = contact?.[key];
+    return typeof value === 'string' && value.trim() ? value : String(officialSite.contact[key]);
+  };
+  const phone = field('phone');
   return (
     <div className="footer" data-source-footer="true">
       <div className="top-footer">
         <div className="iconostandari">
           <OriginalIcon name="footer" />
         </div>
-        <footer className="icx-footer-root">
+        <footer className="icx-footer-root" aria-label="پاورقی استانداری مازندران">
           <div className="icx-footer-wrap">
             {columns.map((column) => (
               <nav className="icx-footer-col" key={column.title} aria-label={column.title}>
                 <h4 className="icx-footer-title">{column.title}</h4>
                 <ul className="icx-footer-list">
                   {column.items.map((item) => (
-                    <li key={item.id}>
+                    <li key={item.href}>
                       <a className="icx-footer-link" href={item.href}>
                         {item.title}
                       </a>
@@ -50,26 +88,40 @@ export function SiteFooter({ contact }: { contact?: PublicRecord } = {}) {
             ))}
             <address className="icx-footer-col icx-footer-contact">
               <h4 className="icx-footer-title">اطلاعات تماس</h4>
-              <p className="icx-footer-text">{field('address')}</p>
               <p className="icx-footer-text">
-                <a href={'mailto:' + field('email')}>{field('email')}</a>
-              </p>
-              <p className="icx-footer-text" dir="ltr">
-                {field('phone')}
+                <ContactIcon kind="address" />
+                <span>{field('address')}</span>
               </p>
               <p className="icx-footer-text">
-                نمابر: <span dir="ltr">{field('fax')}</span>
+                <ContactIcon kind="email" />
+                <a href={'mailto:' + field('email')}>
+                  <bdi>{field('email')}</bdi>
+                </a>
               </p>
-              <a className="icx-footer-link" href="/contact">
-                ارتباط با ما
-              </a>
+              <p className="icx-footer-text">
+                <ContactIcon kind="phone" />
+                <a
+                  href={'tel:' + phone.split('-')[0].replace(/[^\d+]/g, '')}
+                  aria-label={'تلفن ' + phone}
+                >
+                  <bdi>{phone}</bdi>
+                </a>
+              </p>
+              <p className="icx-footer-text">
+                <ContactIcon kind="phone" />
+                <span aria-label="نمابر">
+                  <bdi>{field('fax')}</bdi>
+                </span>
+              </p>
             </address>
           </div>
         </footer>
       </div>
       <div className="bottom-footer">
-        <span className="source-company">صدرا رایانه نوین طبرستان</span>
-        <span>طراحی و توسعه یافته توسط</span>
+        <a href="https://sadrasoft.ir" className="source-footer-credit">
+          <span>طراحی و توسعه یافته توسط</span>
+          <span className="source-company">صدرا رایانه نوین طبرستان</span>
+        </a>
       </div>
     </div>
   );

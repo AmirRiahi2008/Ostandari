@@ -787,3 +787,486 @@
 .source-content .section4-samane a {
   color: inherit;
 }
+
+/* Homepage refinements follow the live portal and retain the supplied assets. */
+[data-section='site'] [data-source-footer] {
+  width: 100% !important;
+  margin: 40px 0 0 !important;
+  border-radius: 0;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+[data-section='site'] [data-source-footer] .top-footer {
+  display: block !important;
+  padding-top: 20px;
+}
+[data-section='site'] [data-source-footer] .iconostandari {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 150px !important;
+  height: 162px !important;
+  margin: 0 auto !important;
+}
+[data-section='site'] [data-source-footer] .iconostandari > svg {
+  display: block;
+  width: 150px;
+  height: 162px;
+  margin: 0;
+}
+[data-section='site'] [data-source-footer] .icx-footer-root {
+  background: #fff;
+  padding: 56px 0;
+}
+[data-section='site'] [data-source-footer] .icx-footer-wrap {
+  display: grid !important;
+  grid-template-columns: 1.1fr 0.7fr 1.1fr 1.1fr !important;
+  gap: clamp(24px, 5vw, 80px);
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 32px;
+  text-align: start;
+  box-sizing: border-box;
+}
+[data-section='site'] [data-source-footer] .icx-footer-col {
+  width: auto !important;
+  min-width: 0;
+  font-style: normal;
+}
+[data-section='site'] [data-source-footer] .icx-footer-title {
+  font-size: 23px;
+  font-weight: 700;
+  line-height: 1.8;
+  color: #1e293b;
+  margin: 0 0 22px;
+}
+[data-section='site'] [data-source-footer] .icx-footer-list {
+  direction: rtl;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+[data-section='site'] [data-source-footer] .icx-footer-list li {
+  display: block;
+}
+[data-section='site'] [data-source-footer] .icx-footer-link {
+  display: inline-block;
+  font-size: 15px;
+  color: #64748b;
+  line-height: 1.9;
+  margin-bottom: 12px;
+  text-decoration: none;
+}
+[data-section='site'] [data-source-footer] .icx-footer-link:hover {
+  color: #0f3e91;
+}
+[data-section='site'] [data-source-footer] .icx-footer-text {
+  display: flex;
+  align-items: flex-start;
+  max-width: none;
+  gap: 10px;
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.9;
+  color: #4b5563;
+}
+[data-section='site'] [data-source-footer] .icx-footer-icon {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+  margin-top: 4px;
+  color: #374151;
+}
+[data-section='site'] [data-source-footer] .icx-footer-text a {
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+[data-section='site'] [data-source-footer] .bottom-footer {
+  min-height: 60px;
+  height: auto !important;
+  padding: 16px 24px;
+  background: #0a2459;
+  box-sizing: border-box;
+}
+.source-footer-credit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.9;
+  text-decoration: none;
+  text-align: center;
+}
+[data-source-footer] .source-footer-credit .source-company {
+  color: #a4b4ff;
+  margin: 0;
+}
+[data-source-footer] a:focus-visible {
+  outline: 2px solid #2d9cdb;
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+
+[data-section='site'] .source-managers.section {
+  width: 100%;
+  padding: 28px;
+  border: 1px solid #e4ebf4;
+  border-radius: 20px;
+  background: #f8fafc;
+  box-sizing: border-box;
+}
+[data-section='site'] .source-managers .manager-tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  width: fit-content;
+  max-width: 100%;
+  gap: 6px;
+  padding: 6px;
+  margin: 0 auto 26px;
+  border: 1px solid #e2eaf5;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 6px 20px #0f3e910f;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  box-sizing: border-box;
+}
+[data-section='site'] .source-managers .tab-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #64748b;
+  font:
+    700 13px/1.8 vazirmatn,
+    sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background 180ms,
+    color 180ms,
+    box-shadow 180ms;
+}
+[data-section='site'] .source-managers .tab-btn:hover {
+  background: #eaf2fb;
+  color: #0f3e91;
+}
+[data-section='site'] .source-managers .tab-btn.active {
+  color: #fff;
+  background: linear-gradient(135deg, #2d9cdb, #0f3e91 70%);
+  box-shadow: 0 5px 14px #0f3e912b;
+}
+[data-section='site'] .source-managers .tab-btn:focus-visible,
+[data-section='site'] .source-managers .more-card:focus-visible {
+  outline: 3px solid #70b8e2;
+  outline-offset: 2px;
+}
+[data-section='site'] .source-managers .tab-content {
+  width: 100%;
+}
+[data-section='site'] .source-managers .source-manager-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 245px), 1fr));
+  align-items: stretch;
+  gap: 20px;
+}
+[data-section='site'] .source-manager-items > .manager-grid {
+  display: contents;
+}
+[data-section='site'] .source-managers .card1 {
+  min-width: 0;
+  height: auto;
+  box-sizing: border-box;
+}
+[data-section='site'] .source-managers .more-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 184px;
+  padding: 26px 20px;
+  border: 1.5px dashed #2d9cdb;
+  border-radius: 15px;
+  background: linear-gradient(160deg, #eaf2fb, #fff);
+  color: #0f3e91;
+  text-decoration: none;
+  text-align: center;
+  box-sizing: border-box;
+  transition:
+    transform 180ms,
+    box-shadow 180ms;
+}
+[data-section='site'] .source-managers .more-card:hover {
+  transform: translateY(-4px);
+  border-style: solid;
+  box-shadow: 0 12px 28px #0f3e911a;
+}
+[data-section='site'] .source-managers .more-card-inner {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+}
+[data-section='site'] .source-managers .more-card svg {
+  width: 34px;
+  height: 34px;
+}
+[data-section='site'] .source-managers .more-card h3 {
+  font-size: 15px;
+  font-weight: 800;
+  color: #153c65;
+  margin: 0;
+}
+[data-section='site'] .source-managers .more-card p {
+  font-size: 12px;
+  line-height: 1.9;
+  color: #64748b;
+  margin: 0;
+}
+
+[data-section='site'] .source-county-map.portal-counties .wrapper {
+  display: grid !important;
+  grid-template-columns: minmax(235px, 0.9fr) minmax(0, 2fr);
+  align-items: stretch;
+  width: 100% !important;
+  min-height: 0;
+  height: auto !important;
+  gap: 0;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #e4ebf4;
+  border-radius: 20px;
+  direction: ltr;
+}
+[data-section='site'] .source-county-map.portal-counties .lefttt {
+  display: flex;
+  flex-direction: column;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  position: relative;
+  background: #f1f5f9;
+  direction: rtl;
+}
+[data-section='site'] .source-county-map.portal-counties .lefttt::after {
+  display: none;
+}
+.source-county-map .portal-county-photo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  container-type: inline-size;
+}
+[data-section='site'] .source-county-map .portal-county-photo #cityImage {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain;
+  position: static;
+}
+.source-county-map .portal-county-nameplate {
+  position: absolute;
+  inset: 23.2% 24% auto;
+  height: 13%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(115deg, #082758, #103367);
+  color: #f4f1e8;
+  font:
+    900 clamp(10px, 4.4cqw, 24px)/1.2 vazirmatn,
+    sans-serif;
+  text-shadow: 1px 2px 1px #031128;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.source-county-map .portal-county-preview-body {
+  display: flex;
+  flex: 1;
+  align-items: stretch;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+  padding: 22px;
+  background: #f1f5f9;
+}
+[data-section='site'] .source-county-map.portal-counties .portal-county-caption {
+  position: static;
+  color: #163c73;
+  font-size: 22px !important;
+  font-weight: 800;
+  line-height: 1.8;
+  text-align: center;
+  text-shadow: none;
+}
+[data-section='site'] .source-county-map.portal-counties .left-ksks {
+  position: static !important;
+  inset: auto !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 100%;
+  min-height: 44px;
+  margin: 0;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: #0f3e91;
+  box-sizing: border-box;
+  font-size: 13px;
+}
+[data-section='site'] .source-county-map.portal-counties .righttt {
+  width: 100% !important;
+  min-width: 0;
+  margin: 0 !important;
+  padding: 24px !important;
+  box-sizing: border-box;
+  direction: rtl;
+}
+[data-section='site'] .source-county-map .portal-map-viewport {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  direction: ltr;
+  padding: 10px 0;
+  scrollbar-width: thin;
+}
+[data-section='site'] .source-county-map.portal-counties .map {
+  display: block;
+  width: 100% !important;
+  min-width: 650px !important;
+  max-width: none !important;
+  height: auto !important;
+  overflow: visible;
+}
+[data-section='site'] .source-county-map .county-region .city {
+  fill: #e7edf4;
+  stroke: #91a4bb;
+  stroke-width: 1;
+  transition:
+    fill 150ms,
+    stroke 150ms;
+}
+[data-section='site']
+  .source-county-map
+  .county-region:is(:hover, :focus-visible, .is-selected)
+  .city {
+  fill: #bbdbf4;
+  stroke: #0f3e91;
+  stroke-width: 1.6;
+}
+[data-section='site'] .source-county-map .city-label {
+  font:
+    750 13px vazirmatn,
+    sans-serif;
+  fill: #123a60;
+  stroke: #fff;
+  stroke-width: 3px;
+  paint-order: stroke;
+  stroke-linejoin: round;
+  cursor: pointer;
+}
+[data-section='site'] .source-county-map .county-label-leader {
+  fill: none;
+  stroke: #64849b;
+  stroke-width: 1;
+  pointer-events: none;
+}
+[data-section='site']
+  .source-county-map
+  .county-region:is(:hover, :focus-visible, .is-selected)
+  .city-label {
+  fill: #082c78;
+  font-weight: 900;
+}
+[data-section='site'] .source-county-map .county-region:focus-visible .city {
+  stroke: #0f3e91;
+  stroke-width: 3;
+}
+.source-county-map .portal-county-list a:is(:hover, :focus-visible, [aria-current='true']) {
+  background: #e0effc;
+  color: #0f3e91;
+}
+@media (max-width: 1040px) {
+  [data-section='site'] .source-county-map.portal-counties .wrapper {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  [data-section='site'] .source-county-map.portal-counties .righttt {
+    order: -1;
+  }
+  [data-section='site'] .source-county-map.portal-counties .lefttt {
+    max-width: 460px;
+    margin-inline: auto;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  [data-section='site'] [data-source-footer] .icx-footer-wrap {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 30px 24px;
+  }
+  [data-section='site'] [data-source-footer] .icx-footer-contact {
+    grid-column: auto;
+  }
+}
+@media (max-width: 600px) {
+  [data-section='site'] .source-managers.section {
+    padding: 18px 14px;
+  }
+  [data-section='site'] .source-managers .manager-tabs {
+    width: 100%;
+    border-radius: 18px;
+    margin-bottom: 20px;
+  }
+  [data-section='site'] .source-managers .tab-btn {
+    padding-inline: 14px;
+  }
+  [data-section='site'] .source-county-map.portal-counties .righttt {
+    padding: 20px 14px !important;
+  }
+  .source-county-map .portal-map-hint {
+    line-height: 1.9;
+  }
+  [data-section='site'] [data-source-footer] .icx-footer-wrap {
+    grid-template-columns: 1fr 1fr !important;
+    padding: 0 22px;
+  }
+  [data-section='site'] [data-source-footer] .icx-footer-title {
+    font-size: 19px;
+    margin-bottom: 14px;
+  }
+  [data-section='site'] [data-source-footer] .icx-footer-link {
+    font-size: 13px;
+  }
+  [data-section='site'] [data-source-footer] .icx-footer-contact {
+    grid-column: 1 / -1;
+  }
+  [data-section='site'] [data-source-footer] .icx-footer-root {
+    padding: 36px 0;
+  }
+  .source-footer-credit {
+    font-size: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-section='site'] .source-managers .tab-btn,
+  [data-section='site'] .source-managers .more-card,
+  [data-section='site'] .source-county-map .city {
+    transition: none;
+  }
+  [data-section='site'] .source-managers .more-card:hover {
+    transform: none;
+  }
+}

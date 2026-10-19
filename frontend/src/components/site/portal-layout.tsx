@@ -25,7 +25,6 @@ export async function PortalLayout({
   designPath = '/',
   home = false,
   branding,
-  headlines,
   chrome,
 }: {
   children: ReactNode;
@@ -36,7 +35,6 @@ export async function PortalLayout({
   designPath?: string;
   home?: boolean;
   branding?: SiteBranding;
-  headlines?: { title: string; href: string }[];
   chrome?: PublicRecord | Promise<PublicRecord>;
 }) {
   const resolvedChrome = await (chrome ?? loadPortalChrome());
@@ -63,7 +61,6 @@ export async function PortalLayout({
           <SiteHeader
             items={headerItems ?? navigationFromMenus(resolvedChrome.menus)}
             branding={configuredBranding}
-            headlines={headlines}
           />
           <main
             id="main-content"
@@ -78,8 +75,8 @@ export async function PortalLayout({
             )}
             {children}
           </main>
-          <SiteFooter contact={settings['site.contact'] as PublicRecord | undefined} />
         </div>
+        <SiteFooter contact={settings['site.contact'] as PublicRecord | undefined} />
       </PageFrame>
     </>
   );

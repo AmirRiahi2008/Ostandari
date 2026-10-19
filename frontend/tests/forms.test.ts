@@ -3,6 +3,10 @@ import assert from 'node:assert/strict';
 import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';
 import { SiteHeader } from '../src/components/site/site-header';
+import { CountyMap } from '../src/components/site/county-map';
+import { OriginalTabs } from '../src/components/site/original-tabs';
+import { counties, countyPreviewTemplate, officeHref } from '../src/data/counties';
+import { managerGroups } from '../src/data/manager-groups';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { JSDOM } from 'jsdom';
 import { templates } from '../src/lib/templates';
@@ -96,7 +100,7 @@ test('public header supports mobile open, Escape, focus return and desktop subme
   });
   const root = createRoot(container);
   await act(async () => root.render(React.createElement(SiteHeader)));
-  const toggle = container.querySelector<HTMLButtonElement>('.public-menu-toggle')!;
+  const toggle = container.querySelector<HTMLButtonElement>('#hamburgerBtn')!;
   await act(async () => toggle.click());
   assert.equal(toggle.getAttribute('aria-expanded'), 'true');
   const drawer = container.querySelector<HTMLElement>('[role=dialog]')!;
@@ -110,9 +114,7 @@ test('public header supports mobile open, Escape, focus return and desktop subme
   assert.equal(container.querySelector('[role=dialog]'), null);
   assert.equal(window.document.body.style.overflow, '');
   assert.equal(window.document.activeElement, toggle);
-  const submenu = [
-    ...container.querySelectorAll<HTMLButtonElement>('.public-nav-label button'),
-  ].find((button) => button.getAttribute('aria-label')?.includes('شرح وظایف'))!;
+  const submenu = container.querySelector<HTMLButtonElement>('#khadmat')!;
   await act(async () => submenu.click());
   assert.equal(submenu.getAttribute('aria-expanded'), 'true');
   assert.equal(
@@ -254,4 +256,135 @@ test('Alpine initializes the page once and disposes listeners when React unmount
     root.querySelector('#cbnCreateMenuModalOverlay')?.classList.contains('active'),
     false,
   );
+});
+
+test('all 22 county hovers synchronize the photo, nameplate, selection and destination', async () => {
+  const container = window.document.createElement('div');
+  window.document.body.replaceChildren(container);
+  const root = createRoot(container);
+  await act(async () => root.render(React.createElement(CountyMap)));
+  try {
+    for (const county of counties) {
+      const region = container.querySelector('svg a[data-county="' + county.slug + '"]')!;
+      await act(async () =>
+        region.dispatchEvent(new window.MouseEvent('mouseover', { bubbles: true })),
+      );
+      const image = container.querySelector('img#cityImage')!;
+      assert.equal(image.getAttribute('src'), county.previewImage, county.slug);
+      assert.equal(image.getAttribute('alt'), 'طرح فرمانداری شهرستان ' + county.name);
+      assert.equal(
+        container.querySelector('.portal-county-caption')?.textContent?.trim(),
+        'فرمانداری ' + county.name,
+      );
+      assert.equal(container.querySelector('.left-ksks')?.getAttribute('href'), officeHref(county));
+      assert.equal(
+        container.querySelector('svg.map .is-selected')?.getAttribute('data-county'),
+        county.slug,
+      );
+      assert.equal(container.querySelector('select')?.value, county.slug);
+      const nameplate = container.querySelector('.portal-county-nameplate');
+      if (county.usesPreviewTemplate) {
+        assert.equal(image.getAttribute('src'), countyPreviewTemplate);
+        assert.equal(nameplate?.textContent?.trim(), 'فرمانداری ' + county.name);
+      } else assert.equal(nameplate, null);
+    }
+  } finally {
+    await act(async () => root.unmount());
+  }
+});
+
+test('county keyboard focus, list hover and select share the same preview; a broken photo preserves the selected city', async () => {
+  const container = window.document.createElement('div');
+  window.document.body.replaceChildren(container);
+  const root = createRoot(container);
+  await act(async () => root.render(React.createElement(CountyMap)));
+  try {
+    for (const county of counties) {
+      const region = container.querySelector('svg a[data-county="' + county.slug + '"]')!;
+      await act(async () =>
+        region.dispatchEvent(new window.FocusEvent('focusin', { bubbles: true })),
+      );
+      assert.equal(
+        container.querySelector('[data-preview-county]')?.getAttribute('data-preview-county'),
+        county.slug,
+      );
+      const directory = container.querySelector(
+        '.portal-county-list a[href="' + officeHref(county) + '"]',
+      )!;
+      await act(async () =>
+        directory.dispatchEvent(new window.MouseEvent('mouseover', { bubbles: true })),
+      );
+      assert.equal(container.querySelector('.left-ksks')?.getAttribute('href'), officeHref(county));
+    }
+    const select = container.querySelector('select')!;
+    await act(async () => {
+      select.value = 'amol';
+      select.dispatchEvent(new window.Event('change', { bubbles: true }));
+    });
+    assert.match(container.querySelector('#cityImage')!.getAttribute('src')!, /101\.png$/);
+    await act(async () =>
+      container.querySelector('#cityImage')!.dispatchEvent(new window.Event('error')),
+    );
+    assert.equal(container.querySelector('#cityImage')?.getAttribute('src'), countyPreviewTemplate);
+    assert.equal(
+      container.querySelector('.portal-county-nameplate')?.textContent?.trim(),
+      'فرمانداری آمل',
+    );
+    assert.equal(container.querySelector('.left-ksks')?.getAttribute('href'), '/office?name=amol');
+    await act(async () => {
+      select.value = 'nur';
+      select.dispatchEvent(new window.Event('change', { bubbles: true }));
+    });
+    assert.equal(
+      container.querySelector('.portal-county-nameplate')?.textContent?.trim(),
+      'فرمانداری نور',
+    );
+    assert.equal(container.querySelector('.left-ksks')?.getAttribute('href'), '/office?name=nur');
+  } finally {
+    await act(async () => root.unmount());
+  }
+});
+
+test('six manager tabs switch by click and RTL keyboard navigation and expose their own directory', async () => {
+  const container = window.document.createElement('div');
+  window.document.body.replaceChildren(container);
+  const root = createRoot(container);
+  const tabs = managerGroups.map((item) => ({
+    title: item.title,
+    href: '/managers?group=' + item.group,
+  }));
+  await act(async () =>
+    root.render(React.createElement(OriginalTabs, { tabs, children: tabs.map(() => null) })),
+  );
+  try {
+    const buttons = [...container.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    assert.equal(buttons.length, 6);
+    for (let i = 0; i < tabs.length; i++) {
+      await act(async () => buttons[i].click());
+      assert.equal(buttons[i].getAttribute('aria-selected'), 'true');
+      const panel = container.querySelector<HTMLElement>('[role="tabpanel"]:not([hidden])')!;
+      assert.equal(panel.getAttribute('aria-labelledby'), buttons[i].id);
+      assert.equal(panel.querySelector('a.more-card')?.getAttribute('href'), tabs[i].href);
+      assert.equal(panel.querySelector('.more-card p')?.textContent, 'لیست کامل ' + tabs[i].title);
+    }
+    await act(async () =>
+      buttons
+        .at(-1)!
+        .dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Home', bubbles: true })),
+    );
+    assert.equal(window.document.activeElement, buttons[0]);
+    await act(async () =>
+      buttons[0].dispatchEvent(
+        new window.KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }),
+      ),
+    );
+    assert.equal(window.document.activeElement, buttons[1]);
+    await act(async () =>
+      buttons[1].dispatchEvent(new window.KeyboardEvent('keydown', { key: 'End', bubbles: true })),
+    );
+    assert.equal(window.document.activeElement, buttons[5]);
+    assert.equal(container.querySelectorAll('[role="tab"][tabindex="0"]').length, 1);
+  } finally {
+    await act(async () => root.unmount());
+  }
 });

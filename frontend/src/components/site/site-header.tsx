@@ -99,11 +99,9 @@ function MobileItems({ items }: { items: NavigationItem[] }) {
 export function SiteHeader({
   items = officialNavigation.main,
   branding = {},
-  headlines = [],
 }: {
   items?: NavigationItem[];
   branding?: SiteBranding;
-  headlines?: { title: string; href: string }[];
 }) {
   const [mobile, setMobile] = useState(false);
   const [mega, setMega] = useState(false);
@@ -444,15 +442,7 @@ export function SiteHeader({
         <div className="header-paen">
           <div className="marquee">
             <div className="marquee-content">
-              {headlines.length ? (
-                headlines.slice(0, 5).map((item) => (
-                  <a href={item.href} key={item.href}>
-                    {item.title}
-                  </a>
-                ))
-              ) : (
-                <span>درگاه الکترونیکی استانداری مازندران</span>
-              )}
+              <span>اقتصاد مقاومتی در سایه وحدت ملی و امنیت ملی</span>
             </div>
           </div>
         </div>

@@ -6,28 +6,33 @@ export type County = {
   shape: string;
   image: string;
   label: readonly [number, number];
+  labelAnchor?: readonly [number, number];
+  labelLines?: readonly string[];
+  previewImage: string;
+  usesPreviewTemplate: boolean;
 };
 
-// Geometry comes from the supplied design. Coastal county names are aligned with
-// their regions rather than inheriting the shifted labels in the HTML prototype.
+export const countyPreviewTemplate = '/design/site/assets/Img/100.png';
+
+// Small coastal regions use callouts so their names do not cover one another.
 const records = [
-  ['ramsar', 'رامسر', 0, 48, 51],
+  ['ramsar', 'رامسر', 0, 45, 53],
   ['tonekabon', 'تنکابن', 1, 87, 105],
-  ['abbasabad', 'عباس‌آباد', 2, 145, 68],
-  ['chalus', 'چالوس', 3, 181, 91],
+  ['abbasabad', 'عباس‌آباد', 2, 139, 56],
+  ['chalus', 'چالوس', 3, 191, 75],
   ['noshahr', 'نوشهر', 4, 219, 143],
-  ['mahmudabad', 'محمودآباد', 5, 329, 73],
+  ['mahmudabad', 'محمودآباد', 5, 318, 49],
   ['amol', 'آمل', 6, 306, 218],
-  ['fereydunkenar', 'فریدونکنار', 7, 366, 48],
-  ['babolsar', 'بابلسر', 8, 396, 64],
-  ['juybar', 'جویبار', 9, 432, 76],
-  ['simorgh', 'سیمرغ', 10, 399, 119],
-  ['babol', 'بابل', 11, 380, 168],
+  ['fereydunkenar', 'فریدونکنار', 7, 364, 22],
+  ['babolsar', 'بابلسر', 8, 413, 2],
+  ['juybar', 'جویبار', 9, 449, 29],
+  ['simorgh', 'سیمرغ', 10, 378, 126],
+  ['babol', 'بابل', 11, 380, 178],
   ['savadkuh', 'سوادکوه', 12, 436, 216],
-  ['savadkuh-shomali', 'سوادکوه شمالی', 13, 445, 164],
+  ['savadkuh-shomali', 'سوادکوه شمالی', 13, 450, 160],
   ['sari', 'ساری', 14, 503, 185],
   ['galugah', 'گلوگاه', 15, 604, 72],
-  ['miandorud', 'میاندورود', 16, 486, 44],
+  ['miandorud', 'میاندورود', 16, 505, 43],
   ['qaemshahr', 'قائم‌شهر', 17, 431, 137],
   ['nur', 'نور', 18, 264, 168],
   ['kelardasht', 'کلاردشت', 19, 141, 154],
@@ -35,18 +40,31 @@ const records = [
   ['behshahr', 'بهشهر', 21, 541, 63],
 ] as const;
 
-export const counties: County[] = records.map(([slug, name, index, x, y]) => ({
-  slug,
-  name,
-  shape: shapes[index].d,
-  image:
-    slug === 'kelardasht'
-      ? '/design/site/assets/Img/kelar.png'
-      : shapes[index].image.startsWith('/design/')
-        ? shapes[index].image
-        : '/design/site/assets/image/baner.png',
-  label: [x, y],
-}));
+const callouts: Record<string, readonly [number, number]> = {
+  abbasabad: [144, 94],
+  chalus: [176, 103],
+  mahmudabad: [335, 100],
+  fereydunkenar: [368, 89],
+  babolsar: [393, 91],
+  juybar: [431, 89],
+  simorgh: [412, 107],
+  miandorud: [488, 76],
+};
+
+export const counties: County[] = records.map(([slug, name, index, x, y]) => {
+  const sourceImage = shapes[index].image.startsWith('/design/') ? shapes[index].image : '';
+  return {
+    slug,
+    name,
+    shape: shapes[index].d,
+    image: sourceImage || '/design/site/assets/image/baner.png',
+    previewImage: sourceImage || countyPreviewTemplate,
+    usesPreviewTemplate: !sourceImage,
+    label: [x, y],
+    labelAnchor: callouts[slug],
+    labelLines: slug === 'savadkuh-shomali' ? ['سوادکوه', 'شمالی'] : undefined,
+  };
+});
 const aliases: Record<string, string> = {
   chalous: 'chalus',
   'north-savadkuh': 'savadkuh-shomali',

@@ -151,7 +151,7 @@ test('all new CMS destinations render an editor in the administration design', (
 test('new article pages render source images and related links', async () => {
   for (const id of ['design-1', 'design-2', 'design-3']) {
     const document = verifyDocument(await renderPublic('/news/' + id), '/news/' + id);
-    assert.ok(document.querySelector('.portal-article-cover'));
+    assert.ok(document.querySelector('.source-article-grid article img.inews'));
   }
 });
 test('an unknown county is a 404, not a fallback to another office', async () => {
