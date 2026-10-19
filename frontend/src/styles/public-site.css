@@ -1050,6 +1050,11 @@
   border-radius: 20px;
   direction: ltr;
 }
+[data-section='site'] .source-home .source-county-map.portal-counties .wrapper {
+  width: 92% !important;
+  margin-inline: auto;
+  box-sizing: border-box;
+}
 [data-section='site'] .source-county-map.portal-counties .lefttt {
   display: flex;
   flex-direction: column;
