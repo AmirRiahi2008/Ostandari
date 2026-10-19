@@ -96,7 +96,8 @@ test('home renders real snapshot headlines, governor and existing full-size slid
     document.querySelector('.source-slider .swiper-slide img')?.getAttribute('src'),
     officialSite.slides[0].image,
   );
-  assert.equal(document.querySelectorAll('svg.map a').length, 22);
+  assert.equal(document.querySelectorAll('svg.map a[data-county][tabindex="0"]').length, 22);
+  assert.equal(document.querySelectorAll('svg.map a[data-label-county]').length, 22);
   assert.equal(
     document.querySelector('.source-slider .swiper-slide img')?.getAttribute('width'),
     '1280',

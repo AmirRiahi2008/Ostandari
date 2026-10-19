@@ -1,6 +1,7 @@
 import original from './template-data.json';
 import { all, date, one, setSafeHtml, text } from '@/lib/dom';
 import type { RecordData } from '@/types/portal';
+import { ticketStatuses, type TicketStatus } from '@/data/ticket-status';
 
 export const reportCategories = [
   'waste',
@@ -60,7 +61,7 @@ export function renderReports(root: HTMLElement, records: RecordData[], filter =
           '</svg><span></span></span></div><div class="report-title"></div><div class="report-meta"><span class="report-city"></span><span class="report-category"></span><span class="num report-date"></span></div><div class="report-detail"><div class="timeline"></div></div>',
       );
       text(card, '.report-id', '#' + String(record.reference ?? record.id));
-      text(card, '.status-badge span', state.label);
+      text(card, '.status-badge span', ticketStatuses[status as TicketStatus] ?? state.label);
       text(card, '.report-title', record.subject ?? record.title);
       text(
         card,

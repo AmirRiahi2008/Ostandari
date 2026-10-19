@@ -96,14 +96,18 @@ test('every provided page has real destinations, existing assets and independent
 
 test('the map contains 22 distinct keyboard-accessible county links, including Nur', () => {
   const document = verifyDocument(renderToStaticMarkup(React.createElement(CountyMap)), 'map');
-  const links = [...document.querySelectorAll('svg.map a')];
+  const links = [...document.querySelectorAll('svg.map a[data-county]')];
   assert.equal(links.length, 22);
   assert.equal(new Set(counties.map((county) => county.shape)).size, 22);
   for (const county of counties) {
     const link = links.find((link) => link.getAttribute('href') === officeHref(county));
     assert.ok(link, county.name);
     assert.ok(link.querySelector('path[d]'));
-    assert.equal(link.querySelector('text')?.textContent, county.name);
+    assert.equal(link.getAttribute('tabindex'), '0');
+    assert.equal(
+      document.querySelector('[data-label-county="' + county.slug + '"] text')?.textContent,
+      county.name,
+    );
     assert.ok(link.getAttribute('aria-label')?.includes(county.name));
   }
   assert.ok(links.some((link) => link.getAttribute('href') === '/office?name=nur'));

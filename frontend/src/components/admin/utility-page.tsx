@@ -4,6 +4,7 @@ import { templates } from '@/lib/templates';
 import { PageFrame } from '@/components/template/page-frame';
 import { templatePreview } from '@/lib/config';
 import { AdminAccount, LogoutButton } from './account';
+import { ReportsPanel } from './reports/reports-panel';
 export function AdminUtilityPage({ path }: { path: string }) {
   const page = {
     ...templates.find((page) => page.path === '/admin')!,
@@ -16,7 +17,7 @@ export function AdminUtilityPage({ path }: { path: string }) {
       ? 'حساب کاربری'
       : path === '/admin/logout'
         ? 'خروج از مدیریت'
-        : 'گزارشات';
+        : 'گزارش‌های مردمی';
   return (
     <>
       <link rel="stylesheet" href={page.css} precedence="design" />
@@ -35,15 +36,7 @@ export function AdminUtilityPage({ path }: { path: string }) {
                 ) : path === '/admin/logout' ? (
                   <LogoutButton preview={templatePreview()} />
                 ) : (
-                  <>
-                    <p>گزارش‌های محتوا، کاربران و درخواست‌ها از داشبورد قابل دسترسی‌اند.</p>
-                    <div className="portal-link-grid">
-                      <a href="/admin">نمای کلی</a>
-                      <a href="/admin/contact/pending">پیام‌های دریافتی</a>
-                      <a href="/admin/submissions">درخواست‌های فرم‌ها</a>
-                      <a href="/admin/internal-users">کاربران داخلی</a>
-                    </div>
-                  </>
+                  <ReportsPanel preview={templatePreview()} />
                 )}
               </div>
             </main>

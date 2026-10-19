@@ -5,6 +5,7 @@ import '@/styles/public-site.css';
 import '@/styles/county-office.css';
 import '@/styles/site-navigation.css';
 import '@/styles/download-page.css';
+import '@/styles/admin-reports.css';
 
 export const metadata: Metadata = {
   title: 'استانداری مازندران',

@@ -3,6 +3,12 @@
 import { useId, useState } from 'react';
 import { counties, countyPreviewTemplate, officeHref } from '@/data/counties';
 import { CountyArtwork } from './county-artwork';
+import {
+  countyMapViewBox,
+  countyMapLabels,
+  countyMapLabelHeight,
+  countyLabelLeader,
+} from '@/data/county-map-layout';
 
 export function CountyMap() {
   const [selected, setSelected] = useState(counties.find((county) => county.slug === 'sari')!);
@@ -57,61 +63,96 @@ export function CountyMap() {
           >
             <svg
               className="map"
-              viewBox="0 -20 650 315"
+              viewBox={countyMapViewBox}
               role="group"
               aria-label="نقشه فرمانداری‌های مازندران"
               aria-describedby={id + '-hint'}
             >
-              {counties.map((county) => (
-                <a
-                  key={county.slug}
-                  href={officeHref(county)}
-                  aria-label={'ورود به فرمانداری ' + county.name}
-                  data-county={county.slug}
-                  tabIndex={0}
-                  className={
-                    'county-region' + (selected.slug === county.slug ? ' is-selected' : '')
-                  }
-                  onMouseEnter={() => setSelected(county)}
-                  onPointerEnter={() => setSelected(county)}
-                  onFocus={() => setSelected(county)}
-                >
-                  <title>{'فرمانداری ' + county.name}</title>
-                  <path className="city" d={county.shape} vectorEffect="non-scaling-stroke" />
-                  {county.labelAnchor && (
-                    <path
-                      className="county-label-leader"
-                      d={
-                        'M' +
-                        county.labelAnchor.join(' ') +
-                        ' L' +
-                        county.label[0] +
-                        ' ' +
-                        (county.label[1] + 7)
-                      }
-                      vectorEffect="non-scaling-stroke"
-                      aria-hidden="true"
-                    />
-                  )}
-                  <text
-                    className="city-label"
-                    x={county.label[0]}
-                    y={county.label[1]}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    direction="rtl"
+              <g className="county-shape-layer">
+                {counties.map((county) => (
+                  <a
+                    key={county.slug}
+                    href={officeHref(county)}
+                    aria-label={'ورود به فرمانداری ' + county.name}
+                    data-county={county.slug}
+                    tabIndex={0}
+                    className={
+                      'county-region' + (selected.slug === county.slug ? ' is-selected' : '')
+                    }
+                    onMouseEnter={() => setSelected(county)}
+                    onPointerEnter={() => setSelected(county)}
+                    onFocus={() => setSelected(county)}
                   >
-                    {county.labelLines
-                      ? county.labelLines.map((line, index) => (
-                          <tspan x={county.label[0]} dy={index ? 13 : 0} key={line}>
-                            {line}
-                            {index < county.labelLines!.length - 1 ? ' ' : ''}
-                          </tspan>
-                        ))
-                      : county.name}
-                  </text>
-                </a>
-              ))}
+                    <title>{'فرمانداری ' + county.name}</title>
+                    <path className="city" d={county.shape} vectorEffect="non-scaling-stroke" />
+                  </a>
+                ))}
+              </g>
+              <g className="county-connection-layer" aria-hidden="true">
+                {counties.map((county) => {
+                  const label = countyMapLabels[county.slug];
+                  if (!label.callout) return null;
+                  return (
+                    <g
+                      key={county.slug}
+                      className={selected.slug === county.slug ? 'is-selected' : undefined}
+                      data-connection-county={county.slug}
+                    >
+                      <path
+                        className="county-label-leader"
+                        d={countyLabelLeader(label)}
+                        vectorEffect="non-scaling-stroke"
+                      />
+                      <circle
+                        className="county-label-dot"
+                        cx={label.anchor[0]}
+                        cy={label.anchor[1]}
+                        r={2.4}
+                        vectorEffect="non-scaling-stroke"
+                      />
+                    </g>
+                  );
+                })}
+              </g>
+              <g className="county-label-layer" aria-hidden="true">
+                {counties.map((county) => {
+                  const label = countyMapLabels[county.slug];
+                  return (
+                    <a
+                      key={county.slug}
+                      href={officeHref(county)}
+                      tabIndex={-1}
+                      className={
+                        'county-map-label' + (selected.slug === county.slug ? ' is-selected' : '')
+                      }
+                      data-label-county={county.slug}
+                      onMouseEnter={() => setSelected(county)}
+                      onPointerEnter={() => setSelected(county)}
+                      onFocus={() => setSelected(county)}
+                    >
+                      <rect
+                        className="county-label-box"
+                        x={label.position[0] - label.width / 2}
+                        y={label.position[1] - countyMapLabelHeight / 2}
+                        width={label.width}
+                        height={countyMapLabelHeight}
+                        rx={5}
+                        vectorEffect="non-scaling-stroke"
+                      />
+                      <text
+                        className="city-label"
+                        x={label.position[0]}
+                        y={label.position[1]}
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                        direction="rtl"
+                      >
+                        {county.name}
+                      </text>
+                    </a>
+                  );
+                })}
+              </g>
             </svg>
           </div>
           <div className="portal-county-picker">

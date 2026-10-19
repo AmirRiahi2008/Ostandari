@@ -22,6 +22,7 @@ type Props = { params: Promise<{ path?: string[] }>; searchParams: Promise<Searc
 
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const path = '/' + ((await params).path ?? []).join('/');
+  if (path === '/admin/reports') return { title: 'گزارش‌های مردمی | استانداری مازندران' };
   const page = resolveTemplate(path);
   const officialSection = resolveOfficialSection(path, await searchParams);
   if (officialSection) return { title: officialSection.title };

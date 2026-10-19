@@ -314,7 +314,7 @@ export default function AdminRail0a9fc() {
                 </div>
                 <div className="nav-item-text-2">{' تماس باما'}</div>
               </a>
-              <a href="/services" className="nav-item">
+              <a href="/admin/reports" className="nav-item">
                 <svg
                   width="16"
                   height="16"
