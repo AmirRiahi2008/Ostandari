@@ -3,6 +3,8 @@ import type { ReactNode } from 'react';
 import '@/styles/globals.css';
 import '@/styles/public-site.css';
 import '@/styles/county-office.css';
+import '@/styles/site-navigation.css';
+import '@/styles/download-page.css';
 
 export const metadata: Metadata = {
   title: 'استانداری مازندران',

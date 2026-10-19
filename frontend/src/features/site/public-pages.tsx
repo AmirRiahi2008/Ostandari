@@ -22,8 +22,10 @@ import { ManagersPage } from './managers-page';
 import { CountyGallery } from './gallery-page';
 import { CollectionPage } from './collection-page';
 import { first, type Search } from './search-params';
+import { DownloadPage } from './download-page';
 export type { Search } from './search-params';
 export async function PublicPage({ path, search }: { path: string; search: Search }) {
+  if (path === '/install' || path === '/download') return <DownloadPage path={path} />;
   if (path === '/office' && !first(search.name)) redirect('/counties');
   if (path === '/office')
     return <OfficePage slug={first(search.name)} section={first(search.section)} />;
@@ -157,31 +159,6 @@ export async function PublicPage({ path, search }: { path: string; search: Searc
       <Panel title={title}>
         <p>پاسخ به پرسش‌ها بر اساس محتوای منتشرشده در پرتال.</p>
         <AssistantForm />
-      </Panel>
-    );
-  else if (path === '/install')
-    content = (
-      <Panel title={title}>
-        <div className="portal-install">
-          <img src="/design/site/assets/image/logo.png" alt="نشان پرتال" />
-          <div>
-            <h2>پرتال استانداری روی دستگاه شما</h2>
-            <p>برای دسترسی سریع، نشانی پرتال را به صفحهٔ اصلی یا نشانک‌های مرورگر اضافه کنید.</p>
-            <details className="portal-faq" open>
-              <summary>آیفون و آیپد</summary>
-              <p>
-                صفحه را در Safari باز کنید. از منوی اشتراک‌گذاری، Add to Home Screen را انتخاب کنید.
-              </p>
-            </details>
-            <details className="portal-faq">
-              <summary>اندروید و رایانه</summary>
-              <p>از منوی مرورگر، افزودن به صفحهٔ اصلی یا افزودن به نشانک‌ها را انتخاب کنید.</p>
-            </details>
-            <a className="portal-button" href="/">
-              باز کردن صفحه اصلی
-            </a>
-          </div>
-        </div>
       </Panel>
     );
   else if (path === '/help')

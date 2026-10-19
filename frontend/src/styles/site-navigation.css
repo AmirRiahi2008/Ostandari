@@ -1,0 +1,334 @@
+[data-section='site'] [data-react-header] .header-box {
+  overflow: visible;
+  isolation: isolate;
+  transition:
+    border-radius 180ms ease,
+    box-shadow 180ms ease;
+}
+[data-section='site'] [data-react-header] .header-box[data-mega-open='true'] {
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+  box-shadow: 0 4px 18px #163c7312;
+}
+[data-section='site'] [data-react-header] .source-mega {
+  position: static;
+}
+[data-section='site'] [data-react-header] .source-mega::after {
+  display: none;
+}
+[data-section='site'] [data-react-header] .source-mega > .mega-menu {
+  position: absolute;
+  inset: 100% 0 auto;
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  width: 100%;
+  max-width: 100%;
+  height: 440px;
+  max-height: 65dvh;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  border: 1px solid #dce6ef;
+  border-top: 1px solid #e8eef5;
+  border-radius: 0 0 18px 18px;
+  background: #fff;
+  box-shadow: 0 22px 38px -16px #12385838;
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  filter: none;
+  transition: none;
+  animation: ostanMegaEnter 210ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  overflow: hidden;
+  z-index: 80;
+}
+[data-react-header] .source-mega .categories {
+  width: auto;
+  max-height: none;
+  min-height: 0;
+  margin: 0;
+  padding: 16px 12px;
+  border: 0;
+  border-inline-end: 1px solid #e1eaf3;
+  background: #f3f7fb;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  box-sizing: border-box;
+}
+[data-react-header] .source-mega .categories > li,
+[data-react-header] .source-mega .nested-categories > li {
+  display: block;
+  padding: 0;
+  margin: 0 0 5px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #41617a;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+[data-react-header] .source-mega .categories > li::after,
+[data-react-header] .source-mega .categories > li.active::after {
+  display: none;
+}
+[data-react-header] .source-mega .categories > li.active,
+[data-react-header] .source-mega .nested-categories > li.active {
+  background: #00477a;
+  color: #fff;
+}
+[data-react-header] .source-mega .categories > li:not(.active):hover,
+[data-react-header] .source-mega .nested-categories > li:not(.active):hover {
+  background: #e6eff7;
+  color: #00477a;
+}
+[data-react-header] .source-mega .categories > li > button,
+[data-react-header] .source-mega .nested-categories > li > button {
+  min-height: 50px;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.9;
+  color: inherit;
+  white-space: normal;
+}
+[data-react-header] .source-mega .category-text {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+[data-section='site']
+  [data-react-header]
+  .source-mega
+  :is(.categories, .nested-categories)
+  li
+  .arrow10 {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  color: inherit;
+  stroke: currentColor;
+  opacity: 0.8;
+  transform: none;
+}
+[data-react-header] .source-mega .submenus {
+  display: flex;
+  flex-direction: column;
+  width: auto;
+  min-width: 0;
+  min-height: 0;
+  padding: 22px 26px;
+  background: white;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+[data-react-header] .source-mega-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid #e6edf4;
+}
+[data-react-header] .source-mega-heading > div > span {
+  color: #7990a3;
+  font-size: 11px;
+}
+[data-react-header] .source-mega-heading h2 {
+  margin: 4px 0 0;
+  color: #143f63;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.8;
+}
+[data-react-header] .source-mega-heading > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  color: #00477a;
+  font-size: 12px;
+  white-space: nowrap;
+  text-decoration: none;
+}
+[data-react-header] .source-mega .submenu,
+[data-react-header] .source-mega .nested-submenu {
+  position: relative;
+  inset: auto;
+  min-width: 0;
+  min-height: 0;
+  padding: 0 3px 4px;
+  flex: 1;
+  opacity: 1;
+  transform: none;
+  filter: none;
+  animation: ostanSubmenuEnter 180ms ease-out both;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+[data-react-header] .source-mega .submenu.active,
+[data-react-header] .source-mega .nested-submenu.active {
+  display: block;
+}
+[data-react-header] .source-mega .submenu.submenu-nested {
+  overflow: hidden;
+}
+[data-react-header] .source-mega .submenu-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+[data-react-header] .source-mega .submenu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  min-height: 62px;
+  padding: 14px;
+  border: 1px solid #e2ebf2;
+  border-radius: 12px;
+  background: #fbfdff;
+  box-shadow: none;
+  box-sizing: border-box;
+  text-decoration: none;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+[data-react-header] .source-mega .submenu-item:hover {
+  border-color: #b5cedf;
+  background: #eff6fb;
+  box-shadow: none;
+  transform: translateY(-2px);
+}
+[data-react-header] .source-mega .submenu-item .gerd {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  margin: 0;
+  background: #247eac;
+}
+[data-react-header] .source-mega .submenu-text {
+  color: #365a76;
+  font-size: 12px;
+  line-height: 1.9;
+}
+[data-react-header] .source-mega .nested-mega {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 18px;
+  height: 100%;
+  min-height: 0;
+}
+[data-react-header] .source-mega .nested-categories {
+  width: auto;
+  height: auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0 0 0 14px;
+  border: 0;
+  border-inline-end: 1px solid #e6edf4;
+  background: white;
+  overflow: auto;
+}
+[data-react-header] .source-mega .nested-categories > li > button {
+  min-height: 44px;
+  padding: 10px;
+  font-size: 12px;
+}
+[data-react-header] .source-mega .nested-submenus {
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+[data-react-header] .source-mega .nested-submenu {
+  height: 100%;
+  box-sizing: border-box;
+}
+[data-react-header] .source-mega .nested-submenu .submenu-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+[data-react-header] .source-mega :is(a, button):focus-visible {
+  outline: 3px solid #d69b36;
+  outline-offset: -3px;
+}
+[data-react-header] #khadmat {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+[data-react-header] .source-mega #khadmat::after {
+  content: '';
+  width: 5px;
+  height: 5px;
+  margin: 0;
+  border: 0;
+  border-inline-end: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 180ms ease;
+}
+[data-react-header] .source-mega #khadmat[aria-expanded='true']::after {
+  transform: translateY(1px) rotate(225deg);
+}
+[data-react-header] .install-app-menu-item > .rast {
+  gap: 7px;
+}
+[data-react-header] .install-app-menu-item > .rast > svg {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  color: white;
+}
+[data-react-header] .mm-item > .mm-row > .mm-link {
+  padding-block: 14px;
+  color: #234d70;
+}
+[data-react-header] .mm-item.is-open > .mm-row {
+  border-radius: 10px;
+  background: #edf5fb;
+}
+@keyframes ostanMegaEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes ostanSubmenuEnter {
+  from {
+    opacity: 0;
+    transform: translateX(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@media (max-width: 1450px) {
+  [data-section='site'] [data-react-header] .source-mega > .mega-menu {
+    grid-template-columns: 230px minmax(0, 1fr);
+  }
+  [data-react-header] .source-mega .submenus {
+    padding: 20px;
+  }
+  [data-react-header] .source-mega .submenu-grid {
+    gap: 10px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-react-header] .source-mega *,
+  [data-react-header] .source-mega > .mega-menu,
+  [data-react-header] .header-box {
+    animation: none !important;
+    transition: none !important;
+  }
+}

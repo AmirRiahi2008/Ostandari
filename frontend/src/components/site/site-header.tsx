@@ -111,6 +111,8 @@ export function SiteHeader({
   const opener = useRef<HTMLButtonElement>(null);
   const megaOpener = useRef<HTMLButtonElement>(null);
   const drawer = useRef<HTMLDivElement>(null);
+  const megaCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const focusMegaCategory = useRef(false);
   const groups = ['/managers', '/services', '/duties', '/service-agreement', '/about'].flatMap(
     (path) => items.filter((item) => item.href === path),
   );
@@ -134,10 +136,39 @@ export function SiteHeader({
     value && /^(?:\/(?!\/)|https?:\/\/)/.test(value) ? value : fallback;
   const logo = image(branding.logo, '/design/site/assets/image/logo.png');
 
+  function cancelMegaClose() {
+    if (megaCloseTimer.current !== null) clearTimeout(megaCloseTimer.current);
+    megaCloseTimer.current = null;
+  }
+
+  function openMega() {
+    cancelMegaClose();
+    setMega(true);
+  }
+
+  function closeMega() {
+    cancelMegaClose();
+    setMega(false);
+  }
+
+  useEffect(
+    () => () => {
+      if (megaCloseTimer.current !== null) clearTimeout(megaCloseTimer.current);
+    },
+    [],
+  );
+
+  useEffect(() => {
+    if (mega && focusMegaCategory.current) {
+      focusMegaCategory.current = false;
+      header.current?.querySelector<HTMLButtonElement>('.categories button')?.focus();
+    }
+  }, [mega]);
+
   useEffect(() => {
     function outside(event: PointerEvent) {
       if (!header.current?.contains(event.target as Node)) {
-        setMega(false);
+        closeMega();
         setLanguage(false);
       }
     }
@@ -178,7 +209,7 @@ export function SiteHeader({
           setLanguage(false);
           if (mobile) setMobile(false);
           else if (mega) {
-            setMega(false);
+            closeMega();
             megaOpener.current?.focus();
           }
         }
@@ -264,7 +295,7 @@ export function SiteHeader({
         </div>
       </div>
       <div className="top-header">
-        <div className="header-box">
+        <div className="header-box" data-mega-open={mega ? 'true' : undefined}>
           <button
             type="button"
             className="header-hamburger"
@@ -284,15 +315,27 @@ export function SiteHeader({
               <img src={logo} width={150} height={162} alt="نشان استانداری مازندران" />
             </a>
           </div>
-          <div className="desktop-menu">
+          <nav className="desktop-menu" aria-label="منوی اصلی">
             <div className="menu-right">
               {navItem('/', 'home')}
               <div
                 className={'menu-item has-mega source-mega' + (mega ? ' is-open' : '')}
-                onMouseEnter={() => setMega(true)}
-                onMouseLeave={() => setMega(false)}
+                onMouseEnter={openMega}
+                onMouseLeave={() => {
+                  cancelMegaClose();
+                  megaCloseTimer.current = setTimeout(() => {
+                    if (
+                      !header.current
+                        ?.querySelector('.source-mega')
+                        ?.contains(document.activeElement)
+                    ) {
+                      setMega(false);
+                    }
+                    megaCloseTimer.current = null;
+                  }, 140);
+                }}
                 onBlur={(event) => {
-                  if (!event.currentTarget.contains(event.relatedTarget as Node)) setMega(false);
+                  if (!event.currentTarget.contains(event.relatedTarget as Node)) closeMega();
                 }}
               >
                 <div className="rast">
@@ -303,12 +346,32 @@ export function SiteHeader({
                     ref={megaOpener}
                     aria-expanded={mega}
                     aria-controls="source-services-menu"
-                    onClick={() => setMega(!mega)}
+                    onClick={() => {
+                      cancelMegaClose();
+                      setMega(!mega);
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === 'ArrowDown') {
+                        event.preventDefault();
+                        focusMegaCategory.current = !mega;
+                        openMega();
+                        if (mega)
+                          header.current
+                            ?.querySelector<HTMLButtonElement>('.categories button')
+                            ?.focus();
+                      }
+                    }}
                   >
                     خدمات
                   </button>
                 </div>
-                <div className="mega-menu" id="source-services-menu" hidden={!mega}>
+                <div
+                  className="mega-menu"
+                  id="source-services-menu"
+                  hidden={!mega}
+                  role="region"
+                  aria-label="خدمات و بخش‌های استانداری"
+                >
                   <ul className="categories">
                     {categories.map((item, number) => (
                       <li
@@ -332,6 +395,21 @@ export function SiteHeader({
                     ))}
                   </ul>
                   <div className="submenus">
+                    {categories[selected] && (
+                      <div className="source-mega-heading">
+                        <div>
+                          <span>دسترسی به بخش‌های استانداری</span>
+                          <h2>
+                            {categories[selected].href === '/services'
+                              ? 'خدمات الکترونیکی'
+                              : categories[selected].title}
+                          </h2>
+                        </div>
+                        <a href={categories[selected].href}>
+                          مشاهدهٔ بخش <span aria-hidden="true">←</span>
+                        </a>
+                      </div>
+                    )}
                     {categories.map((item, number) => (
                       <div
                         key={item.id}
@@ -362,7 +440,7 @@ export function SiteHeader({
               </div>
               <div className="menu-item install-app-menu-item">
                 <div className="rast">
-                  <span className="app-badge">App</span>
+                  <OriginalIcon name="app" />
                   <a href="/install">نصب اپلیکیشن</a>
                 </div>
               </div>
@@ -387,7 +465,7 @@ export function SiteHeader({
                 </div>
               </div>
             </div>
-          </div>
+          </nav>
           <div
             className={'mm-backdrop' + (mobile ? ' active' : '')}
             id="mmBackdrop"
