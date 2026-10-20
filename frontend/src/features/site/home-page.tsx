@@ -163,23 +163,6 @@ export async function HomePage() {
               <a className="name-btn2" href="/governors">
                 معرفی استانداران
               </a>
-              <div className="name-icon">
-                {[
-                  ['bale-color.png', 'بله'],
-                  ['eitaa-icon-colorful.png', 'ایتا'],
-                  ['linkedin.png', 'لینکدین'],
-                  ['telegram.png', 'تلگرام'],
-                ].map(([image, title]) => (
-                  <a href="/social" key={image} aria-label={title}>
-                    <img
-                      src={'/design/site/assets/image/' + image}
-                      width={24}
-                      height={24}
-                      alt={title}
-                    />
-                  </a>
-                ))}
-              </div>
             </div>
           </div>
         </section>

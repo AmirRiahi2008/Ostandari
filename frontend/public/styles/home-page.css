@@ -275,16 +275,6 @@
   color: #075c96;
   border: 1px solid #d4e3ee;
 }
-.source-home .home-experience .container-body-left .name-icon {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin: auto 0 0;
-  padding-top: 9px;
-}
-.source-home .home-experience .container-body-left .name-icon a {
-  transition: transform 200ms;
-}
 .source-home .home-experience .sections-container {
   width: 100%;
   gap: clamp(38px, 4vw, 64px);
@@ -748,9 +738,6 @@
     border-color: #bbd4e3;
     box-shadow: 0 14px 30px #173b6010;
   }
-  .source-home .home-experience .container-body-left .name-icon a:hover {
-    transform: translateY(-3px);
-  }
   .source-home .home-experience .image-box:hover > img,
   .source-home .home-experience .stdprx-screen:hover > img {
     transform: scale(1.035);
@@ -799,14 +786,8 @@
   }
   .source-home .home-experience .container-body-left .name {
     grid-column: 2;
+    grid-row: 1 / 3;
     margin: 0;
-  }
-  .source-home .home-experience .container-body-left .name-icon {
-    grid-column: 2;
-    grid-row: 2;
-    justify-content: flex-start;
-    margin: 0;
-    padding: 0;
   }
   .source-home .home-experience .container-body-left :is(.name-btn, .name-btn2) {
     grid-column: 3;
