@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { api, ApiError } from '@/lib/api/client';
+import { safeAdminReturn } from '@/lib/admin-routes';
 import { ticketStatuses, ticketTypes, ticketUrgencies } from '@/data/ticket-status';
 import {
   reportDate,
@@ -10,7 +11,6 @@ import {
   type ReportOptions,
   type ReportsResponse,
 } from '@/features/admin/reports';
-import { ReportDetail } from './report-detail';
 
 export function ReportsPanel({ preview }: { preview: boolean }) {
   const [options, setOptions] = useState<ReportOptions | null>(null);
@@ -19,12 +19,33 @@ export function ReportsPanel({ preview }: { preview: boolean }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(!preview);
   const [query, setQuery] = useState('order=urgency');
+  const [countyId, setCountyId] = useState('');
   const [page, setPage] = useState(1);
   const [revision, setRevision] = useState(0);
-  const [reference, setReference] = useState<string | null>(null);
-  const [writing, setWriting] = useState(false);
   const form = useRef<HTMLFormElement>(null);
-  const trigger = useRef<HTMLButtonElement | null>(null);
+  const [restored, setRestored] = useState(false);
+
+  useEffect(() => {
+    const saved = safeAdminReturn(
+      '/admin/reports',
+      window.location.pathname + window.location.search,
+    );
+    const params = new URL(saved, window.location.origin).searchParams;
+    setPage(Number(params.get('page') ?? 1));
+    params.delete('page');
+    if (!params.has('order')) params.set('order', 'urgency');
+    setQuery(params.toString());
+    setCountyId(params.get('county_id') ?? '');
+    for (const [key, value] of params) {
+      const control = form.current?.querySelector<HTMLInputElement | HTMLSelectElement>(
+        '[name="' + key + '"]',
+      );
+      if (control instanceof HTMLInputElement && control.type === 'checkbox')
+        control.checked = value === '1';
+      else if (control) control.value = value;
+    }
+    setRestored(true);
+  }, []);
 
   useEffect(() => {
     if (preview) return;
@@ -46,6 +67,7 @@ export function ReportsPanel({ preview }: { preview: boolean }) {
     setLoading(true);
     setResult(null);
     setError('');
+    if (!restored) return;
     const params = new URLSearchParams(query);
     params.set('per_page', '20');
     params.set('page', String(page));
@@ -73,19 +95,12 @@ export function ReportsPanel({ preview }: { preview: boolean }) {
         if (!abort.signal.aborted) setLoading(false);
       });
     return () => abort.abort();
-  }, [preview, query, page, revision]);
+  }, [preview, query, page, revision, restored]);
 
   function filter(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (writing) return;
     setQuery(reportQuery(new FormData(event.currentTarget)));
     setPage(1);
-  }
-
-  function close() {
-    setReference(null);
-    if (trigger.current?.isConnected) trigger.current.focus();
-    else form.current?.querySelector<HTMLInputElement>('input[name="q"]')?.focus();
   }
 
   if (preview)
@@ -158,7 +173,12 @@ export function ReportsPanel({ preview }: { preview: boolean }) {
         </label>
         <label>
           شهرستان
-          <select name="county_id" disabled={!options}>
+          <select
+            name="county_id"
+            value={countyId}
+            onChange={(event) => setCountyId(event.target.value)}
+            disabled={!options}
+          >
             <option value="">همهٔ شهرستان‌های مجاز</option>
             {options?.counties.map((county) => (
               <option key={county.id} value={county.id}>
@@ -188,15 +208,16 @@ export function ReportsPanel({ preview }: { preview: boolean }) {
           فقط درخواست‌های گذشته از مهلت پاسخ
         </label>
         <div className="reports-actions">
-          <button type="submit" disabled={loading || writing}>
+          <button type="submit" disabled={loading}>
             اعمال فیلتر
           </button>
           <button
             type="button"
             className="reports-secondary"
-            disabled={loading || writing}
+            disabled={loading}
             onClick={() => {
               form.current?.reset();
+              setCountyId('');
               setQuery('order=urgency');
               setPage(1);
               setRevision((value) => value + 1);
@@ -207,7 +228,7 @@ export function ReportsPanel({ preview }: { preview: boolean }) {
           <button
             type="button"
             className="reports-secondary"
-            disabled={loading || writing}
+            disabled={loading}
             onClick={() => setRevision((value) => value + 1)}
           >
             تازه‌سازی
@@ -259,11 +280,7 @@ export function ReportsPanel({ preview }: { preview: boolean }) {
               </tr>
             ) : null}
             {result?.data.map((report) => (
-              <tr
-                key={report.reference}
-                data-report-reference={report.reference}
-                className={reference === report.reference ? 'reports-selected-row' : undefined}
-              >
+              <tr key={report.reference} data-report-reference={report.reference}>
                 <th scope="row">
                   <strong>{report.subject}</strong>
                   <small>{ticketTypes[report.type]}</small>
@@ -293,18 +310,17 @@ export function ReportsPanel({ preview }: { preview: boolean }) {
                   ) : null}
                 </td>
                 <td>
-                  <button
-                    type="button"
+                  <a
+                    href={
+                      '/admin/reports/' +
+                      encodeURIComponent(report.reference) +
+                      '/edit?' +
+                      new URLSearchParams({ return: '/admin/reports?' + query + '&page=' + page })
+                    }
                     className="reports-secondary"
-                    disabled={writing}
-                    aria-expanded={reference === report.reference}
-                    onClick={(event) => {
-                      trigger.current = event.currentTarget;
-                      setReference(report.reference);
-                    }}
                   >
                     جزئیات و پاسخ<span className="reports-sr-only"> به {report.subject}</span>
-                  </button>
+                  </a>
                   <small>{(report.messages_count ?? 0).toLocaleString('fa-IR')} پیام</small>
                 </td>
               </tr>
@@ -317,7 +333,7 @@ export function ReportsPanel({ preview }: { preview: boolean }) {
           <button
             type="button"
             className="reports-secondary"
-            disabled={loading || writing || page <= 1}
+            disabled={loading || page <= 1}
             onClick={() => setPage(page - 1)}
           >
             صفحهٔ قبل
@@ -329,22 +345,12 @@ export function ReportsPanel({ preview }: { preview: boolean }) {
           <button
             type="button"
             className="reports-secondary"
-            disabled={loading || writing || page >= result.meta.last_page}
+            disabled={loading || page >= result.meta.last_page}
             onClick={() => setPage(page + 1)}
           >
             صفحهٔ بعد
           </button>
         </nav>
-      ) : null}
-      {reference ? (
-        <ReportDetail
-          key={reference}
-          reference={reference}
-          options={options}
-          onClose={close}
-          onChanged={() => setRevision((value) => value + 1)}
-          onBusy={setWriting}
-        />
       ) : null}
     </section>
   );

@@ -4,7 +4,7 @@ import type { PageContext } from '@/types/portal';
 export function closeOverlays(root: HTMLElement): void {
   all(
     root,
-    '.cbn-modal-overlay,.top-modal-overlay,.cbn-actions-menu,.install-app-overlay,#panel,#panelOverlay,#lightboxOverlay,#flagDropdown',
+    '.cbn-modal-overlay,.top-modal-overlay,.cbn-actions-menu,.install-app-overlay,#panel,#panelOverlay,#lightboxOverlay,#flagDropdown,.sidebar.open,.sidebar-parent.open,.dark-background-tablet.open',
   ).forEach((element) =>
     element.classList.remove(
       'active',
@@ -37,7 +37,10 @@ export function bindUi(
     const commandElement = target.closest<HTMLElement>('[data-command],[data-navigate]');
     if (commandElement && root.contains(commandElement)) {
       if (commandElement.dataset.navigate) {
-        window.location.assign(commandElement.dataset.navigate);
+        event.preventDefault();
+        (context.navigate ?? ((href) => window.location.assign(href)))(
+          commandElement.dataset.navigate,
+        );
         return;
       }
       if (!commandElement.dataset.commandEvent || commandElement.dataset.commandEvent === 'click') {

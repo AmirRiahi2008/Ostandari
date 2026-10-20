@@ -2,6 +2,7 @@ import { templates } from '@/lib/templates';
 import schemas from './resource-schema.json';
 import { adminExtraPages } from './extra-pages';
 import { adminUtilityTitles } from './utility-pages';
+import { adminSectionFor, reviewResource } from './sections';
 
 const names: Record<string, string> = {
   '/admin/menu-items': 'آیتم‌های منو',
@@ -76,17 +77,20 @@ export const adminModules = [
           path: page.path,
           title: names[page.path] ?? page.title,
           permission: resourcePermission(page.resource),
+          resource: page.resource,
         })),
       ...Object.entries(adminExtraPages).map(([path, page]) => ({
         path,
         title: page.title,
         permission: resourcePermission(page.resource),
+        resource: page.resource,
       })),
       ...Object.entries(adminUtilityTitles)
         .filter(([path]) => !['/admin/logout', '/admin/account'].includes(path))
         .map(([path, title]) => ({
           path,
           title,
+          resource: '',
           permission:
             path === '/admin/reports'
               ? 'tickets.manage'
@@ -96,4 +100,21 @@ export const adminModules = [
         })),
     ].map((page) => [page.path, page]),
   ).values(),
-];
+].map((page) => ({
+  ...page,
+  section: adminSectionFor(page.path),
+  canCreate:
+    Boolean(page.resource) && !reviewResource(page.resource) && page.resource !== 'settings',
+  canEdit: Boolean(page.resource) && page.resource !== 'media',
+  description: !page.resource
+    ? page.path === '/admin/reports'
+      ? 'رسیدگی و پاسخ به گزارش‌های ثبت‌شدهٔ شهروندان'
+      : 'مشاهده و مدیریت ' + page.title
+    : reviewResource(page.resource)
+      ? 'مشاهده، بررسی و پیگیری موارد ثبت‌شده'
+      : page.resource === 'media'
+        ? 'بارگذاری و مدیریت فایل‌های سایت'
+        : page.resource === 'settings'
+          ? 'ویرایش تنظیمات موجود سامانه'
+          : 'فهرست، افزودن و ویرایش ' + page.title.replace(/^مدیریت /, ''),
+}));

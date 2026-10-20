@@ -3,10 +3,14 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/api/client';
 import { adminModules } from '@/data/admin/modules';
 import type { RecordData } from '@/types/portal';
+import { adminSections } from '@/data/admin/sections';
+import { adminEditorHref } from '@/lib/admin-routes';
 export function AdminDashboard({ preview }: { preview: boolean }) {
   const [stats, setStats] = useState<RecordData | null>(null);
   const [error, setError] = useState('');
   const [revision, setRevision] = useState(0);
+  const [query, setQuery] = useState('');
+  const [sectionId, setSectionId] = useState('');
   useEffect(() => {
     if (preview) return;
     const abort = new AbortController();
@@ -24,6 +28,11 @@ export function AdminDashboard({ preview }: { preview: boolean }) {
   const links = adminModules.filter(
     (page) => !permissions || permissions.includes('*') || permissions.includes(page.permission),
   );
+  const visible = links.filter(
+    (page) =>
+      (!sectionId || page.section === sectionId) &&
+      (page.title + ' ' + page.description).includes(query.trim()),
+  );
   return (
     <div className="portal-dashboard">
       <div className="portal-dashboard-heading">
@@ -31,6 +40,10 @@ export function AdminDashboard({ preview }: { preview: boolean }) {
         <a href="/">مشاهدهٔ سایت</a>
         <a href="/admin/account">حساب کاربری</a>
       </div>
+      <p className="portal-dashboard-intro">
+        همهٔ بخش‌های مدیریت در دسترس شما، به تفکیک موضوع. برای ثبت مورد تازه «افزودن» و برای تغییر
+        اطلاعات «فهرست و ویرایش» را انتخاب کنید.
+      </p>
       {stats && (
         <div className="portal-admin-stats">
           {[
@@ -59,14 +72,72 @@ export function AdminDashboard({ preview }: { preview: boolean }) {
           </button>
         </div>
       )}
-      <div className="portal-link-grid">
-        {links.map((page) => (
-          <a key={page.path} href={page.path}>
-            {page.title}
-            <span aria-hidden="true">←</span>
-          </a>
-        ))}
+      <div className="portal-dashboard-filters">
+        <label>
+          جستجوی بخش
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="مثلاً خبر، استاندار، فرم یا گزارش…"
+          />
+        </label>
+        <label>
+          گروه
+          <select value={sectionId} onChange={(event) => setSectionId(event.target.value)}>
+            <option value="">همهٔ گروه‌ها</option>
+            {adminSections
+              .filter((section) => links.some((page) => page.section === section.id))
+              .map((section) => (
+                <option key={section.id} value={section.id}>
+                  {section.title}
+                </option>
+              ))}
+          </select>
+        </label>
+        <span role="status">{visible.length.toLocaleString('fa-IR')} بخش</span>
       </div>
+      {adminSections.map((section) => {
+        const modules = visible.filter((page) => page.section === section.id);
+        if (!modules.length) return null;
+        return (
+          <section
+            className="portal-dashboard-section"
+            key={section.id}
+            aria-labelledby={'admin-section-' + section.id}
+          >
+            <header>
+              <div>
+                <h3 id={'admin-section-' + section.id}>{section.title}</h3>
+                <p>{section.description}</p>
+              </div>
+              <span>{modules.length.toLocaleString('fa-IR')} بخش</span>
+            </header>
+            <div className="portal-module-grid">
+              {modules.map((page) => (
+                <article key={page.path} className="portal-module-card">
+                  <a href={page.path}>
+                    <h4>{page.title}</h4>
+                    <p>{page.description}</p>
+                  </a>
+                  <div>
+                    <a href={page.path}>
+                      {page.resource && page.canEdit ? 'فهرست و ویرایش' : 'مشاهده و مدیریت'}
+                      <span aria-hidden="true"> ←</span>
+                    </a>
+                    {page.canCreate && (
+                      <a className="portal-module-create" href={adminEditorHref(page.path)}>
+                        + {page.resource === 'media' ? 'بارگذاری' : 'افزودن'}
+                      </a>
+                    )}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        );
+      })}
+      {!visible.length && <p role="status">بخشی با این نام یا در این گروه پیدا نشد.</p>}
     </div>
   );
 }

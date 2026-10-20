@@ -196,14 +196,25 @@ export function resourceFields(resource: string): FieldRules {
 export function AdminResourceForm({
   resource,
   defaults = {},
+  formId,
 }: {
   resource: string;
   defaults?: Record<string, string>;
+  formId?: string;
 }) {
   const fields = resourceFields(resource);
   const initialValues = { ...resourceScope(resource), ...defaults };
   return (
-    <form className="cbn-flex-form portal-resource-form" data-form="true">
+    <form id={formId} className="cbn-flex-form portal-resource-form" data-form="true">
+      {resource === 'media' && (
+        <label className="portal-resource-field portal-resource-wide">
+          انتخاب فایل
+          <input type="file" required accept="image/jpeg,image/png,image/webp,.pdf,.xlsx,.xls" />
+          <small>
+            تصویر، PDF یا Excel؛ حداکثر ۴ مگابایت. فایل در کتابخانهٔ عمومی سایت ذخیره می‌شود.
+          </small>
+        </label>
+      )}
       {Object.entries(fields)
         .filter(([field]) => !field.includes('.'))
         .map(([field, rules]) => {

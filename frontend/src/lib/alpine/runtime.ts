@@ -2,7 +2,12 @@ import type { Alpine as AlpineType } from 'alpinejs';
 import type { PageContext, TemplatePage } from '@/types/portal';
 import { bindUi, closeOverlays } from './ui';
 
-type ContextInput = { page: TemplatePage; preview: boolean; path: string };
+type ContextInput = {
+  page: TemplatePage;
+  preview: boolean;
+  path: string;
+  navigate?: (href: string) => void;
+};
 const contexts = new WeakMap<HTMLElement, ContextInput>();
 let singleton: Promise<AlpineType> | undefined;
 

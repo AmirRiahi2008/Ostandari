@@ -2,6 +2,7 @@ import { adminExtraPages } from '@/data/admin/extra-pages';
 import { publicTitles } from '@/data/public-navigation';
 import { resolveTemplate } from '@/lib/templates';
 import { adminUtilityTitles } from '@/data/admin/utility-pages';
+import { resolveAdminEditor, resolveReportEditor } from '@/lib/admin-routes';
 
 export function isPublicRoute(path: string): boolean {
   return Boolean(publicTitles[path] || /^\/(?:news|service|content)\/[^/]+$/.test(path));
@@ -20,6 +21,8 @@ export function knownRoute(href: string): boolean {
   if (/^https?:|^mailto:|^tel:/i.test(href)) return true;
   const url = new URL(href, 'http://127.0.0.1:3000');
   return Boolean(
+    resolveAdminEditor(url.pathname) ||
+    resolveReportEditor(url.pathname) ||
     adminExtraPages[url.pathname] ||
     adminUtilityTitles[url.pathname] ||
     isPublicRoute(url.pathname) ||

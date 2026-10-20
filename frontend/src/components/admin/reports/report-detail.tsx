@@ -38,12 +38,14 @@ export function ReportDetail({
   onClose,
   onChanged,
   onBusy,
+  closeLabel = 'بستن جزئیات',
 }: {
   reference: string;
   options: ReportOptions | null;
   onClose: () => void;
   onChanged: () => void;
   onBusy: (busy: boolean) => void;
+  closeLabel?: string;
 }) {
   const [record, setRecord] = useState<CitizenReport | null>(null);
   const [loading, setLoading] = useState(true);
@@ -188,7 +190,7 @@ export function ReportDetail({
           {record?.subject ?? 'جزئیات درخواست'}
         </h2>
         <button type="button" className="reports-secondary" onClick={onClose} disabled={busy}>
-          بستن جزئیات
+          {closeLabel}
         </button>
       </header>
       {notice ? (

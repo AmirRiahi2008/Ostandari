@@ -7,6 +7,7 @@ import '@/styles/site-navigation.css';
 import '@/styles/download-page.css';
 import '@/styles/admin-reports.css';
 import '@/styles/admin-cms.css';
+import '@/styles/admin-pages.css';
 
 export const metadata: Metadata = {
   title: 'استانداری مازندران',

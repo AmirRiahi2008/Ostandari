@@ -17,6 +17,9 @@ import { HomePage } from '@/features/site/home-page';
 import { OfficialSectionPage } from '@/features/site/official-section-page';
 import { resolveOfficialSection } from '@/features/site/official-data';
 import { adminUtilityTitles } from '@/data/admin/utility-pages';
+import { resolveAdminEditor, resolveReportEditor } from '@/lib/admin-routes';
+import { AdminEditorPage } from '@/components/admin/editor-page';
+import { AdminReportPage } from '@/components/admin/reports/report-page';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -24,6 +27,15 @@ type Props = { params: Promise<{ path?: string[] }>; searchParams: Promise<Searc
 
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const path = '/' + ((await params).path ?? []).join('/');
+  const editor = resolveAdminEditor(path);
+  if (editor)
+    return {
+      title:
+        (editor.mode === 'create' ? 'افزودن — ' : 'ویرایش — ') +
+        editor.page.title +
+        ' | استانداری مازندران',
+    };
+  if (resolveReportEditor(path)) return { title: 'رسیدگی به گزارش مردمی | استانداری مازندران' };
   if (adminUtilityTitles[path])
     return { title: adminUtilityTitles[path] + ' | استانداری مازندران' };
   const page = resolveTemplate(path);
@@ -40,6 +52,16 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 export default async function TemplateRoute({ params, searchParams }: Props) {
   const path = '/' + ((await params).path ?? []).join('/');
   const search = await searchParams;
+  const editor = resolveAdminEditor(path);
+  if (editor) {
+    await requireAdmin(path);
+    return <AdminEditorPage path={path} route={editor} returnTo={first(search.return)} />;
+  }
+  const report = resolveReportEditor(path);
+  if (report) {
+    await requireAdmin(path);
+    return <AdminReportPage path={path} reference={report} returnTo={first(search.return)} />;
+  }
   const alias = routeAlias(
     path,
     new URLSearchParams(

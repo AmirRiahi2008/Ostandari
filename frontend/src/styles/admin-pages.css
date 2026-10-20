@@ -1,0 +1,446 @@
+[data-section='admin'] {
+  --admin-surface: #fff;
+  --admin-soft: #f2f6fa;
+  --admin-ink: #203d5d;
+  --admin-muted: #64778c;
+  --admin-line: #dce5ee;
+}
+[data-section='admin'].portal-dark {
+  --admin-surface: #1d2b3e;
+  --admin-soft: #23344a;
+  --admin-ink: #e1ebf6;
+  --admin-muted: #b0bfd2;
+  --admin-line: #3c506a;
+}
+[data-section='admin'] .sidebar-extended {
+  display: none !important;
+}
+[data-section='admin'] .all-website {
+  width: 100%;
+  height: 100dvh;
+}
+[data-section='admin'] .sadyar-header {
+  flex-shrink: 0;
+}
+[data-section='admin'] .sadyar-content {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+}
+[data-section='admin'] .main-content {
+  min-height: 0;
+  overflow: auto !important;
+}
+[data-section='admin'] .sidebar {
+  width: 260px;
+  min-width: 260px;
+  max-width: 260px;
+  flex: 0 0 260px;
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--admin-surface);
+  scrollbar-width: thin;
+}
+[data-section='admin'] .portal-module-menu {
+  color: var(--admin-ink);
+  padding: 10px 4px 24px;
+  font-size: 12px;
+}
+[data-section='admin'] .portal-module-menu a {
+  color: inherit;
+  text-decoration: none;
+}
+[data-section='admin'] .portal-module-menu a.portal-menu-home {
+  display: block;
+  background: #17619b;
+  color: #fff;
+  padding: 12px;
+  border-radius: 9px;
+  font-weight: 700;
+}
+[data-section='admin'] .portal-menu-search {
+  display: grid;
+  gap: 7px;
+  margin-block: 18px 12px;
+  color: var(--admin-muted);
+}
+[data-section='admin'] .portal-menu-search input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid var(--admin-line);
+  border-radius: 8px;
+  background: var(--admin-soft);
+  color: var(--admin-ink);
+  font: inherit;
+}
+[data-section='admin'] .portal-module-menu details {
+  border-bottom: 1px solid var(--admin-line);
+  padding-block: 7px;
+}
+[data-section='admin'] .portal-module-menu summary {
+  cursor: pointer;
+  padding: 10px 3px;
+  font-weight: 600;
+}
+[data-section='admin'] .portal-module-menu summary span {
+  float: left;
+  color: var(--admin-muted);
+  font-weight: 400;
+}
+[data-section='admin'] .portal-module-menu details > div {
+  display: grid;
+  gap: 3px;
+  padding: 2px 6px 8px;
+}
+[data-section='admin'] .portal-module-menu details a {
+  padding: 9px 10px;
+  border-radius: 7px;
+  line-height: 1.8;
+}
+[data-section='admin'] .portal-module-menu details a:hover,
+[data-section='admin'] .portal-module-menu [aria-current='page']:not(.portal-menu-home) {
+  color: #147e8e;
+  background: var(--admin-soft);
+}
+[data-section='admin'] .portal-menu-footer {
+  display: grid;
+  gap: 12px;
+  margin-block-start: 20px;
+  padding: 8px;
+}
+[data-section='admin'] .sidebar.shrink {
+  width: 80px;
+  min-width: 80px;
+  flex-basis: 80px;
+}
+[data-section='admin'] .sidebar.shrink .portal-menu-search,
+[data-section='admin'] .sidebar.shrink .portal-module-menu details,
+[data-section='admin'] .sidebar.shrink .portal-menu-footer {
+  display: none;
+}
+[data-section='admin'] .portal-admin-main {
+  min-width: 0;
+  overflow: visible;
+}
+[data-section='admin'] .portal-dashboard-intro {
+  color: var(--admin-muted);
+  font-size: 13px;
+  line-height: 2;
+  margin-block: 8px 22px;
+}
+[data-section='admin'] .portal-dashboard-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: end;
+  padding: 18px;
+  border: 1px solid var(--admin-line);
+  border-radius: 12px;
+  background: var(--admin-surface);
+}
+[data-section='admin'] .portal-dashboard-filters label {
+  display: grid;
+  gap: 8px;
+  flex: 1 1 220px;
+  color: var(--admin-ink);
+  font-size: 12px;
+}
+[data-section='admin'] .portal-dashboard-filters input,
+[data-section='admin'] .portal-dashboard-filters select {
+  width: 100%;
+  min-height: 42px;
+  box-sizing: border-box;
+  border: 1px solid var(--admin-line);
+  border-radius: 8px;
+  padding: 9px 12px;
+  background: var(--admin-soft);
+  color: var(--admin-ink);
+  font: inherit;
+}
+[data-section='admin'] .portal-dashboard-filters > span {
+  font-size: 12px;
+  color: var(--admin-muted);
+  padding-block: 12px;
+}
+[data-section='admin'] .portal-dashboard-section {
+  margin-block: 28px;
+}
+[data-section='admin'] .portal-dashboard-section > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-block-end: 14px;
+}
+[data-section='admin'] .portal-dashboard-section h3 {
+  font-size: 16px;
+  margin: 0 0 5px;
+  color: var(--admin-ink);
+}
+[data-section='admin'] .portal-dashboard-section > header p {
+  color: var(--admin-muted);
+  font-size: 12px;
+  margin: 0;
+  line-height: 1.8;
+}
+[data-section='admin'] .portal-dashboard-section > header > span {
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--admin-muted);
+}
+[data-section='admin'] .portal-module-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
+  gap: 14px;
+}
+[data-section='admin'] .portal-module-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--admin-line);
+  border-radius: 12px;
+  background: var(--admin-surface);
+  overflow: hidden;
+}
+[data-section='admin'] .portal-module-card > a {
+  display: block;
+  padding: 18px;
+  text-decoration: none;
+  flex: 1;
+  color: var(--admin-ink);
+}
+[data-section='admin'] .portal-module-card h4 {
+  margin: 0 0 10px;
+  font-size: 14px;
+  line-height: 1.9;
+}
+[data-section='admin'] .portal-module-card p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.9;
+  color: var(--admin-muted);
+}
+[data-section='admin'] .portal-module-card > div {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--admin-line);
+  background: var(--admin-soft);
+  padding: 12px 16px;
+}
+[data-section='admin'] .portal-module-card > div a {
+  color: var(--admin-ink);
+  font-size: 12px;
+  text-decoration: none;
+}
+[data-section='admin'] .portal-module-card > div .portal-module-create {
+  color: #087f86;
+  font-weight: 700;
+}
+[data-section='admin'] .portal-module-card:hover {
+  border-color: #74accc;
+}
+[data-section='admin'] .portal-editor-heading {
+  padding: 22px 28px 14px;
+}
+[data-section='admin'] .portal-editor-heading nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  color: var(--admin-muted);
+  font-size: 12px;
+  margin-block-end: 16px;
+  line-height: 1.9;
+}
+[data-section='admin'] .portal-editor-heading a {
+  color: #1e7298;
+}
+[data-section='admin'] .portal-editor-heading h1 {
+  font-size: clamp(18px, 2vw, 23px);
+  line-height: 1.9;
+  color: var(--admin-ink);
+  margin: 0;
+}
+[data-section='admin'] .portal-editor-heading p {
+  font-size: 13px;
+  color: var(--admin-muted);
+  line-height: 1.9;
+}
+[data-section='admin'] .portal-editor-page {
+  box-sizing: border-box;
+  width: calc(100% - 48px);
+  max-width: 1200px;
+  margin: 0 auto 32px;
+  padding: 24px;
+  border: 1px solid var(--admin-line);
+  border-radius: 14px;
+  background: var(--admin-surface);
+  color: var(--admin-ink);
+}
+[data-section='admin'] .portal-editor-status {
+  font-size: 13px;
+  padding: 12px 15px;
+  border-inline-start: 3px solid #139e99;
+  border-radius: 6px;
+  background: var(--admin-soft);
+  margin-block-end: 20px;
+  line-height: 1.9;
+}
+[data-section='admin'] .portal-editor-fields {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+[data-section='admin'] .portal-editor-fields:disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+[data-section='admin'] .portal-editor-page .portal-resource-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+[data-section='admin'] .portal-editor-page .portal-resource-field {
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+[data-section='admin'] .portal-editor-page .portal-resource-wide {
+  grid-column: 1 / -1;
+}
+[data-section='admin'] .portal-editor-page .portal-resource-field > label {
+  color: var(--admin-ink);
+  font-size: 13px;
+  line-height: 1.8;
+}
+[data-section='admin']
+  .portal-editor-page
+  :is(input:not([type='checkbox']):not([type='radio']), textarea, select) {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--admin-line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: var(--admin-surface);
+  color: var(--admin-ink);
+  font: inherit;
+  font-size: 13px;
+}
+[data-section='admin'] .portal-editor-page select[multiple] {
+  min-height: 120px;
+}
+[data-section='admin'] .portal-editor-page textarea {
+  resize: vertical;
+  line-height: 1.9;
+}
+[data-section='admin'] .portal-editor-page .portal-cms-surface {
+  min-height: 320px;
+  max-height: 70dvh;
+}
+[data-section='admin'] .portal-editor-actions {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px;
+  padding-block: 18px 5px;
+  border-top: 1px solid var(--admin-line);
+  background: var(--admin-surface);
+  margin-block-start: 24px;
+  z-index: 3;
+}
+[data-section='admin'] .portal-editor-actions a {
+  font-size: 13px;
+  color: var(--admin-muted);
+}
+[data-section='admin'] .portal-editor-current-image {
+  width: 180px;
+  max-height: 200px;
+  object-fit: contain;
+  border-radius: 10px;
+  margin-block-end: 20px;
+}
+[data-section='admin'] .portal-record-detail:empty {
+  display: none;
+}
+[data-section='admin'][data-admin-view='list'] :is(.cbn-modal-overlay, .top-modal-overlay) {
+  display: none !important;
+}
+[data-section='admin'] .portal-report-editor .reports-detail {
+  margin-block-start: 20px;
+}
+[data-section='admin'] .portal-report-editor .reports-detail > header h2 {
+  font-size: 18px;
+}
+@media (max-width: 1000px) {
+  [data-section='admin'] .sidebar {
+    width: 230px;
+    min-width: 230px;
+    max-width: 230px;
+    flex-basis: 230px;
+  }
+  [data-section='admin'] .portal-editor-page {
+    width: calc(100% - 28px);
+    padding: 18px;
+  }
+  [data-section='admin'] .portal-editor-heading {
+    padding-inline: 18px;
+  }
+}
+@media (max-width: 900px) {
+  [data-section='admin'] .sidebar {
+    position: fixed;
+    inset-inline-start: 0;
+    top: 70px;
+    bottom: 0;
+    z-index: 1800;
+    height: calc(100dvh - 70px);
+    width: min(290px, calc(100vw - 45px)) !important;
+    min-width: 0;
+    max-width: none;
+    transform: translateX(110%);
+    transition: transform 0.2s;
+    box-shadow: 0 10px 40px #152d4930;
+  }
+  [data-section='admin'] .sidebar.open,
+  [data-section='admin'] .sidebar-parent.open .sidebar {
+    transform: translateX(0);
+  }
+  [data-section='admin'] .portal-editor-page .portal-resource-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 550px) {
+  [data-section='admin'] .portal-dashboard {
+    padding: 14px;
+  }
+  [data-section='admin'] .portal-dashboard-filters {
+    padding: 14px;
+  }
+  [data-section='admin'] .portal-editor-heading {
+    padding: 18px 12px 8px;
+  }
+  [data-section='admin'] .portal-editor-page {
+    width: calc(100% - 20px);
+    padding: 15px;
+  }
+  [data-section='admin'] .portal-editor-actions > * {
+    flex: 1 1 100%;
+    text-align: center;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-section='admin'] .sidebar {
+    transition: none;
+  }
+}

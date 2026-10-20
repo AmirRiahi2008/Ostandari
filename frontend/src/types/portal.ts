@@ -21,6 +21,7 @@ export interface TemplatePage {
   controller: string;
   resource: string;
   defaults: Record<string, string>;
+  editor?: { mode: 'create' | 'edit'; id?: string; returnTo: string };
 }
 
 export interface PortalUser extends RecordData {
@@ -39,4 +40,5 @@ export interface PageContext {
   preview: boolean;
   signal: AbortSignal;
   path: string;
+  navigate?: (href: string) => void;
 }

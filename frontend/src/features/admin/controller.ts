@@ -10,15 +10,21 @@ import { mountFormBuilder, validateFormBuilder } from './form-builder';
 import { mountPermissionFields } from './permission-fields';
 import { contextualFilters, relatedAdminLinks } from './relations';
 import { ticketTransitions } from '@/data/ticket-status';
+import { adminEditorHref } from '@/lib/admin-routes';
 
 export function adminController(context: PageContext) {
   const { root, page, signal, preview } = context;
   let records: RecordData[] = [];
   let editing: RecordData | null = null;
   let busy = false;
+  let editorLoaded = !page.editor || page.editor.mode === 'create';
+  let editorSaved = false;
+  const listPages = root.dataset.adminView === 'list';
+  const navigate = context.navigate ?? ((href: string) => window.location.assign(href));
   let uploaded: { file: File; id: number } | null = null;
-  let currentQuery = '';
-  let currentPage = 1;
+  let currentQuery = new URLSearchParams(window.location.search).get('q')?.slice(0, 100) ?? '';
+  const initialPage = new URLSearchParams(window.location.search).get('page') ?? '';
+  let currentPage = /^[1-9]\d{0,6}$/.test(initialPage) ? Number(initialPage) : 1;
   let loadVersion = 0;
   let editVersion = 0;
   let optionsReady = Promise.resolve();
@@ -31,7 +37,8 @@ export function adminController(context: PageContext) {
   const headers = all(root, '.main-content table thead th').map((cell) =>
     fieldForColumn(cell.textContent ?? '', page.resource),
   );
-  const modal = () => one<HTMLElement>(root, '#cbnCreateMenuModalOverlay');
+  const modal = () =>
+    one<HTMLElement>(root, '[data-admin-record-editor],#cbnCreateMenuModalOverlay');
   const endpoint = page.resource === 'media' ? 'media' : 'admin/' + page.resource;
   const reviewOnly =
     ['tickets', 'submissions', 'subscribers'].includes(page.resource) ||
@@ -46,12 +53,136 @@ export function adminController(context: PageContext) {
       );
   };
 
+  function listSearch() {
+    const query = new URLSearchParams(filters);
+    if (currentQuery) query.set('q', currentQuery);
+    if (currentPage > 1) query.set('page', String(currentPage));
+    return query.size ? '?' + query : '';
+  }
+
+  function pageLink(control: HTMLElement, id?: string | number) {
+    const link = document.createElement('a');
+    for (const attribute of Array.from(control.attributes))
+      if (
+        !['type', 'role', 'data-command', 'data-command-event', 'data-command-args'].includes(
+          attribute.name,
+        )
+      )
+        link.setAttribute(attribute.name, attribute.value);
+    link.append(...control.childNodes);
+    link.href = adminEditorHref(page.path, id, listSearch());
+    link.dataset.navigate = link.getAttribute('href')!;
+    control.replaceWith(link);
+    return link;
+  }
+
+  function editorState(ready: boolean, message: string) {
+    editorLoaded = ready;
+    const fields = one<HTMLFieldSetElement>(root, '[data-editor-fields]');
+    if (fields) {
+      fields.disabled = !ready || busy;
+      fields.inert = !ready || busy;
+    }
+    for (const button of all<HTMLButtonElement>(root, '[data-editor-save]'))
+      button.disabled = !ready || busy;
+    const status = one(root, '[data-editor-status]');
+    if (status) status.textContent = message;
+  }
+
+  async function loadEditor() {
+    if (!page.editor) return;
+    const version = ++editVersion;
+    const retry = one<HTMLElement>(root, '[data-editor-retry]');
+    if (retry) retry.hidden = true;
+    if (page.editor.mode === 'create') {
+      fillFields(modal()!, {
+        locale: 'fa',
+        priority: 0,
+        is_active: true,
+        ...filters,
+        ...resourceScope(page.resource),
+        ...page.defaults,
+      });
+      editorState(
+        true,
+        preview
+          ? 'نمایش طرح؛ ذخیرهٔ واقعی به اتصال بک‌اند نیاز دارد.'
+          : 'اطلاعات مورد جدید را وارد کنید.',
+      );
+      root.dataset.ready = 'true';
+      return;
+    }
+    editorState(false, 'در حال دریافت اطلاعات…');
+    try {
+      if (preview) throw new Error('برای ویرایش اطلاعات واقعی، وارد حساب متصل به بک‌اند شوید.');
+      const [result] = await Promise.all([
+        api<RecordData | RecordData[]>(
+          endpoint +
+            (page.resource === 'settings' ? '' : '/' + encodeURIComponent(page.editor.id!)),
+          { signal },
+        ),
+        optionsReady,
+      ]);
+      if (signal.aborted || version !== editVersion) return;
+      if (page.resource === 'settings') {
+        records = resourceRows('settings', result.data);
+        editing = {};
+      } else {
+        const next = result.data as RecordData;
+        if (
+          !next ||
+          typeof next !== 'object' ||
+          Array.isArray(next) ||
+          String(next.reference ?? next.id) !== page.editor.id
+        )
+          throw new Error('اطلاعات این مورد قابل دریافت نیست.');
+        for (const [key, value] of Object.entries({
+          ...resourceScope(page.resource),
+          ...page.defaults,
+        }))
+          if (['type', 'kind', 'person_type'].includes(key) && String(next[key]) !== value)
+            throw new Error('این مورد متعلق به بخش انتخاب‌شده نیست. از فهرست همان بخش وارد شوید.');
+        editing = next;
+      }
+      showEditing();
+      setImage(
+        one<HTMLImageElement>(root, '[data-editor-current-image]'),
+        editing?.image ?? editing?.cover,
+      );
+      const systemRole = page.resource === 'roles' && editing?.is_system;
+      editorState(
+        !systemRole,
+        systemRole
+          ? 'نقش سیستمی قابل ویرایش نیست؛ برای دسترسی‌های سفارشی، یک نقش جدید بسازید.'
+          : 'اطلاعات دریافت شد. پس از تغییر، ذخیره را انتخاب کنید.',
+      );
+    } catch (error) {
+      if (signal.aborted || version !== editVersion) return;
+      editing = null;
+      editorState(false, error instanceof Error ? error.message : 'دریافت اطلاعات انجام نشد.');
+      if (retry) retry.hidden = false;
+    }
+    root.dataset.ready = 'true';
+  }
+
   function paint() {
     if (!tbody || !prototype) return;
     tbody.replaceChildren();
     records.forEach((record, index) => {
       const row = prototype.cloneNode(true) as HTMLTableRowElement;
       row.dataset.record = String(record.reference ?? record.id ?? index);
+      if (listPages && page.resource !== 'media')
+        all<HTMLElement>(
+          row,
+          '[data-command="editRecord"],[data-command="openEditCommitmentModal"]',
+        ).forEach((button) => {
+          const link = pageLink(button, String(record.reference ?? record.id));
+          link.setAttribute(
+            'aria-label',
+            (reviewOnly ? 'بررسی ' : 'ویرایش ') +
+              String(record.title ?? record.name ?? record.reference ?? record.id),
+          );
+        });
       all<HTMLAnchorElement>(row, '[data-related-resource="menu-items"]').forEach((link) => {
         link.href = '/admin/menu-items?menu_id=' + encodeURIComponent(String(record.id));
       });
@@ -198,6 +329,13 @@ export function adminController(context: PageContext) {
     records = resourceRows(page.resource, result.data);
     if (!records.length && currentPage > 1) return load(query, currentPage - 1);
     paint();
+    if (listPages) {
+      const plus = one<HTMLAnchorElement>(root, 'a#cbnOpenCreateMenuModalBtn');
+      if (plus) {
+        plus.href = adminEditorHref(page.path, undefined, listSearch());
+        plus.dataset.navigate = plus.getAttribute('href')!;
+      }
+    }
     pagination(result.meta);
     root.dataset.ready = 'true';
   }
@@ -269,7 +407,9 @@ export function adminController(context: PageContext) {
   async function save() {
     writeable();
     const node = modal();
-    if (!node || busy) return;
+    if (!node || busy || editorSaved) return;
+    if (page.editor && !editorLoaded)
+      throw new Error('ابتدا دریافت اطلاعات این مورد را کامل کنید.');
     validateRichText(node);
     validateFormBuilder(node);
     const form = one<HTMLFormElement>(node, 'form');
@@ -287,6 +427,7 @@ export function adminController(context: PageContext) {
     if (choice) choice.required = required;
     if (!valid) return;
     busy = true;
+    if (page.editor) editorState(true, 'در حال ذخیره…');
     try {
       let data: RecordData = {
         ...filters,
@@ -321,6 +462,10 @@ export function adminController(context: PageContext) {
       }
       if (page.resource === 'media') {
         if (!file) throw new Error('فایل را انتخاب کنید.');
+        if (page.editor) {
+          finishEditor();
+          return;
+        }
         closeOverlays(root);
         await load();
         return;
@@ -341,6 +486,10 @@ export function adminController(context: PageContext) {
         body: jsonBody(data),
         signal,
       });
+      if (page.editor) {
+        finishEditor();
+        return;
+      }
       closeOverlays(root);
       editing = null;
       feedback(root, 'اطلاعات با موفقیت ذخیره شد.');
@@ -354,11 +503,95 @@ export function adminController(context: PageContext) {
       }
     } finally {
       busy = false;
+      if (page.editor && !editorSaved)
+        editorState(editorLoaded, 'اطلاعات فرم حفظ شده است. نتیجهٔ عملیات را بررسی کنید.');
     }
+  }
+
+  function finishEditor() {
+    if (!page.editor) return;
+    editorSaved = true;
+    editorState(false, 'اطلاعات ذخیره شد. در حال بازگشت به فهرست…');
+    const target = new URL(page.editor.returnTo, window.location.origin);
+    target.searchParams.set('saved', page.editor.mode);
+    navigate(target.pathname + target.search);
+  }
+
+  function showEditing() {
+    if (!modal()) return;
+    fillFields(
+      modal()!,
+      page.resource === 'settings'
+        ? {
+            settings: records.map((record) => ({
+              key: record.key,
+              value: record.value,
+              is_public: record.is_public,
+            })),
+          }
+        : (editing ?? {}),
+    );
+    if (editing && page.resource === 'tickets') {
+      const status = one<HTMLSelectElement>(modal()!, 'select[data-field="status"]');
+      const current = String(editing.status) as keyof typeof ticketTransitions;
+      for (const option of Array.from(status?.options ?? []))
+        option.disabled =
+          option.value !== current &&
+          !(ticketTransitions[current] as readonly string[] | undefined)?.includes(option.value);
+    }
+    if (
+      editing &&
+      (['tickets', 'submissions'].includes(page.resource) ||
+        page.resource.startsWith('moderation/'))
+    ) {
+      let details = one<HTMLElement>(modal()!, '[data-record-detail]');
+      if (!details) {
+        details = document.createElement('div');
+        details.dataset.recordDetail = 'true';
+        details.className = 'portal-record-detail';
+        modal()!.querySelector('.cbn-modal-body')?.prepend(details);
+      }
+      details.textContent =
+        String(editing.subject ?? editing.reference ?? '') +
+        '\n' +
+        String(editing.body ?? '') +
+        (page.resource === 'submissions' ? '\n' + JSON.stringify(editing.data ?? {}, null, 2) : '');
+      const attachments = (parent: HTMLElement, media: unknown) => {
+        if (!Array.isArray(media)) return;
+        for (const file of media as RecordData[]) {
+          if (!file.id) continue;
+          const link = document.createElement('a');
+          link.href = '/api/backend/media/' + encodeURIComponent(String(file.id)) + '/download';
+          link.textContent = 'دریافت پیوست: ' + String(file.original_name ?? file.id);
+          const line = document.createElement('p');
+          line.append(link);
+          parent.append(line);
+        }
+      };
+      attachments(details, editing.media);
+      if (Array.isArray(editing.messages))
+        for (const message of editing.messages as RecordData[]) {
+          const paragraph = document.createElement('p');
+          const author = message.author as RecordData | undefined;
+          paragraph.textContent =
+            (message.is_internal ? 'یادداشت داخلی — ' : '') +
+            String(author?.name ?? '') +
+            ': ' +
+            String(message.body ?? '');
+          attachments(paragraph, message.media);
+          details.append(paragraph);
+        }
+    }
+    if (!page.editor) toggleModal(root, true);
   }
 
   async function dispatch(command: string, element: HTMLElement) {
     try {
+      if (command === 'reloadEditor') {
+        optionsReady = relatedOptions();
+        await loadEditor();
+        return;
+      }
       if (command === 'printSection') {
         window.print();
         return;
@@ -377,6 +610,10 @@ export function adminController(context: PageContext) {
       if (['openEditCommitmentModal', 'editRecord'].includes(command)) {
         if (busy) return;
         if (!record) throw new Error('این مورد دیگر در فهرست نیست. فهرست را تازه‌سازی کنید.');
+        if (listPages) {
+          navigate(adminEditorHref(page.path, String(record.reference ?? record.id), listSearch()));
+          return;
+        }
         const version = ++editVersion;
         uploaded = null;
         let next = record;
@@ -391,77 +628,7 @@ export function adminController(context: PageContext) {
           ).data;
         if (signal.aborted || version !== editVersion) return;
         editing = next;
-        if (modal()) {
-          fillFields(
-            modal()!,
-            page.resource === 'settings'
-              ? {
-                  settings: records.map((record) => ({
-                    key: record.key,
-                    value: record.value,
-                    is_public: record.is_public,
-                  })),
-                }
-              : (editing ?? {}),
-          );
-          if (editing && page.resource === 'tickets') {
-            const status = one<HTMLSelectElement>(modal()!, 'select[data-field="status"]');
-            const current = String(editing.status) as keyof typeof ticketTransitions;
-            for (const option of Array.from(status?.options ?? []))
-              option.disabled =
-                option.value !== current &&
-                !(ticketTransitions[current] as readonly string[] | undefined)?.includes(
-                  option.value,
-                );
-          }
-          if (
-            editing &&
-            (['tickets', 'submissions'].includes(page.resource) ||
-              page.resource.startsWith('moderation/'))
-          ) {
-            let details = one<HTMLElement>(modal()!, '[data-record-detail]');
-            if (!details) {
-              details = document.createElement('div');
-              details.dataset.recordDetail = 'true';
-              details.className = 'portal-record-detail';
-              modal()!.querySelector('.cbn-modal-body')?.prepend(details);
-            }
-            details.textContent =
-              String(editing.subject ?? editing.reference ?? '') +
-              '\n' +
-              String(editing.body ?? '') +
-              (page.resource === 'submissions'
-                ? '\n' + JSON.stringify(editing.data ?? {}, null, 2)
-                : '');
-            const attachments = (parent: HTMLElement, media: unknown) => {
-              if (!Array.isArray(media)) return;
-              for (const file of media as RecordData[]) {
-                if (!file.id) continue;
-                const link = document.createElement('a');
-                link.href =
-                  '/api/backend/media/' + encodeURIComponent(String(file.id)) + '/download';
-                link.textContent = 'دریافت پیوست: ' + String(file.original_name ?? file.id);
-                const line = document.createElement('p');
-                line.append(link);
-                parent.append(line);
-              }
-            };
-            attachments(details, editing.media);
-            if (Array.isArray(editing.messages))
-              for (const message of editing.messages as RecordData[]) {
-                const paragraph = document.createElement('p');
-                const author = message.author as RecordData | undefined;
-                paragraph.textContent =
-                  (message.is_internal ? 'یادداشت داخلی — ' : '') +
-                  String(author?.name ?? '') +
-                  ': ' +
-                  String(message.body ?? '');
-                attachments(paragraph, message.media);
-                details.append(paragraph);
-              }
-          }
-          toggleModal(root, true);
-        }
+        showEditing();
         return;
       }
       if (command === 'saveRecord') {
@@ -490,15 +657,17 @@ export function adminController(context: PageContext) {
       }
     } catch (error) {
       const editor = modal();
-      if (editor?.classList.contains('active')) fieldError(editor, error);
+      if (page.editor || editor?.classList.contains('active')) fieldError(editor!, error);
       else feedback(root, error instanceof Error ? error.message : 'عملیات ناموفق بود.');
     }
   }
 
   function init() {
-    mountRichText(root, signal, preview);
-    mountFormBuilder(root, signal);
-    mountPermissionFields(root, signal);
+    if (!listPages) {
+      mountRichText(root, signal, preview);
+      mountFormBuilder(root, signal);
+      mountPermissionFields(root, signal);
+    }
     if (page.resource && tbody && modal()) {
       if (reviewOnly)
         one<HTMLElement>(root, '#cbnOpenCreateMenuModalBtn')?.setAttribute('hidden', '');
@@ -545,6 +714,29 @@ export function adminController(context: PageContext) {
         }
       }
     }
+    if (listPages) {
+      const plus = one<HTMLElement>(root, '#cbnOpenCreateMenuModalBtn');
+      if (plus && !reviewOnly) {
+        const link = pageLink(plus);
+        link.setAttribute(
+          'aria-label',
+          (page.resource === 'settings' ? 'ویرایش ' : 'افزودن ') + page.title,
+        );
+        if (page.resource === 'settings') link.textContent = 'ویرایش تنظیمات';
+      }
+      if (currentQuery) {
+        const input = one<HTMLInputElement>(root, '#searchInput');
+        if (input) input.value = currentQuery;
+      }
+      if (new URLSearchParams(window.location.search).has('saved'))
+        feedback(root, 'اطلاعات با موفقیت ذخیره شد.');
+      all<HTMLElement>(root, 'tbody tr[data-record]').forEach((row) => {
+        all<HTMLElement>(
+          row,
+          '[data-command="editRecord"],[data-command="openEditCommitmentModal"]',
+        ).forEach((button) => pageLink(button, row.dataset.record));
+      });
+    }
     const setProfile = (name: string, mobile = '') => {
       all<HTMLElement>(
         root,
@@ -559,7 +751,12 @@ export function adminController(context: PageContext) {
     if (preview) setProfile('مدیر محلی');
     else
       void api<{ name: string; mobile?: string }>('auth/me', { signal })
-        .then((result) => setProfile(result.data.name, result.data.mobile))
+        .then((result) => {
+          setProfile(result.data.name, result.data.mobile);
+          root.dispatchEvent(
+            new window.CustomEvent('portal:admin-user', { detail: result.data, bubbles: true }),
+          );
+        })
         .catch(() => {});
 
     all<HTMLElement>(root, '.bigitem-menu-bottom-item').forEach((item) => {
@@ -610,44 +807,45 @@ export function adminController(context: PageContext) {
       if (localStorage.getItem('portal-admin-theme') === 'dark') root.classList.add('portal-dark');
     } catch {}
 
-    one(root, '#cbnOpenCreateMenuModalBtn')?.addEventListener(
-      'click',
-      () => {
-        editVersion++;
-        editing = null;
-        uploaded = null;
-        const node = modal();
-        if (node)
-          fillFields(
-            node,
-            page.resource === 'settings'
-              ? {
-                  settings: records.map((record) => ({
-                    key: record.key,
-                    value: record.value,
-                    is_public: record.is_public,
-                  })),
-                }
-              : {
-                  locale: 'fa',
-                  priority: 0,
-                  is_active: true,
-                  ...Object.fromEntries(
-                    Object.entries(filters).map(([key, value]) => [key, Number(value)]),
-                  ),
-                  ...resourceScope(page.resource),
-                  ...page.defaults,
-                },
-          );
-      },
-      { signal },
-    );
+    if (!listPages)
+      one(root, '#cbnOpenCreateMenuModalBtn')?.addEventListener(
+        'click',
+        () => {
+          editVersion++;
+          editing = null;
+          uploaded = null;
+          const node = modal();
+          if (node)
+            fillFields(
+              node,
+              page.resource === 'settings'
+                ? {
+                    settings: records.map((record) => ({
+                      key: record.key,
+                      value: record.value,
+                      is_public: record.is_public,
+                    })),
+                  }
+                : {
+                    locale: 'fa',
+                    priority: 0,
+                    is_active: true,
+                    ...Object.fromEntries(
+                      Object.entries(filters).map(([key, value]) => [key, Number(value)]),
+                    ),
+                    ...resourceScope(page.resource),
+                    ...page.defaults,
+                  },
+            );
+        },
+        { signal },
+      );
     root.addEventListener(
       'submit',
       (event) => {
         event.preventDefault();
         const form = event.target as HTMLFormElement;
-        if (form.closest('#cbnCreateMenuModalOverlay'))
+        if (form.closest('[data-admin-record-editor],#cbnCreateMenuModalOverlay'))
           void save().catch((error) => fieldError(form, error));
         else if (form.classList.contains('search-box-wrapper'))
           void load(one<HTMLInputElement>(root, '#searchInput')?.value ?? '', 1).catch((error) =>
@@ -703,9 +901,12 @@ export function adminController(context: PageContext) {
       },
       { signal },
     );
-    if (!preview && page.resource) {
-      tableMessage('در حال دریافت اطلاعات…');
+    if (page.editor) {
       optionsReady = relatedOptions();
+      void loadEditor();
+    } else if (!preview && page.resource) {
+      tableMessage('در حال دریافت اطلاعات…');
+      optionsReady = listPages ? Promise.resolve() : relatedOptions();
       void Promise.all([load(), optionsReady]).catch((error) => {
         tableMessage('دریافت اطلاعات انجام نشد. دوباره تلاش کنید.');
         root.dataset.ready = 'true';

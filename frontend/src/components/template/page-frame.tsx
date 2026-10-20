@@ -26,6 +26,9 @@ export function PageFrame({
       data-design={page.scope}
       data-preview={String(preview)}
       data-section={page.controller}
+      data-admin-view={
+        page.controller === 'admin' && page.resource ? (page.editor ? 'editor' : 'list') : undefined
+      }
       data-path={path}
       data-page={page.id}
       lang={page.lang}
