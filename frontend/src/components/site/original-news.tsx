@@ -23,6 +23,19 @@ export function OriginalNews({ items }: { items: OriginalNewsItem[] }) {
   const visible = type === 'all' ? items : items.filter((item) => item.type === type);
   return (
     <div className="akhbar-scroll-wrapper">
+      <div className="tabs" aria-label="فیلتر اخبار">
+        {tabs.map((tab) => (
+          <button
+            type="button"
+            key={tab.id}
+            className={'tab ' + tab.shape + (type === tab.id ? ' active' : '')}
+            aria-pressed={type === tab.id}
+            onClick={() => setType(tab.id)}
+          >
+            {tab.title}
+          </button>
+        ))}
+      </div>
       <div className="akhbar-scroll-div" aria-live="polite">
         {visible.map((item) => (
           <a
@@ -44,19 +57,6 @@ export function OriginalNews({ items }: { items: OriginalNewsItem[] }) {
           </a>
         ))}
         {!visible.length && <p className="source-empty">مطلبی در این بخش منتشر نشده است.</p>}
-      </div>
-      <div className="tabs" aria-label="فیلتر اخبار">
-        {tabs.map((tab) => (
-          <button
-            type="button"
-            key={tab.id}
-            className={'tab ' + tab.shape + (type === tab.id ? ' active' : '')}
-            aria-pressed={type === tab.id}
-            onClick={() => setType(tab.id)}
-          >
-            {tab.title}
-          </button>
-        ))}
       </div>
     </div>
   );
