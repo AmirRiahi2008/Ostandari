@@ -1,25 +1,22 @@
+import { AdminPortalRoute } from '@/components/admin/portal-route';
+import { countyAdminRoute } from '@/lib/admin-workspace';
 import { notFound, redirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import { PageFrame } from '@/components/template/page-frame';
 import { resolveTemplate } from '@/lib/templates';
 import { templateViews } from '@/views';
 import { templatePreview } from '@/lib/config';
-import { requireAdmin } from '@/lib/auth/admin-access';
 import { isPublicRoute, routeAlias } from '@/lib/routes';
 import { PublicPage, type Search } from '@/features/site/public-pages';
-import { AdminUtilityPage } from '@/components/admin/utility-page';
 import { findCounty } from '@/data/counties';
 import { first } from '@/features/site/search-params';
 import { publicTitles } from '@/data/public-navigation';
 import { adminExtraPages } from '@/data/admin/extra-pages';
-import { AdminResourcePage } from '@/components/admin/resource-page';
 import { HomePage } from '@/features/site/home-page';
 import { OfficialSectionPage } from '@/features/site/official-section-page';
 import { resolveOfficialSection } from '@/features/site/official-data';
 import { adminUtilityTitles } from '@/data/admin/utility-pages';
 import { resolveAdminEditor, resolveReportEditor } from '@/lib/admin-routes';
-import { AdminEditorPage } from '@/components/admin/editor-page';
-import { AdminReportPage } from '@/components/admin/reports/report-page';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -27,6 +24,12 @@ type Props = { params: Promise<{ path?: string[] }>; searchParams: Promise<Searc
 
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const path = '/' + ((await params).path ?? []).join('/');
+  const countyAdmin = countyAdminRoute(path);
+  if (countyAdmin)
+    return {
+      title:
+        (countyAdmin.login ? 'ورود به فرمانداری ' : 'داشبورد فرمانداری ') + countyAdmin.county.name,
+    };
   const editor = resolveAdminEditor(path);
   if (editor)
     return {
@@ -52,16 +55,11 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 export default async function TemplateRoute({ params, searchParams }: Props) {
   const path = '/' + ((await params).path ?? []).join('/');
   const search = await searchParams;
-  const editor = resolveAdminEditor(path);
-  if (editor) {
-    await requireAdmin(path);
-    return <AdminEditorPage path={path} route={editor} returnTo={first(search.return)} />;
-  }
-  const report = resolveReportEditor(path);
-  if (report) {
-    await requireAdmin(path);
-    return <AdminReportPage path={path} reference={report} returnTo={first(search.return)} />;
-  }
+  if (
+    ((path === '/admin' || path.startsWith('/admin/')) && path !== '/admin/login') ||
+    path.startsWith('/county-admin/')
+  )
+    return <AdminPortalRoute path={path} search={search} />;
   const alias = routeAlias(
     path,
     new URLSearchParams(
@@ -77,21 +75,13 @@ export default async function TemplateRoute({ params, searchParams }: Props) {
   if (path === '/password' && (!search.email || !search.token)) redirect('/forgot-password');
   if (isPublicRoute(path) || (path === '/gallery' && search.name))
     return <PublicPage path={path} search={search} />;
-  if (adminExtraPages[path]) {
-    await requireAdmin(path);
-    return <AdminResourcePage path={path} />;
-  }
-  if (adminUtilityTitles[path]) {
-    await requireAdmin(path);
-    return <AdminUtilityPage path={path} />;
-  }
   const page =
     path === '/admin/login'
       ? { ...resolveTemplate('/login')!, path: '/admin/login', title: 'ورود مدیریت' }
       : resolveTemplate(path);
   if (!page) notFound();
   const preview = templatePreview();
-  if (page.group === 'admin') await requireAdmin(path);
+  if (page.group === 'admin') return <AdminPortalRoute path={page.path} search={search} />;
   const View = templateViews[page.id as keyof typeof templateViews];
   return (
     <>

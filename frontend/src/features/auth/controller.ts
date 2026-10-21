@@ -77,7 +77,10 @@ export function initAuth(context: PageContext): void {
                   password: inputs[1]?.value,
                 }),
               });
-          const fallback = result.data.user.person_type === 'citizen' ? '/citizen' : '/admin';
+          const fallback =
+            result.data.user.person_type === 'citizen'
+              ? '/citizen'
+              : (result.data.user.portal_context?.dashboard_path ?? '/admin');
           window.location.assign(
             new URLSearchParams(window.location.search).has('return')
               ? safeReturn(new URLSearchParams(window.location.search).get('return'))

@@ -60,11 +60,12 @@
   "tags": {
     "permission": "content.manage",
     "scope": [],
-    "filters": ["locale"],
+    "filters": ["locale", "organization_id"],
     "fields": {
       "name": ["required", "string", "max:255"],
       "slug": ["nullable", "string", "max:255"],
-      "locale": ["sometimes", "in:\"fa\",\"en\",\"ar\""]
+      "locale": ["sometimes", "in:\"fa\",\"en\",\"ar\""],
+      "organization_id": ["nullable", "exists:organizations,id,deleted_at,\"NULL\""]
     },
     "soft_deletes": true,
     "table": "tags"
@@ -119,12 +120,13 @@
   "menus": {
     "permission": "navigation.manage",
     "scope": [],
-    "filters": ["key", "locale", "is_active"],
+    "filters": ["key", "locale", "is_active", "organization_id"],
     "fields": {
       "name": ["required", "string", "max:255"],
       "key": ["required", "string", "max:60", "alpha_dash:ascii"],
       "locale": ["sometimes", "in:\"fa\",\"en\",\"ar\""],
-      "is_active": ["sometimes", "boolean"]
+      "is_active": ["sometimes", "boolean"],
+      "organization_id": ["nullable", "exists:organizations,id,deleted_at,\"NULL\""]
     },
     "soft_deletes": true,
     "table": "menus"
@@ -152,7 +154,7 @@
     "scope": {
       "kind": "slide"
     },
-    "filters": ["category_id", "locale", "is_active"],
+    "filters": ["category_id", "locale", "is_active", "organization_id"],
     "fields": {
       "category_id": ["nullable", "exists:categories,id,deleted_at,\"NULL\""],
       "locale": ["sometimes", "in:\"fa\",\"en\",\"ar\""],
@@ -164,7 +166,8 @@
       "priority": ["sometimes", "integer", "min:0", "max:100000"],
       "is_active": ["sometimes", "boolean"],
       "starts_at": ["nullable", "date"],
-      "ends_at": ["nullable", "date"]
+      "ends_at": ["nullable", "date"],
+      "organization_id": ["nullable", "exists:organizations,id,deleted_at,\"NULL\""]
     },
     "soft_deletes": true,
     "table": "slides"
@@ -236,7 +239,7 @@
   "links": {
     "permission": "content.manage",
     "scope": [],
-    "filters": ["category_id", "locale", "position", "is_active"],
+    "filters": ["category_id", "locale", "position", "is_active", "organization_id"],
     "fields": {
       "title": ["required", "string", "max:255"],
       "url": ["required", "url:http,https", "max:2048"],
@@ -245,7 +248,8 @@
       "media_id": ["nullable", "exists:media,id,visibility,\"public\",deleted_at,\"NULL\""],
       "position": ["sometimes", "in:\"useful\",\"footer\",\"banner\",\"quick\""],
       "is_active": ["sometimes", "boolean"],
-      "priority": ["sometimes", "integer", "min:0", "max:100000"]
+      "priority": ["sometimes", "integer", "min:0", "max:100000"],
+      "organization_id": ["nullable", "exists:organizations,id,deleted_at,\"NULL\""]
     },
     "soft_deletes": true,
     "table": "links"
@@ -253,13 +257,14 @@
   "faqs": {
     "permission": "content.manage",
     "scope": [],
-    "filters": ["locale", "is_active"],
+    "filters": ["locale", "is_active", "organization_id"],
     "fields": {
       "question": ["required", "string", "max:1000"],
       "answer": ["required", "string", "max:30000"],
       "locale": ["sometimes", "in:\"fa\",\"en\",\"ar\""],
       "is_active": ["sometimes", "boolean"],
-      "priority": ["sometimes", "integer", "min:0", "max:100000"]
+      "priority": ["sometimes", "integer", "min:0", "max:100000"],
+      "organization_id": ["nullable", "exists:organizations,id,deleted_at,\"NULL\""]
     },
     "soft_deletes": true,
     "table": "faqs"
@@ -267,7 +272,7 @@
   "quotes": {
     "permission": "content.manage",
     "scope": [],
-    "filters": ["locale", "is_active"],
+    "filters": ["locale", "is_active", "organization_id"],
     "fields": {
       "author": ["required", "string", "max:255"],
       "text": ["required", "string", "max:10000"],
@@ -275,7 +280,8 @@
       "is_active": ["sometimes", "boolean"],
       "priority": ["sometimes", "integer", "min:0", "max:100000"],
       "starts_at": ["nullable", "date"],
-      "ends_at": ["nullable", "date"]
+      "ends_at": ["nullable", "date"],
+      "organization_id": ["nullable", "exists:organizations,id,deleted_at,\"NULL\""]
     },
     "soft_deletes": true,
     "table": "quotes"
@@ -315,14 +321,15 @@
   "polls": {
     "permission": "polls.manage",
     "scope": [],
-    "filters": ["locale", "status"],
+    "filters": ["locale", "status", "organization_id"],
     "fields": {
       "question": ["required", "string", "max:1000"],
       "description": ["nullable", "string", "max:100000"],
       "locale": ["sometimes", "in:\"fa\",\"en\",\"ar\""],
       "status": ["sometimes", "in:\"draft\",\"active\",\"closed\""],
       "starts_at": ["nullable", "date"],
-      "ends_at": ["nullable", "date"]
+      "ends_at": ["nullable", "date"],
+      "organization_id": ["nullable", "exists:organizations,id,deleted_at,\"NULL\""]
     },
     "soft_deletes": true,
     "table": "polls"
@@ -792,7 +799,7 @@
     "scope": {
       "kind": "advertisement"
     },
-    "filters": ["category_id", "locale", "is_active"],
+    "filters": ["category_id", "locale", "is_active", "organization_id"],
     "fields": {
       "category_id": ["nullable", "exists:categories,id,deleted_at,\"NULL\""],
       "locale": ["sometimes", "in:\"fa\",\"en\",\"ar\""],
@@ -804,7 +811,8 @@
       "priority": ["sometimes", "integer", "min:0", "max:100000"],
       "is_active": ["sometimes", "boolean"],
       "starts_at": ["nullable", "date"],
-      "ends_at": ["nullable", "date"]
+      "ends_at": ["nullable", "date"],
+      "organization_id": ["nullable", "exists:organizations,id,deleted_at,\"NULL\""]
     },
     "soft_deletes": true,
     "table": "slides"

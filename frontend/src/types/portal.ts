@@ -24,7 +24,20 @@ export interface TemplatePage {
   editor?: { mode: 'create' | 'edit'; id?: string; returnTo: string };
 }
 
+export interface PortalWorkspace {
+  type: 'central' | 'province' | 'county';
+  organization_id: number | null;
+  organization_name: string | null;
+  county: { id: number; name: string; slug: string } | null;
+  can_write: boolean;
+  is_global: boolean;
+  dashboard_path: string;
+  login_path: string;
+  public_path: string;
+}
+
 export interface PortalUser extends RecordData {
+  portal_context?: PortalWorkspace;
   name: string;
   person_type: string;
   mobile?: string;

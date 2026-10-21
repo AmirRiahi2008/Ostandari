@@ -1058,12 +1058,18 @@
 [data-section='site'] .source-county-map.portal-counties .lefttt {
   display: flex;
   flex-direction: column;
-  width: 100% !important;
+  width: calc(100% - 32px) !important;
   height: auto !important;
   min-height: 0 !important;
   position: relative;
   background: #f1f5f9;
   direction: rtl;
+  align-self: center;
+  margin: 16px;
+  border: 1px solid #dfe7f0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px #163c7308;
 }
 [data-section='site'] .source-county-map.portal-counties .lefttt::after {
   display: none;
@@ -1074,6 +1080,7 @@
   aspect-ratio: 3 / 2;
   overflow: hidden;
   container-type: inline-size;
+  flex: 0 0 auto;
 }
 [data-section='site'] .source-county-map .portal-county-photo #cityImage {
   display: block;
@@ -1100,12 +1107,12 @@
 }
 .source-county-map .portal-county-preview-body {
   display: flex;
-  flex: 1;
+  flex: 0 0 auto;
   align-items: stretch;
-  justify-content: center;
+  justify-content: flex-start;
   flex-direction: column;
-  gap: 16px;
-  padding: 22px;
+  gap: 10px;
+  padding: 12px 18px 18px;
   background: #f1f5f9;
 }
 [data-section='site'] .source-county-map.portal-counties .portal-county-caption {
@@ -1129,8 +1136,13 @@
   padding: 10px 16px;
   border-radius: 10px;
   background: #0f3e91;
+  color: #fff;
   box-sizing: border-box;
   font-size: 13px;
+}
+[data-section='site'] .source-county-map.portal-counties .left-ksks:is(:hover, :focus-visible) {
+  background: #123574;
+  color: #fff;
 }
 [data-section='site'] .source-county-map.portal-counties .righttt {
   width: 100% !important;

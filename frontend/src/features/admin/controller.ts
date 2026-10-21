@@ -14,6 +14,10 @@ import { adminEditorHref } from '@/lib/admin-routes';
 
 export function adminController(context: PageContext) {
   const { root, page, signal, preview } = context;
+  const readOnly = root.dataset.canWrite === 'false';
+  const ownOrganization =
+    root.dataset.workspaceGlobal === 'false' &&
+    ['organizations', 'counties'].includes(page.resource);
   let records: RecordData[] = [];
   let editing: RecordData | null = null;
   let busy = false;
@@ -47,6 +51,7 @@ export function adminController(context: PageContext) {
     all(prototype, '#cbnOpenCreateMenuModalBtn').forEach((button) => button.removeAttribute('id'));
   all(root, 'tbody #cbnOpenCreateMenuModalBtn').forEach((button) => button.removeAttribute('id'));
   const writeable = () => {
+    if (readOnly) throw new Error('این حساب فقط امکان مشاهدهٔ اطلاعات را دارد.');
     if (preview)
       throw new Error(
         'حالت نمایش طرح فعال است. برای ثبت واقعی، TEMPLATE_PREVIEW=false و بک‌اند را اجرا کنید.',
@@ -171,7 +176,7 @@ export function adminController(context: PageContext) {
     records.forEach((record, index) => {
       const row = prototype.cloneNode(true) as HTMLTableRowElement;
       row.dataset.record = String(record.reference ?? record.id ?? index);
-      if (listPages && page.resource !== 'media')
+      if (listPages && !readOnly && page.resource !== 'media')
         all<HTMLElement>(
           row,
           '[data-command="editRecord"],[data-command="openEditCommitmentModal"]',
@@ -268,6 +273,21 @@ export function adminController(context: PageContext) {
         cell.textContent =
           data === null || data === undefined || typeof data === 'object' ? '' : String(data);
       });
+      if (readOnly) {
+        all(
+          row,
+          '[data-command="editRecord"],[data-command="openEditCommitmentModal"],[data-command="deleteRecord"]',
+        ).forEach((button) => button.remove());
+        all<HTMLInputElement>(row, '[data-toggle-active]').forEach((input) => {
+          input.disabled = true;
+        });
+      }
+      if (ownOrganization) {
+        all(row, '[data-command="deleteRecord"]').forEach((button) => button.remove());
+        all<HTMLInputElement>(row, '[data-toggle-active]').forEach((input) => {
+          input.disabled = true;
+        });
+      }
       tbody.append(row);
     });
     if (!records.length) tableMessage('موردی برای نمایش وجود ندارد.');
@@ -435,6 +455,12 @@ export function adminController(context: PageContext) {
         ...collectFields(node),
         ...resourceScope(page.resource),
       };
+      if (root.dataset.workspaceGlobal === 'false' && root.dataset.organizationId) {
+        if (page.resource === 'organizations') {
+          for (const key of ['parent_id', 'county_id', 'slug', 'type', 'is_active'])
+            delete data[key];
+        } else data.organization_id = Number(root.dataset.organizationId);
+      }
       for (const key of ['type', 'kind']) if (page.defaults[key]) data[key] = page.defaults[key];
       delete data.person_type;
       if (page.resource === 'users') {
@@ -663,6 +689,28 @@ export function adminController(context: PageContext) {
   }
 
   function init() {
+    const homePath = root.dataset.workspaceHome ?? '/admin';
+    const loginPath = root.dataset.workspaceLogin ?? '/admin/login';
+    if (root.dataset.workspaceName) {
+      const main = one<HTMLElement>(root, '.main-content');
+      if (main) {
+        const notice = document.createElement('nav');
+        notice.className = 'portal-workspace-bar';
+        notice.setAttribute('aria-label', 'فضای کاری فعلی');
+        const home = document.createElement('a');
+        home.href = homePath;
+        home.textContent = root.dataset.workspaceName;
+        const scope = document.createElement('span');
+        scope.textContent = readOnly
+          ? 'فقط مشاهدهٔ اطلاعات همین سازمان'
+          : root.dataset.workspaceGlobal === 'false'
+            ? 'مدیریت محتوای همین سازمان'
+            : 'مدیریت مرکزی سامانه';
+        notice.append(home, scope);
+        main.prepend(notice);
+        signal.addEventListener('abort', () => notice.remove(), { once: true });
+      }
+    }
     if (!listPages) {
       mountRichText(root, signal, preview);
       mountFormBuilder(root, signal);
@@ -736,6 +784,22 @@ export function adminController(context: PageContext) {
           '[data-command="editRecord"],[data-command="openEditCommitmentModal"]',
         ).forEach((button) => pageLink(button, row.dataset.record));
       });
+    }
+    if (readOnly) {
+      one(root, '#cbnOpenCreateMenuModalBtn')?.remove();
+      all<HTMLElement>(root, '.sadyar-header-left-righ-createbtn').forEach((button) => {
+        button.hidden = true;
+      });
+    }
+    if (ownOrganization) one(root, '#cbnOpenCreateMenuModalBtn')?.remove();
+    if (root.dataset.workspaceGlobal === 'false' && page.resource === 'organizations') {
+      for (const key of ['parent_id', 'county_id', 'slug', 'type', 'is_active']) {
+        const field = one<HTMLInputElement>(root, '[data-field="' + key + '"]');
+        if (field) {
+          field.disabled = true;
+          field.closest<HTMLElement>('.portal-resource-field')?.setAttribute('hidden', '');
+        }
+      }
     }
     const setProfile = (name: string, mobile = '') => {
       all<HTMLElement>(
@@ -911,7 +975,7 @@ export function adminController(context: PageContext) {
         tableMessage('دریافت اطلاعات انجام نشد. دوباره تلاش کنید.');
         root.dataset.ready = 'true';
         if (error instanceof ApiError && error.status === 401)
-          window.location.assign('/admin/login?return=' + encodeURIComponent(page.path));
+          window.location.assign(loginPath + '?return=' + encodeURIComponent(context.path));
         else feedback(root, error.message);
       });
     }

@@ -2,8 +2,11 @@
 import { useEffect, useState } from 'react';
 import { adminModules } from '@/data/admin/modules';
 import { adminSections } from '@/data/admin/sections';
+import { useAdminWorkspace } from './workspace-provider';
+import { workspaceModuleAllowed, workspaceModuleTitle } from '@/lib/admin-workspace';
 
 export function AdminModuleMenu() {
+  const user = useAdminWorkspace();
   const [query, setQuery] = useState('');
   const [path, setPath] = useState('');
   const [permissions, setPermissions] = useState<string[] | null>(null);
@@ -18,17 +21,24 @@ export function AdminModuleMenu() {
   }, []);
   const modules = adminModules.filter(
     (module) =>
+      workspaceModuleAllowed(module, user) &&
       (!permissions || permissions.includes('*') || permissions.includes(module.permission)) &&
-      (module.title + ' ' + module.description).includes(query.trim()),
+      (workspaceModuleTitle(module.path, module.title, user) + ' ' + module.description).includes(
+        query.trim(),
+      ),
   );
   return (
     <nav className="portal-module-menu" aria-label="همهٔ بخش‌های مدیریت">
       <a
         className="portal-menu-home"
-        href="/admin"
-        aria-current={path === '/admin' ? 'page' : undefined}
+        href={user?.portal_context?.dashboard_path ?? '/admin'}
+        aria-current={
+          path === (user?.portal_context?.dashboard_path ?? '/admin') ? 'page' : undefined
+        }
       >
-        داشبورد مدیریت
+        {user?.portal_context?.type === 'county'
+          ? 'داشبورد فرمانداری ' + user.portal_context.county?.name
+          : 'داشبورد مدیریت'}
       </a>
       <label className="portal-menu-search">
         پیدا کردن بخش
@@ -63,7 +73,7 @@ export function AdminModuleMenu() {
                     path === module.path || path.startsWith(module.path + '/') ? 'page' : undefined
                   }
                 >
-                  {module.title}
+                  {workspaceModuleTitle(module.path, module.title, user)}
                 </a>
               ))}
             </div>
@@ -73,7 +83,7 @@ export function AdminModuleMenu() {
       {!modules.length && <p role="status">بخشی پیدا نشد.</p>}
       <div className="portal-menu-footer">
         <a href="/admin/account">حساب کاربری</a>
-        <a href="/">مشاهدهٔ سایت</a>
+        <a href={user?.portal_context?.public_path ?? '/'}>مشاهدهٔ سایت</a>
         <a href="/admin/logout">خروج</a>
       </div>
     </nav>

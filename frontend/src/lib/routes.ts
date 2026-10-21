@@ -1,6 +1,7 @@
 import { adminExtraPages } from '@/data/admin/extra-pages';
 import { publicTitles } from '@/data/public-navigation';
 import { resolveTemplate } from '@/lib/templates';
+import { countyAdminRoute } from '@/lib/admin-workspace';
 import { adminUtilityTitles } from '@/data/admin/utility-pages';
 import { resolveAdminEditor, resolveReportEditor } from '@/lib/admin-routes';
 
@@ -21,6 +22,7 @@ export function knownRoute(href: string): boolean {
   if (/^https?:|^mailto:|^tel:/i.test(href)) return true;
   const url = new URL(href, 'http://127.0.0.1:3000');
   return Boolean(
+    countyAdminRoute(url.pathname) ||
     resolveAdminEditor(url.pathname) ||
     resolveReportEditor(url.pathname) ||
     adminExtraPages[url.pathname] ||

@@ -5,7 +5,11 @@ import type { PortalUser } from '@/types/portal';
 export async function logoutAdmin(preview: boolean) {
   if (preview) await fetch('/api/local-admin', { method: 'DELETE' });
   else await api('auth/logout', { method: 'POST' });
-  window.location.assign('/admin/login');
+  const target =
+    document.querySelector<HTMLElement>('[data-workspace-login]')?.dataset.workspaceLogin;
+  window.location.assign(
+    target && /^\/county-admin\/[a-z0-9-]+\/login$/.test(target) ? target : '/admin/login',
+  );
 }
 export function LogoutButton({ preview }: { preview: boolean }) {
   const [error, setError] = useState('');

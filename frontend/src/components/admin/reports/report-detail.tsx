@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import { api, jsonBody } from '@/lib/api/client';
+import { useAdminWorkspace } from '../workspace-provider';
 import {
   ticketCategories,
   ticketStatuses,
@@ -47,6 +48,7 @@ export function ReportDetail({
   onBusy: (busy: boolean) => void;
   closeLabel?: string;
 }) {
+  const readOnly = useAdminWorkspace()?.portal_context?.can_write === false;
   const [record, setRecord] = useState<CitizenReport | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -112,6 +114,7 @@ export function ReportDetail({
   }
 
   async function save(kind: 'status' | 'message', data: Record<string, unknown>) {
+    if (readOnly) return;
     if (!record || !abort.current || busyRef.current) return;
     const signal = abort.current.signal;
     busyRef.current = true;
@@ -208,7 +211,7 @@ export function ReportDetail({
         <button
           type="button"
           className="reports-secondary"
-          disabled={busy || loading}
+          disabled={readOnly || busy || loading}
           onClick={() => void refresh()}
         >
           تازه‌سازی جزئیات
@@ -294,7 +297,7 @@ export function ReportDetail({
               aria-label="تغییر وضعیت و ارجاع"
             >
               <h3>رسیدگی و ارجاع</h3>
-              <fieldset disabled={busy || loading}>
+              <fieldset disabled={readOnly || busy || loading}>
                 <label>
                   وضعیت
                   <select
@@ -415,7 +418,7 @@ export function ReportDetail({
                 </p>
               ) : null}
               <form onSubmit={send} aria-label="ارسال پاسخ یا یادداشت داخلی">
-                <fieldset disabled={busy || loading || record.status === 'closed'}>
+                <fieldset disabled={readOnly || busy || loading || record.status === 'closed'}>
                   <label>
                     {internal ? 'متن یادداشت داخلی' : 'متن پاسخ به شهروند'}
                     <textarea

@@ -3,7 +3,8 @@ import { redirect } from 'next/navigation';
 import { SESSION_COOKIE } from '@/lib/api/proxy';
 import { templatePreview } from '@/lib/config';
 import { LOCAL_ADMIN_COOKIE, localAdminEnabled, validLocalSession } from './local-admin';
-import { validAdminSession } from './admin-session';
+import { readAdminSession } from './admin-session';
+import { countyAdminRoute } from '@/lib/admin-workspace';
 
 export async function requireAdmin(path: string) {
   const jar = await cookies();
@@ -15,7 +16,13 @@ export async function requireAdmin(path: string) {
       return;
   } else {
     const token = jar.get(SESSION_COOKIE)?.value;
-    if (token && (await validAdminSession(token))) return;
+    if (token) {
+      const user = await readAdminSession(token);
+      if (user) return user;
+    }
   }
-  redirect('/admin/login?return=' + encodeURIComponent(path));
+  const county = countyAdminRoute(path);
+  redirect(
+    (county ? county.dashboard + '/login' : '/admin/login') + '?return=' + encodeURIComponent(path),
+  );
 }

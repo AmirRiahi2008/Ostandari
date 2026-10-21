@@ -444,3 +444,61 @@
     transition: none;
   }
 }
+
+[data-section='admin'] .portal-workspace-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 24px;
+  background: var(--admin-soft);
+  border-bottom: 1px solid var(--admin-line);
+  color: var(--admin-muted);
+  font-size: 12px;
+}
+[data-section='admin'] .portal-workspace-bar a {
+  color: var(--admin-ink);
+  font-weight: 700;
+}
+[data-section='admin'] #cbnOpenCreateMenuModalBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 10px 18px;
+  border: 1px solid #17619b !important;
+  border-radius: 9px;
+  background: #17619b !important;
+  color: #fff !important;
+  font: inherit;
+  font-weight: 650;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.18s, border-color 0.18s;
+}
+[data-section='admin'] #cbnOpenCreateMenuModalBtn:is(:hover, :active) {
+  background: #124e7d !important;
+  border-color: #124e7d !important;
+  color: #fff !important;
+}
+[data-section='admin'] #cbnOpenCreateMenuModalBtn:focus-visible {
+  outline: 3px solid #30a4b2;
+  outline-offset: 3px;
+}
+[data-section='admin'] #cbnOpenCreateMenuModalBtn:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+[data-section='admin'][data-can-write='false']
+  :is(
+    #cbnOpenCreateMenuModalBtn,
+    .sadyar-header-left-righ-createbtn,
+    [data-editor-save],
+    [data-command='editRecord'],
+    [data-command='openEditCommitmentModal'],
+    [data-command='deleteRecord']
+  ) {
+  display: none !important;
+}

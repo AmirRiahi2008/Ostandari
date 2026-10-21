@@ -5,7 +5,11 @@ import { adminModules } from '@/data/admin/modules';
 import type { RecordData } from '@/types/portal';
 import { adminSections } from '@/data/admin/sections';
 import { adminEditorHref } from '@/lib/admin-routes';
+import { useAdminWorkspace } from './workspace-provider';
+import { workspaceCanCreate, workspaceModuleAllowed } from '@/lib/admin-workspace';
 export function AdminDashboard({ preview }: { preview: boolean }) {
+  const user = useAdminWorkspace();
+  const canWrite = user?.portal_context?.can_write !== false;
   const [stats, setStats] = useState<RecordData | null>(null);
   const [error, setError] = useState('');
   const [revision, setRevision] = useState(0);
@@ -26,7 +30,9 @@ export function AdminDashboard({ preview }: { preview: boolean }) {
   }, [preview, revision]);
   const permissions = Array.isArray(stats?.permissions) ? (stats.permissions as string[]) : null;
   const links = adminModules.filter(
-    (page) => !permissions || permissions.includes('*') || permissions.includes(page.permission),
+    (page) =>
+      workspaceModuleAllowed(page, user) &&
+      (!permissions || permissions.includes('*') || permissions.includes(page.permission)),
   );
   const visible = links.filter(
     (page) =>
@@ -41,8 +47,9 @@ export function AdminDashboard({ preview }: { preview: boolean }) {
         <a href="/admin/account">حساب کاربری</a>
       </div>
       <p className="portal-dashboard-intro">
-        همهٔ بخش‌های مدیریت در دسترس شما، به تفکیک موضوع. برای ثبت مورد تازه «افزودن» و برای تغییر
-        اطلاعات «فهرست و ویرایش» را انتخاب کنید.
+        {canWrite
+          ? 'همهٔ بخش‌های مدیریت در دسترس شما، به تفکیک موضوع. برای ثبت مورد تازه «افزودن» و برای تغییر اطلاعات «فهرست و ویرایش» را انتخاب کنید.'
+          : 'حساب روابط عمومی استانداری فقط امکان مشاهدهٔ اطلاعات همین استانداری را دارد. ثبت، ویرایش و حذف محتوا برای این حساب غیرفعال است.'}
       </p>
       {stats && (
         <div className="portal-admin-stats">
@@ -122,10 +129,12 @@ export function AdminDashboard({ preview }: { preview: boolean }) {
                   </a>
                   <div>
                     <a href={page.path}>
-                      {page.resource && page.canEdit ? 'فهرست و ویرایش' : 'مشاهده و مدیریت'}
+                      {canWrite && page.resource && page.canEdit
+                        ? 'فهرست و ویرایش'
+                        : 'مشاهده و مدیریت'}
                       <span aria-hidden="true"> ←</span>
                     </a>
-                    {page.canCreate && (
+                    {workspaceCanCreate(page, user) && (
                       <a className="portal-module-create" href={adminEditorHref(page.path)}>
                         + {page.resource === 'media' ? 'بارگذاری' : 'افزودن'}
                       </a>
