@@ -23,7 +23,7 @@ export function AdminEditorPage({
         : 'افزودن — '
       : reviewResource(resource.resource)
         ? 'بررسی و پیگیری — '
-        : 'ویرایش — ') + resource.title;
+        : 'ویرایش — ') + module.itemName;
   const page = { ...resource, id: 'AdminRecordEditor', editor: { mode, id, returnTo: back } };
   return (
     <AdminShell page={page} path={path}>
@@ -37,6 +37,10 @@ export function AdminEditorPage({
         </nav>
         <h1>{title}</h1>
         <p>{module.description}</p>
+        <p className="portal-editor-guide">
+          فیلدهای «الزامی» را تکمیل کنید. گزینه‌های اختیاری را می‌توانید خالی بگذارید. عکس را در
+          همین فرم بارگذاری کنید و در پایان ذخیره را بزنید.
+        </p>
       </div>
       <section className="portal-editor-page" data-admin-record-editor="true" aria-label={title}>
         {resource.path === '/admin/governors' && (

@@ -53,12 +53,15 @@ export async function HomePage() {
     (governor.name === officialSite.governor.name ? officialSite.governor.image : undefined);
   const slidesFromApi: HomeSlide[] = realRecords(home.slides).map((slide) => ({
     id: String(slide.id),
-    title: String(slide.title),
+    title: String(slide.title ?? ''),
     image:
       officialImage(slide) ??
       officialSite.slides.find((source) => source.title === slide.title)?.image ??
       undefined,
-    href: safeDestination(slide.url, slide.content_id ? '/content/' + slide.content_id : '/news'),
+    href:
+      slide.url || slide.content_id
+        ? safeDestination(slide.url, slide.content_id ? '/content/' + slide.content_id : '/news')
+        : undefined,
   }));
   const slides = slidesFromApi.length
     ? slidesFromApi

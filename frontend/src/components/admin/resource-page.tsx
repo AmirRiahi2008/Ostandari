@@ -33,7 +33,7 @@ export function AdminResourcePage({ path, user }: { path: string; user?: PortalU
               id="cbnOpenCreateMenuModalBtn"
             >
               <span aria-hidden="true">＋</span>
-              {page.resource === 'media' ? 'بارگذاری فایل جدید' : 'افزودن مورد جدید'}
+              {page.resource === 'media' ? 'بارگذاری فایل جدید' : 'افزودن ' + module.itemName}
             </a>
           )}
           {page.resource === 'settings' && writable && (

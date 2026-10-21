@@ -1,5 +1,7 @@
+import { AdminImageField, imageFields } from './image-field';
 import {
   adminFieldLabel,
+  adminFieldPlaceholder,
   adminFieldHelp,
   adminFieldIncluded,
   adminFieldAdvanced,
@@ -35,7 +37,7 @@ export const fieldLabels: Record<string, string> = {
   aerial_media_id: 'تصویر هوایی شهرستان',
   cover_media_id: 'تصویر شاخص',
   gallery_id: 'گالری',
-  content_id: 'محتوا',
+  content_id: 'صفحه یا خبر مرتبط',
   poll_id: 'نظرسنجی',
   status: 'وضعیت',
   subtitle: 'عنوان فرعی',
@@ -217,9 +219,11 @@ export function AdminResourceForm({
 }) {
   const fields = resourceFields(resource);
   const initialValues = { ...resourceScope(resource), ...defaults };
-  const visible = Object.entries(fields).filter(([field]) =>
-    adminFieldIncluded(resource, field, defaults, path),
-  );
+  const visible = Object.entries(fields)
+    .filter(([field]) => adminFieldIncluded(resource, field, defaults, path))
+    .sort(([a], [b]) => Number(imageFields.includes(b)) - Number(imageFields.includes(a)));
+  const slide = ['slides', 'advertisements'].includes(resource);
+  const slideExtra = (field: string) => slide && ['title', 'url', 'content_id'].includes(field);
   const renderField = ([field, rules]: [string, string[]]) => {
     const label = adminFieldLabel(resource, field, fieldLabels[field] ?? field);
     const help = adminFieldHelp(resource, field, mode === 'edit');
@@ -235,6 +239,17 @@ export function AdminResourceForm({
       );
     const id = 'editor-' + resource.replaceAll('/', '-') + '-' + field;
     const required = rules.includes('required');
+    if (imageFields.includes(field))
+      return (
+        <AdminImageField
+          key={field}
+          field={field}
+          id={id}
+          label={label}
+          help={help}
+          required={required}
+        />
+      );
     const json = rules.includes('array');
     const list = ['requirements', 'steps'].includes(field);
     const multipleLookup = field === 'tag_ids' ? 'tags' : field === 'media_ids' ? 'media' : '';
@@ -284,12 +299,13 @@ export function AdminResourceForm({
               }
             />
             {label}
+            {help && <small className="portal-field-help">{help}</small>}
           </label>
         ) : (
           <>
             <label htmlFor={id}>
               {label}
-              {required && <span aria-hidden="true"> *</span>}
+              <span className="portal-field-requirement">{required ? 'الزامی' : 'اختیاری'}</span>
             </label>
             {multipleLookup ? (
               <select
@@ -375,6 +391,7 @@ export function AdminResourceForm({
                           ? 'number'
                           : 'text'
                 }
+                placeholder={adminFieldPlaceholder(resource, field)}
                 defaultValue={initial ?? (numeric ? '0' : undefined)}
                 required={field === 'password' ? mode === 'create' : required}
                 minLength={field === 'password' ? 12 : undefined}
@@ -409,7 +426,18 @@ export function AdminResourceForm({
     );
   };
   return (
-    <form id={formId} className="cbn-flex-form portal-resource-form" data-form="true">
+    <form
+      id={formId}
+      className="cbn-flex-form portal-resource-form"
+      data-form="true"
+      data-resource={resource}
+    >
+      {slide && (
+        <p className="portal-resource-wide portal-admin-help">
+          برای اسلایدِ بدون نوشته، فقط عکس را انتخاب کنید و ذخیره را بزنید. عنوان، متن و پیوند لازم
+          نیست.
+        </p>
+      )}
       {resource === 'media' && (
         <label className="portal-resource-field portal-resource-wide">
           انتخاب فایل
@@ -428,33 +456,31 @@ export function AdminResourceForm({
           </small>
         </label>
       )}
-      {visible.filter(([field, rules]) => !adminFieldAdvanced(field, rules)).map(renderField)}
-      {visible.some(([field, rules]) => adminFieldAdvanced(field, rules)) && (
+      {visible
+        .filter(([field, rules]) => !slideExtra(field) && !adminFieldAdvanced(field, rules))
+        .map(renderField)}
+      {visible.some(([field, rules]) => !slideExtra(field) && adminFieldAdvanced(field, rules)) && (
         <details className="portal-form-additional">
           <summary>تنظیمات بیشتر (اختیاری)</summary>
           <p>این گزینه‌ها را فقط در صورت نیاز تغییر دهید.</p>
           <div className="portal-form-additional-fields">
-            {visible.filter(([field, rules]) => adminFieldAdvanced(field, rules)).map(renderField)}
+            {visible
+              .filter(([field, rules]) => !slideExtra(field) && adminFieldAdvanced(field, rules))
+              .map(renderField)}
           </div>
         </details>
       )}
-      {(['slides', 'members', 'contents', 'advertisements', 'links', 'gallery-items'].includes(
-        resource,
-      ) ||
-        (schemas as Record<string, { table: string }>)[resource]?.table === 'contents') && (
-        <label className="portal-resource-field portal-resource-wide">
-          بارگذاری تصویر
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            data-media-field={
-              (schemas as Record<string, { table: string }>)[resource]?.table === 'contents'
-                ? 'cover_media_id'
-                : 'media_id'
-            }
-          />
-          <small>تصویر به WebP تبدیل و کوچک می‌شود. حداکثر حجم فایل ۴ مگابایت است.</small>
-        </label>
+      {slide && (
+        <details className="portal-form-additional">
+          <summary>عنوان و پیوند اسلاید (اختیاری)</summary>
+          <p>
+            اگر اسلاید باید به صفحه‌ای باز شود، پیوند آن را وارد کنید؛ در غیر این صورت، این بخش را
+            خالی بگذارید.
+          </p>
+          <div className="portal-form-additional-fields">
+            {visible.filter(([field]) => slideExtra(field)).map(renderField)}
+          </div>
+        </details>
       )}
     </form>
   );

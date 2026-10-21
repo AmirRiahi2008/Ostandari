@@ -8,12 +8,12 @@ type Setting = { key: string; value: unknown; is_public: boolean };
 const strings = {
   'site.name': 'نام سایت',
   'site.description': 'توضیح سایت',
-  'site.logo': 'نشانی لوگوی سایت',
-  'site.banner': 'نشانی تصویر سربرگ',
-  'site.slogan': 'نشانی تصویر شعار سال',
+  'site.logo': 'لوگوی سایت',
+  'site.banner': 'تصویر سربرگ سایت',
+  'site.slogan': 'تصویر شعار سال',
   'site.slogan_text': 'متن شعار زیر منو',
   'site.app_url': 'نشانی دانلود برنامه',
-  'site.app_qr': 'نشانی تصویر QR برنامه',
+  'site.app_qr': 'تصویر کد QR برنامه',
 };
 const contactLabels = {
   address: 'نشانی',
@@ -78,7 +78,7 @@ export function SiteSettings({ preview }: { preview: boolean }) {
       for (const key of Object.keys(contactLabels))
         contact[key] = String(data.get('contact.' + key) ?? '').trim();
       settings.push({ key: 'site.contact', value: contact, is_public: true });
-      for (const key of ['site.logo', 'site.banner', 'site.slogan']) {
+      for (const key of ['site.logo', 'site.banner', 'site.slogan', 'site.app_qr']) {
         const input = form.elements.namedItem('upload.' + key) as HTMLInputElement;
         const file = input.files?.[0];
         if (!file) continue;
@@ -108,7 +108,10 @@ export function SiteSettings({ preview }: { preview: boolean }) {
   if (preview) return <p>تنظیمات عمومی با اتصال واقعی به سامانه قابل ویرایش است.</p>;
   return (
     <section className="portal-settings">
-      <p>نام سایت، سربرگ، لوگو، شعار و اطلاعات تماس را از این صفحه به‌روز کنید.</p>
+      <p>
+        نام سایت، سربرگ، لوگو، شعار و اطلاعات تماس را از این صفحه به‌روز کنید. برای تصاویر، فایل را
+        همین‌جا انتخاب کنید؛ وارد کردن نشانی لازم نیست. عکس‌ها با زدن ذخیره بارگذاری می‌شوند.
+      </p>
       {message && <p role="status">{message}</p>}
       {!records ? (
         <button type="button" className="portal-button" onClick={() => setRevision((n) => n + 1)}>
@@ -126,7 +129,7 @@ export function SiteSettings({ preview }: { preview: boolean }) {
                 defaultValue={displayValue(key)}
                 maxLength={key === 'site.description' ? 2000 : 2048}
               />
-              {['site.logo', 'site.banner', 'site.slogan'].includes(key) && (
+              {['site.logo', 'site.banner', 'site.slogan', 'site.app_qr'].includes(key) && (
                 <>
                   <span>یا بارگذاری تصویر جدید</span>
                   <input

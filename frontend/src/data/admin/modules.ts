@@ -1,3 +1,4 @@
+import { adminModuleCopy } from './module-copy';
 import { templates } from '@/lib/templates';
 import schemas from './resource-schema.json';
 import { adminExtraPages } from './extra-pages';
@@ -111,18 +112,6 @@ export const adminModules = [
       page.resource !== 'settings' &&
       page.path !== '/admin/organization-contact',
     canEdit: Boolean(page.resource) && page.resource !== 'media',
-    description: !page.resource
-      ? page.path === '/admin/reports'
-        ? 'رسیدگی و پاسخ به گزارش‌های ثبت‌شدهٔ شهروندان'
-        : 'مشاهده و مدیریت ' + page.title
-      : reviewResource(page.resource)
-        ? 'مشاهده، بررسی و پیگیری موارد ثبت‌شده'
-        : page.resource === 'media'
-          ? 'بارگذاری و مدیریت فایل‌های سایت'
-          : page.resource === 'settings'
-            ? 'ویرایش تنظیمات موجود سامانه'
-            : page.path === '/admin/organization-contact'
-              ? 'ویرایش تلفن، نشانی و راه‌های تماس واحدهای سازمانی موجود'
-              : 'فهرست، افزودن و ویرایش ' + page.title.replace(/^مدیریت /, ''),
+    ...adminModuleCopy(page.path, page.resource, page.title),
   }))
   .sort((a, b) => adminSectionOrder(a.path) - adminSectionOrder(b.path));

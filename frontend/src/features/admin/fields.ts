@@ -121,7 +121,9 @@ export function fillFields(root: ParentNode, record: RecordData): void {
       }
     }
   }
-  root.dispatchEvent(new window.CustomEvent('portal:fields-filled', { bubbles: true }));
+  root.dispatchEvent(
+    new window.CustomEvent('portal:fields-filled', { bubbles: true, detail: record }),
+  );
 }
 
 export function fieldForColumn(label: string, resource = ''): string {

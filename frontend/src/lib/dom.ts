@@ -56,6 +56,22 @@ export function feedback(root: HTMLElement, message: string): void {
 }
 
 export function fieldError(root: HTMLElement, error: unknown): void {
+  for (const previous of all<HTMLElement>(root, '[data-server-field-error]')) {
+    const errorId = previous.id;
+    for (const field of all<HTMLElement>(root, '[aria-describedby]')) {
+      const ids = field
+        .getAttribute('aria-describedby')!
+        .split(' ')
+        .filter((id) => id && id !== errorId);
+      if (ids.length) field.setAttribute('aria-describedby', ids.join(' '));
+      else field.removeAttribute('aria-describedby');
+    }
+    previous.remove();
+  }
+  for (const field of all<HTMLElement>(root, '[data-server-invalid]')) {
+    field.removeAttribute('aria-invalid');
+    field.removeAttribute('data-server-invalid');
+  }
   const message = error instanceof Error ? error.message : 'عملیات ناموفق بود.';
   let status = one<HTMLElement>(root, '[data-form-error]');
   if (!status) {
@@ -66,6 +82,34 @@ export function fieldError(root: HTMLElement, error: unknown): void {
     root.prepend(status);
   }
   status.textContent = message;
+  const errors = (error as { errors?: Record<string, string[]> } | null)?.errors ?? {};
+  let first: HTMLElement | undefined;
+  for (const [name, messages] of Object.entries(errors)) {
+    const field = all<HTMLElement>(root, '[data-field]').find(
+      (item) => item.dataset.field === name || item.dataset.field === name.split('.')[0],
+    );
+    if (!field) continue;
+    const wrapper = field.closest<HTMLElement>('.portal-resource-field') ?? field.parentElement;
+    if (!wrapper || wrapper.querySelector('[data-server-field-error]')) continue;
+    const note = document.createElement('small');
+    note.dataset.serverFieldError = 'true';
+    note.id = (field.id || 'field-' + name.replace(/[^a-z0-9_-]/gi, '-')) + '-error';
+    note.className = 'portal-field-error';
+    note.textContent = messages.join(' ');
+    wrapper.append(note);
+    field.setAttribute('aria-invalid', 'true');
+    field.dataset.serverInvalid = 'true';
+    field.setAttribute(
+      'aria-describedby',
+      [field.getAttribute('aria-describedby'), note.id].filter(Boolean).join(' '),
+    );
+    for (let parent = field.parentElement; parent && parent !== root; parent = parent.parentElement)
+      if (parent.tagName === 'DETAILS') (parent as HTMLDetailsElement).open = true;
+    const focus =
+      wrapper.querySelector<HTMLElement>('[data-image-upload], [contenteditable="true"]') ?? field;
+    first ??= focus;
+  }
+  first?.focus();
 }
 
 export function commandArgs(source: string): string[] {

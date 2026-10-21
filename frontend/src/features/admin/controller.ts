@@ -1,3 +1,5 @@
+import { adminModuleCopy } from '@/data/admin/module-copy';
+import { mountImageFields } from './image-fields';
 import { normalizeAdminSearch } from '@/lib/admin-search';
 import { api, ApiError, jsonBody, upload } from '@/lib/api/client';
 import { all, date, feedback, fieldError, one, setImage, setOptions } from '@/lib/dom';
@@ -15,6 +17,7 @@ import { adminEditorHref } from '@/lib/admin-routes';
 
 export function adminController(context: PageContext) {
   const { root, page, signal, preview } = context;
+  const itemName = adminModuleCopy(page.path, page.resource, page.title).itemName;
   const readOnly = root.dataset.canWrite === 'false';
   const ownOrganization =
     root.dataset.workspaceGlobal === 'false' &&
@@ -26,6 +29,7 @@ export function adminController(context: PageContext) {
   let editorSaved = false;
   const listPages = root.dataset.adminView === 'list';
   const navigate = context.navigate ?? ((href: string) => window.location.assign(href));
+  let imageFields: ReturnType<typeof mountImageFields> | undefined;
   let uploaded: { file: File; id: number } | null = null;
   let currentQuery = new URLSearchParams(window.location.search).get('q')?.slice(0, 100) ?? '';
   const initialPage = new URLSearchParams(window.location.search).get('page') ?? '';
@@ -155,10 +159,11 @@ export function adminController(context: PageContext) {
         editing = next;
       }
       showEditing();
-      setImage(
-        one<HTMLImageElement>(root, '[data-editor-current-image]'),
-        editing?.image ?? editing?.cover,
-      );
+      if (!one(root, '[data-image-field]'))
+        setImage(
+          one<HTMLImageElement>(root, '[data-editor-current-image]'),
+          editing?.image ?? editing?.cover,
+        );
       const systemRole = page.resource === 'roles' && editing?.is_system;
       editorState(
         !systemRole,
@@ -190,7 +195,13 @@ export function adminController(context: PageContext) {
           link.setAttribute(
             'aria-label',
             (reviewOnly ? 'بررسی ' : 'ویرایش ') +
-              String(record.title ?? record.name ?? record.reference ?? record.id),
+              String(
+                record.title ||
+                  record.name ||
+                  (['slides', 'advertisements'].includes(page.resource)
+                    ? 'اسلاید تصویری ' + record.id
+                    : record.reference || record.id),
+              ),
           );
         });
       all<HTMLAnchorElement>(row, '[data-related-resource="menu-items"]').forEach((link) => {
@@ -245,41 +256,45 @@ export function adminController(context: PageContext) {
           return;
         }
         const data =
-          key === '_index'
-            ? (currentPage - 1) * 100 + index + 1
-            : key === '_form_title'
-              ? (record.form as RecordData | undefined)?.title
-              : key?.endsWith('_at')
-                ? date(record[key])
-                : key === 'locale'
-                  ? ({ fa: 'فارسی', en: 'انگلیسی', ar: 'عربی' }[String(record.locale) as 'fa'] ??
-                    record.locale)
-                  : key === 'is_active'
-                    ? record.is_active
-                      ? 'فعال'
-                      : 'غیرفعال'
-                    : key === 'name' && page.resource === 'media'
-                      ? record.original_name
-                      : key === 'status'
-                        ? ({
-                            draft: 'پیش‌نویس',
-                            published: 'منتشرشده',
-                            archived: 'بایگانی',
-                            pending: 'در انتظار',
-                            review: 'در حال بررسی',
-                            referred: 'ارجاع‌شده',
-                            resolved: 'پاسخ داده‌شده',
-                            closed: 'بسته‌شده',
-                            rejected: 'ردشده',
-                            accepted: 'پذیرفته‌شده',
-                            approved: 'تأییدشده',
-                            active: 'فعال',
-                          }[String(record.status)] ?? record.status)
-                        : key === 'is_current'
-                          ? record.is_current
-                            ? 'بله'
-                            : 'خیر'
-                          : record[key];
+          key === 'title' &&
+          ['slides', 'advertisements'].includes(page.resource) &&
+          !String(record.title ?? '').trim()
+            ? 'فقط تصویر (بدون نوشته)'
+            : key === '_index'
+              ? (currentPage - 1) * 100 + index + 1
+              : key === '_form_title'
+                ? (record.form as RecordData | undefined)?.title
+                : key?.endsWith('_at')
+                  ? date(record[key])
+                  : key === 'locale'
+                    ? ({ fa: 'فارسی', en: 'انگلیسی', ar: 'عربی' }[String(record.locale) as 'fa'] ??
+                      record.locale)
+                    : key === 'is_active'
+                      ? record.is_active
+                        ? 'فعال'
+                        : 'غیرفعال'
+                      : key === 'name' && page.resource === 'media'
+                        ? record.original_name
+                        : key === 'status'
+                          ? ({
+                              draft: 'پیش‌نویس',
+                              published: 'منتشرشده',
+                              archived: 'بایگانی',
+                              pending: 'در انتظار',
+                              review: 'در حال بررسی',
+                              referred: 'ارجاع‌شده',
+                              resolved: 'پاسخ داده‌شده',
+                              closed: 'بسته‌شده',
+                              rejected: 'ردشده',
+                              accepted: 'پذیرفته‌شده',
+                              approved: 'تأییدشده',
+                              active: 'فعال',
+                            }[String(record.status)] ?? record.status)
+                          : key === 'is_current'
+                            ? record.is_current
+                              ? 'بله'
+                              : 'خیر'
+                            : record[key];
         cell.textContent =
           data === null || data === undefined || typeof data === 'object' ? '' : String(data);
       });
@@ -418,12 +433,20 @@ export function adminController(context: PageContext) {
                           : ['contents', 'calls', 'publications'].includes(page.resource)
                             ? 'document'
                             : '';
+          if (resource === 'media' && select.hasAttribute('data-image-value'))
+            lookupFilters.kind = 'image';
           if (resource === 'categories' && family) lookupFilters.type = family;
           if (resource === 'menu-items' && filters.menu_id) lookupFilters.menu_id = filters.menu_id;
           const requestKey = resource + '?' + new URLSearchParams(lookupFilters);
           if (!requests.has(requestKey))
             requests.set(requestKey, lookupRecords(resource, signal, lookupFilters));
           const records = await requests.get(requestKey)!;
+          if (signal.aborted) return;
+          const retained =
+            select.hasAttribute('data-image-value') && select.value
+              ? (select.selectedOptions[0]?.cloneNode(true) as HTMLOptionElement)
+              : null;
+          const current = select.value;
           setOptions(
             select,
             records,
@@ -435,8 +458,28 @@ export function adminController(context: PageContext) {
                   ? 'name'
                   : 'title',
           );
+          if (select.hasAttribute('data-image-value')) {
+            for (const record of records) {
+              const option = Array.from(select.options).find(
+                (option) => option.value === String(record.id),
+              );
+              if (option && record.url) option.dataset.imageUrl = String(record.url);
+            }
+            if (
+              retained &&
+              !Array.from(select.options).some((option) => option.value === retained.value)
+            )
+              select.add(retained);
+            if (current) select.value = current;
+          }
         } catch {
-          select.replaceChildren(new Option('دسترسی یا داده‌ای موجود نیست', ''));
+          if (signal.aborted) return;
+          if (select.hasAttribute('data-image-value')) {
+            if (!select.value)
+              select.replaceChildren(
+                new Option('کتابخانه دریافت نشد؛ می‌توانید همین‌جا عکس بارگذاری کنید', ''),
+              );
+          } else select.replaceChildren(new Option('دسترسی یا داده‌ای موجود نیست', ''));
         }
       }),
     );
@@ -448,25 +491,28 @@ export function adminController(context: PageContext) {
     if (!node || busy || editorSaved) return;
     if (page.editor && !editorLoaded)
       throw new Error('ابتدا دریافت اطلاعات این مورد را کامل کنید.');
-    validateRichText(node);
-    validateFormBuilder(node);
-    const form = one<HTMLFormElement>(node, 'form');
-    const fileInput = one<HTMLInputElement>(
-      node,
-      'input[type=file][data-media-field], input[type=file]:not([data-cms-file])',
-    );
-    const file = fileInput?.files?.[0];
-    const choice = fileInput?.dataset.mediaField
-      ? one<HTMLSelectElement>(node, 'select[data-field="' + fileInput.dataset.mediaField + '"]')
-      : null;
-    const required = choice?.required ?? false;
-    if (file && choice) choice.required = false;
-    const valid = !form || form.reportValidity();
-    if (choice) choice.required = required;
-    if (!valid) return;
     busy = true;
-    if (page.editor) editorState(true, 'در حال ذخیره…');
     try {
+      imageFields ??= mountImageFields(root, signal, preview);
+      await imageFields.ready();
+      imageFields?.validate();
+      validateRichText(node);
+      validateFormBuilder(node);
+      const form = one<HTMLFormElement>(node, 'form');
+      const fileInput = one<HTMLInputElement>(
+        node,
+        'input[type=file][data-media-field]:not([data-image-upload]), input[type=file]:not([data-cms-file]):not([data-image-upload])',
+      );
+      const file = fileInput?.files?.[0];
+      const choice = fileInput?.dataset.mediaField
+        ? one<HTMLSelectElement>(node, 'select[data-field="' + fileInput.dataset.mediaField + '"]')
+        : null;
+      const required = choice?.required ?? false;
+      if (file && choice) choice.required = false;
+      const valid = !form || form.reportValidity();
+      if (choice) choice.required = required;
+      if (!valid) return;
+      if (page.editor) editorState(true, 'در حال ذخیره…');
       let data: RecordData = {
         ...filters,
         ...page.defaults,
@@ -730,6 +776,7 @@ export function adminController(context: PageContext) {
       }
     }
     if (!listPages) {
+      imageFields ??= mountImageFields(root, signal, preview);
       mountRichText(root, signal, preview);
       mountFormBuilder(root, signal);
       mountPermissionFields(root, signal);
@@ -742,7 +789,7 @@ export function adminController(context: PageContext) {
         button.type = 'button';
         button.id = 'cbnOpenCreateMenuModalBtn';
         button.className = 'button-designv1';
-        button.textContent = 'افزودن مورد جدید';
+        button.textContent = 'افزودن ' + itemName;
         one(root, '.main-content section header,.main-content-header')?.append(button);
       }
       if (
@@ -786,7 +833,7 @@ export function adminController(context: PageContext) {
         const link = pageLink(plus);
         link.setAttribute(
           'aria-label',
-          (page.resource === 'settings' ? 'ویرایش ' : 'افزودن ') + page.title,
+          (page.resource === 'settings' ? 'ویرایش ' : 'افزودن ') + itemName,
         );
         if (page.resource === 'settings') link.textContent = 'ویرایش تنظیمات';
       }

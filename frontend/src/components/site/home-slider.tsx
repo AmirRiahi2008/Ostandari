@@ -6,7 +6,7 @@ export interface HomeSlide {
   id: string;
   title: string;
   image?: string;
-  href: string;
+  href?: string;
 }
 
 export function HomeSlider({ slides }: { slides: HomeSlide[] }) {
@@ -31,6 +31,18 @@ export function HomeSlider({ slides }: { slides: HomeSlide[] }) {
   }, [slides.length, paused, focused, hovered, reduced]);
   const move = (delta: number) =>
     setIndex((value) => (value + delta + slides.length) % slides.length);
+  const slideImage = current?.image ? (
+    <img
+      key={current.image}
+      src={current.image}
+      alt={current.title || 'اسلاید اطلاع‌رسانی'}
+      width={1280}
+      height={522}
+      fetchPriority="high"
+    />
+  ) : (
+    <span>{current?.title}</span>
+  );
   return (
     <section
       className="swiper mySwiper source-slider"
@@ -59,20 +71,17 @@ export function HomeSlider({ slides }: { slides: HomeSlide[] }) {
           aria-label={current ? selected + 1 + ' از ' + slides.length : 'اطلاع‌رسانی'}
         >
           {current ? (
-            <a href={current.href} className="source-slide-link" aria-label={current.title}>
-              {current.image ? (
-                <img
-                  key={current.image}
-                  src={current.image}
-                  alt={current.title}
-                  width={1280}
-                  height={522}
-                  fetchPriority="high"
-                />
-              ) : (
-                <span>{current.title}</span>
-              )}
-            </a>
+            current.href ? (
+              <a
+                href={current.href}
+                className="source-slide-link"
+                aria-label={current.title || 'اسلاید اطلاع‌رسانی'}
+              >
+                {slideImage}
+              </a>
+            ) : (
+              <div className="source-slide-link">{slideImage}</div>
+            )
           ) : (
             <a className="source-slide-link" href="/news">
               درگاه الکترونیکی استانداری مازندران

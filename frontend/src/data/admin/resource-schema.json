@@ -160,7 +160,7 @@
     "fields": {
       "category_id": ["nullable", "exists:categories,id,deleted_at,\"NULL\""],
       "locale": ["sometimes", "in:\"fa\",\"en\",\"ar\""],
-      "title": ["required", "string", "max:255"],
+      "title": ["nullable", "string", "max:255"],
       "subtitle": ["nullable", "string", "max:255"],
       "media_id": ["nullable", "exists:media,id,visibility,\"public\",deleted_at,\"NULL\""],
       "content_id": ["nullable", "exists:contents,id,deleted_at,\"NULL\""],
@@ -805,7 +805,7 @@
     "fields": {
       "category_id": ["nullable", "exists:categories,id,deleted_at,\"NULL\""],
       "locale": ["sometimes", "in:\"fa\",\"en\",\"ar\""],
-      "title": ["required", "string", "max:255"],
+      "title": ["nullable", "string", "max:255"],
       "subtitle": ["nullable", "string", "max:255"],
       "media_id": ["nullable", "exists:media,id,visibility,\"public\",deleted_at,\"NULL\""],
       "content_id": ["nullable", "exists:contents,id,deleted_at,\"NULL\""],
