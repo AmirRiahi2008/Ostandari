@@ -74,6 +74,8 @@ export function AdminEditorPage({
             resource={resource.resource}
             defaults={resource.defaults}
             formId="admin-record-form"
+            path={resource.path}
+            mode={mode}
           />
         </fieldset>
         <div className="portal-editor-actions">

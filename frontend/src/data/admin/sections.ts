@@ -118,3 +118,9 @@ export function reviewResource(resource: string): boolean {
     resource.startsWith('moderation/')
   );
 }
+
+export function adminSectionOrder(path: string): number {
+  const key = path.replace(/^\/admin\//, '');
+  const section = adminSections.findIndex((item) => paths[item.id].includes(key));
+  return section < 0 ? 10000 : section * 100 + paths[adminSections[section].id].indexOf(key);
+}

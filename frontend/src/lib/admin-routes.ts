@@ -11,7 +11,18 @@ export function adminResourcePage(path: string): TemplatePage | undefined {
   const page = adminExtraPages[path]
     ? { ...templates.find((item) => item.path === '/admin/calls')!, ...adminExtraPages[path], path }
     : templates.find((item) => item.path === path);
-  return page ? { ...page, title: module.title } : undefined;
+  return page
+    ? {
+        ...page,
+        title: module.title,
+        defaults: {
+          ...page.defaults,
+          ...(page.resource === 'media'
+            ? { visibility: 'public', ...(path === '/admin/images' ? { kind: 'image' } : {}) }
+            : {}),
+        },
+      }
+    : undefined;
 }
 
 export function safeAdminReturn(base: string, value?: string | null): string {

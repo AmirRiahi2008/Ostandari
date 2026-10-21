@@ -174,9 +174,7 @@ async function mount(path: string, editor = false) {
           route,
           returnTo: url.searchParams.get('return') ?? undefined,
         })
-      : adminExtraPages[url.pathname]
-        ? React.createElement(AdminResourcePage, { path: url.pathname })
-        : React.createElement(templateViews[activePage.id as keyof typeof templateViews]),
+      : React.createElement(AdminResourcePage, { path: url.pathname }),
   );
   const root = wrapper.querySelector<HTMLElement>('[data-design]') ?? wrapper;
   root.dataset.adminView = editor ? 'editor' : 'list';

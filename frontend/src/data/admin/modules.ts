@@ -2,19 +2,19 @@ import { templates } from '@/lib/templates';
 import schemas from './resource-schema.json';
 import { adminExtraPages } from './extra-pages';
 import { adminUtilityTitles } from './utility-pages';
-import { adminSectionFor, reviewResource } from './sections';
+import { adminSectionFor, adminSectionOrder, reviewResource } from './sections';
 
 const names: Record<string, string> = {
-  '/admin/menu-items': 'آیتم‌های منو',
-  '/admin/menu-groups': 'گروه‌های منو',
-  '/admin/slide-groups': 'گروه‌های اسلایدشو',
+  '/admin/menu-items': 'گزینه‌های منو و مگامنو',
+  '/admin/menu-groups': 'منوهای سایت',
+  '/admin/slide-groups': 'گروه‌بندی اسلایدها',
   '/admin/slides': 'اسلایدهای صفحهٔ اصلی',
-  '/admin/member-groups': 'گروه‌های اعضا',
-  '/admin/members': 'اعضای سازمان',
+  '/admin/member-groups': 'گروه‌بندی مدیران و اعضا',
+  '/admin/members': 'مدیران و اعضای سازمان',
   '/admin/document-groups': 'گروه‌های اسناد',
   '/admin/service-groups': 'گروه‌های خدمات',
   '/admin/calls': 'فراخوان‌ها',
-  '/admin/form-groups': 'گروه‌بندی ویژگی‌ها',
+  '/admin/form-groups': 'گروه‌بندی ویژگی‌های فرم',
   '/admin/gallery-groups': 'گروه‌های گالری',
   '/admin/item-order': 'تنظیمات پیشرفته',
   '/admin/external-users': 'کاربران مردمی',
@@ -26,10 +26,10 @@ const names: Record<string, string> = {
   '/admin/employees': 'مدیریت کارمندان',
   '/admin/experts': 'کارشناسان فرم',
   '/admin/subscribers': 'اعضای خبرنامه',
-  '/admin/organizations': 'سازمان‌ها',
-  '/admin/files': 'فایل‌ها',
-  '/admin/images': 'تصاویر',
-  '/admin/submissions': 'متقاضیان فرم‌ها',
+  '/admin/organizations': 'واحدهای سازمانی و فرمانداری‌ها',
+  '/admin/files': 'کتابخانهٔ فایل‌ها',
+  '/admin/images': 'کتابخانهٔ تصاویر',
+  '/admin/submissions': 'درخواست‌های ثبت‌شدهٔ فرم‌ها',
   '/admin/media-groups': 'گروه‌های چندرسانه‌ای',
   '/admin/roles': 'نقش‌ها و دسترسی‌ها',
   '/admin/comments/pending': 'نظرات در انتظار',
@@ -44,10 +44,10 @@ const names: Record<string, string> = {
   '/admin/advertisements': 'تبلیغات و بنرها',
   '/admin/tags': 'برچسب‌های خبر',
   '/admin/forum-groups': 'گروه‌های تالار گفتگو',
-  '/admin/organization-contact': 'اطلاعات تماس سازمان‌ها',
+  '/admin/organization-contact': 'اطلاعات تماس واحدهای سازمانی',
   '/admin/contact/pending': 'پیام‌های تازهٔ تماس با ما',
   '/admin/contact/replied': 'پیام‌های پاسخ‌داده‌شدهٔ تماس با ما',
-  '/admin/contact/approved': 'پیام‌های در حال بررسی',
+  '/admin/contact/approved': 'پیام‌های تماس در حال بررسی',
 };
 const specialPermissions: Record<string, string> = {
   users: 'users.manage',
@@ -100,21 +100,29 @@ export const adminModules = [
         })),
     ].map((page) => [page.path, page]),
   ).values(),
-].map((page) => ({
-  ...page,
-  section: adminSectionFor(page.path),
-  canCreate:
-    Boolean(page.resource) && !reviewResource(page.resource) && page.resource !== 'settings',
-  canEdit: Boolean(page.resource) && page.resource !== 'media',
-  description: !page.resource
-    ? page.path === '/admin/reports'
-      ? 'رسیدگی و پاسخ به گزارش‌های ثبت‌شدهٔ شهروندان'
-      : 'مشاهده و مدیریت ' + page.title
-    : reviewResource(page.resource)
-      ? 'مشاهده، بررسی و پیگیری موارد ثبت‌شده'
-      : page.resource === 'media'
-        ? 'بارگذاری و مدیریت فایل‌های سایت'
-        : page.resource === 'settings'
-          ? 'ویرایش تنظیمات موجود سامانه'
-          : 'فهرست، افزودن و ویرایش ' + page.title.replace(/^مدیریت /, ''),
-}));
+]
+  .map((page) => ({
+    ...page,
+    section: adminSectionFor(page.path),
+    showInNavigation: page.path !== '/admin/employee-list',
+    canCreate:
+      Boolean(page.resource) &&
+      !reviewResource(page.resource) &&
+      page.resource !== 'settings' &&
+      page.path !== '/admin/organization-contact',
+    canEdit: Boolean(page.resource) && page.resource !== 'media',
+    description: !page.resource
+      ? page.path === '/admin/reports'
+        ? 'رسیدگی و پاسخ به گزارش‌های ثبت‌شدهٔ شهروندان'
+        : 'مشاهده و مدیریت ' + page.title
+      : reviewResource(page.resource)
+        ? 'مشاهده، بررسی و پیگیری موارد ثبت‌شده'
+        : page.resource === 'media'
+          ? 'بارگذاری و مدیریت فایل‌های سایت'
+          : page.resource === 'settings'
+            ? 'ویرایش تنظیمات موجود سامانه'
+            : page.path === '/admin/organization-contact'
+              ? 'ویرایش تلفن، نشانی و راه‌های تماس واحدهای سازمانی موجود'
+              : 'فهرست، افزودن و ویرایش ' + page.title.replace(/^مدیریت /, ''),
+  }))
+  .sort((a, b) => adminSectionOrder(a.path) - adminSectionOrder(b.path));

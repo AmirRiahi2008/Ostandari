@@ -25,6 +25,7 @@ import { first } from '@/features/site/search-params';
 import type { Search } from '@/features/site/public-pages';
 
 export async function AdminPortalRoute({ path, search }: { path: string; search: Search }) {
+  if (path === '/admin/organization-contact/new') redirect('/admin/organization-contact');
   const county = countyAdminRoute(path);
   if (path.startsWith('/county-admin/') && !county) notFound();
   if (county?.login)
@@ -74,7 +75,8 @@ export async function AdminPortalRoute({ path, search }: { path: string; search:
     content = <AdminEditorPage path={path} route={editor} returnTo={first(search.return)} />;
   else if (report)
     content = <AdminReportPage path={path} reference={report} returnTo={first(search.return)} />;
-  else if (adminExtraPages[path]) content = <AdminResourcePage path={path} />;
+  else if (adminExtraPages[path] || page?.resource)
+    content = <AdminResourcePage path={page?.path ?? path} user={user} />;
   else if (adminUtilityTitles[path]) content = <AdminUtilityPage path={path} />;
   else if (page && View)
     content = (

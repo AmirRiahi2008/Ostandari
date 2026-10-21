@@ -222,13 +222,13 @@ test('the dashboard contains every module in a named section and every add short
   try {
     assert.equal(
       screen.element.querySelectorAll('.portal-module-card').length,
-      adminModules.length,
+      adminModules.filter((module) => module.showInNavigation).length,
     );
     assert.equal(
       screen.element.querySelectorAll('.portal-dashboard-section').length,
       adminSections.length,
     );
-    for (const module of adminModules)
+    for (const module of adminModules.filter((module) => module.showInNavigation))
       assert.ok(
         screen.element.querySelector(`.portal-module-card a[href="${module.path}"]`),
         module.path,
@@ -244,7 +244,7 @@ test('the dashboard contains every module in a named section and every add short
     });
     assert.equal(
       screen.element.querySelectorAll('.portal-module-card').length,
-      adminModules.filter((module) => module.section === 'forms').length,
+      adminModules.filter((module) => module.showInNavigation && module.section === 'forms').length,
     );
     assert.ok(screen.element.querySelector('a[href="/admin/forms"]'));
     assert.equal(screen.element.querySelector('.portal-module-card a[href="/admin/news"]'), null);
@@ -257,7 +257,7 @@ test('the dashboard contains every module in a named section and every add short
 test('the shared sidebar exposes all modules and updates to the authenticated users permissions', async () => {
   const screen = await mount(React.createElement(AdminModuleMenu));
   try {
-    for (const module of adminModules)
+    for (const module of adminModules.filter((module) => module.showInNavigation))
       assert.ok(screen.element.querySelector(`a[href="${module.path}"]`), module.path);
     await act(async () =>
       document.dispatchEvent(

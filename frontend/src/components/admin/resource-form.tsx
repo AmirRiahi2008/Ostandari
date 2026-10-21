@@ -1,3 +1,9 @@
+import {
+  adminFieldLabel,
+  adminFieldHelp,
+  adminFieldIncluded,
+  adminFieldAdvanced,
+} from '@/data/admin/form-layout';
 import schemas from '@/data/admin/resource-schema.json';
 import { lookupResource, resourceScope } from '@/features/admin/resources';
 
@@ -87,6 +93,7 @@ export const fieldLabels: Record<string, string> = {
   longitude: 'طول جغرافیایی',
   video_url: 'نشانی ویدیو',
   name_en: 'نام انگلیسی',
+  domain: 'دامنه',
   sms_number: 'شمارهٔ پیامک',
 };
 const labels: Record<string, string> = {
@@ -197,205 +204,238 @@ export function AdminResourceForm({
   resource,
   defaults = {},
   formId,
+  path,
+  mode = 'create',
 }: {
   resource: string;
   defaults?: Record<string, string>;
   formId?: string;
+  path?: string;
+  mode?: 'create' | 'edit';
 }) {
   const fields = resourceFields(resource);
   const initialValues = { ...resourceScope(resource), ...defaults };
+  const visible = Object.entries(fields).filter(([field]) =>
+    adminFieldIncluded(resource, field, defaults, path),
+  );
+  const renderField = ([field, rules]: [string, string[]]) => {
+    const label = adminFieldLabel(resource, field, fieldLabels[field] ?? field);
+    const help = adminFieldHelp(resource, field, mode === 'edit');
+    if (initialValues[field] && ['type', 'kind', 'person_type'].includes(field))
+      return (
+        <input
+          key={field}
+          type="hidden"
+          name={field}
+          data-field={field}
+          defaultValue={initialValues[field]}
+        />
+      );
+    const id = 'editor-' + resource.replaceAll('/', '-') + '-' + field;
+    const required = rules.includes('required');
+    const json = rules.includes('array');
+    const list = ['requirements', 'steps'].includes(field);
+    const multipleLookup = field === 'tag_ids' ? 'tags' : field === 'media_ids' ? 'media' : '';
+    const flag = rules.includes('boolean');
+    const options = rules
+      .find((rule) => rule.startsWith('in:'))
+      ?.slice(3)
+      .split(',')
+      .map((value) => value.replace(/^"|"$/g, ''));
+    const lookup = rules
+      .find((rule) => rule.startsWith('exists:'))
+      ?.split(':')[1]
+      .split(',')[0];
+    const numeric = rules.includes('integer');
+    const long = [
+      'body',
+      'bio',
+      'description',
+      'excerpt',
+      'answer',
+      'note',
+      'reply',
+      'question',
+      'seo_description',
+    ].includes(field);
+    const initial =
+      initialValues[field] ??
+      (field === 'locale' ? 'fa' : field === 'status' ? 'draft' : undefined);
+    const max = Number(rules.find((rule) => rule.startsWith('max:'))?.split(':')[1]);
+    const date = rules.includes('date');
+    return (
+      <div
+        className={'portal-resource-field' + (long || json ? ' portal-resource-wide' : '')}
+        key={field}
+      >
+        {flag ? (
+          <label className="portal-choice">
+            <input
+              id={id}
+              type="checkbox"
+              name={field}
+              data-field={field}
+              defaultChecked={
+                field === 'is_active' ||
+                field === 'comments_enabled' ||
+                (field === 'is_current' && ['governor', 'county_governor'].includes(defaults.kind))
+              }
+            />
+            {label}
+          </label>
+        ) : (
+          <>
+            <label htmlFor={id}>
+              {label}
+              {required && <span aria-hidden="true"> *</span>}
+            </label>
+            {multipleLookup ? (
+              <select
+                id={id}
+                name={field}
+                data-field={field}
+                data-lookup={multipleLookup}
+                multiple
+                aria-describedby={id + '-help'}
+              />
+            ) : json ? (
+              <textarea
+                id={id}
+                name={field}
+                data-field={field}
+                data-json={list ? undefined : 'true'}
+                data-lines={list ? 'true' : undefined}
+                data-form-builder={field === 'fields' ? 'true' : undefined}
+                data-permissions={field === 'permissions' ? 'true' : undefined}
+                required={required}
+                rows={5}
+                dir={list ? 'rtl' : 'ltr'}
+                placeholder={
+                  list
+                    ? 'هر مورد در یک خط جداگانه'
+                    : field === 'permissions'
+                      ? '["content.manage"]'
+                      : '[]'
+                }
+              />
+            ) : options ? (
+              <select
+                id={id}
+                name={field}
+                data-field={field}
+                required={required}
+                disabled={
+                  Boolean(initialValues[field]) && ['type', 'kind', 'person_type'].includes(field)
+                }
+                defaultValue={initial ?? options[0]}
+              >
+                {options.map((value) => (
+                  <option key={value} value={value}>
+                    {labels[value] ?? value}
+                  </option>
+                ))}
+              </select>
+            ) : lookup ? (
+              <select
+                id={id}
+                name={field}
+                data-field={field}
+                data-lookup={lookupResource(lookup)}
+                required={required}
+              >
+                <option value="">انتخاب کنید</option>
+              </select>
+            ) : long ? (
+              <textarea
+                id={id}
+                name={field}
+                data-field={field}
+                rows={field === 'body' ? 8 : 4}
+                required={required}
+                maxLength={max || undefined}
+                data-rich-text={
+                  ['body', 'bio', 'description', 'answer'].includes(field) ? 'true' : undefined
+                }
+              />
+            ) : (
+              <input
+                id={id}
+                name={field}
+                data-field={field}
+                type={
+                  field === 'password'
+                    ? 'password'
+                    : field === 'email'
+                      ? 'email'
+                      : date
+                        ? 'datetime-local'
+                        : numeric
+                          ? 'number'
+                          : 'text'
+                }
+                defaultValue={initial ?? (numeric ? '0' : undefined)}
+                required={field === 'password' ? mode === 'create' : required}
+                minLength={field === 'password' ? 12 : undefined}
+                autoComplete={field === 'password' ? 'new-password' : undefined}
+                maxLength={!numeric && !date ? max || undefined : undefined}
+                min={numeric ? 0 : undefined}
+                dir={
+                  date ||
+                  numeric ||
+                  ['url', 'slug', 'username', 'email', 'mobile', 'phone'].includes(field)
+                    ? 'ltr'
+                    : undefined
+                }
+              />
+            )}
+            {help && <small className="portal-field-help">{help}</small>}
+            {multipleLookup && (
+              <small id={id + '-help'}>
+                برای انتخاب چند مورد، کلید Ctrl یا Command را نگه دارید.
+              </small>
+            )}
+            {json && !list && !multipleLookup && (
+              <small>
+                {field === 'fields_schema'
+                  ? 'تعریف فیلدهای فرم به صورت آرایهٔ JSON'
+                  : 'مقدار را به صورت JSON وارد کنید.'}
+              </small>
+            )}
+          </>
+        )}
+      </div>
+    );
+  };
   return (
     <form id={formId} className="cbn-flex-form portal-resource-form" data-form="true">
       {resource === 'media' && (
         <label className="portal-resource-field portal-resource-wide">
           انتخاب فایل
-          <input type="file" required accept="image/jpeg,image/png,image/webp,.pdf,.xlsx,.xls" />
+          <input
+            type="file"
+            required
+            accept={
+              path === '/admin/images'
+                ? 'image/jpeg,image/png,image/webp'
+                : 'image/jpeg,image/png,image/webp,.pdf,.docx,.xlsx,.mp4,.mp3,.txt'
+            }
+          />
           <small>
-            تصویر، PDF یا Excel؛ حداکثر ۴ مگابایت. فایل در کتابخانهٔ عمومی سایت ذخیره می‌شود.
+            تصاویر به WebP تبدیل می‌شوند؛ حداکثر ۴ مگابایت. فایل در کتابخانهٔ عمومی سایت ذخیره
+            می‌شود.
           </small>
         </label>
       )}
-      {Object.entries(fields)
-        .filter(([field]) => !field.includes('.'))
-        .map(([field, rules]) => {
-          const label = fieldLabels[field] ?? field;
-          const id = 'editor-' + resource.replaceAll('/', '-') + '-' + field;
-          const required = rules.includes('required');
-          const json = rules.includes('array');
-          const list = ['requirements', 'steps'].includes(field);
-          const multipleLookup =
-            field === 'tag_ids' ? 'tags' : field === 'media_ids' ? 'media' : '';
-          const flag = rules.includes('boolean');
-          const options = rules
-            .find((rule) => rule.startsWith('in:'))
-            ?.slice(3)
-            .split(',')
-            .map((value) => value.replace(/^"|"$/g, ''));
-          const lookup = rules
-            .find((rule) => rule.startsWith('exists:'))
-            ?.split(':')[1]
-            .split(',')[0];
-          const numeric = rules.includes('integer');
-          const long = [
-            'body',
-            'bio',
-            'description',
-            'excerpt',
-            'answer',
-            'note',
-            'reply',
-            'question',
-            'seo_description',
-          ].includes(field);
-          const initial =
-            initialValues[field] ??
-            (field === 'locale' ? 'fa' : field === 'status' ? 'draft' : undefined);
-          const max = Number(rules.find((rule) => rule.startsWith('max:'))?.split(':')[1]);
-          const date = rules.includes('date');
-          return (
-            <div
-              className={'portal-resource-field' + (long || json ? ' portal-resource-wide' : '')}
-              key={field}
-            >
-              {flag ? (
-                <label className="portal-choice">
-                  <input
-                    id={id}
-                    type="checkbox"
-                    name={field}
-                    data-field={field}
-                    defaultChecked={
-                      field === 'is_active' ||
-                      field === 'comments_enabled' ||
-                      (field === 'is_current' &&
-                        ['governor', 'county_governor'].includes(defaults.kind))
-                    }
-                  />
-                  {label}
-                </label>
-              ) : (
-                <>
-                  <label htmlFor={id}>
-                    {label}
-                    {required && <span aria-hidden="true"> *</span>}
-                  </label>
-                  {multipleLookup ? (
-                    <select
-                      id={id}
-                      name={field}
-                      data-field={field}
-                      data-lookup={multipleLookup}
-                      multiple
-                      aria-describedby={id + '-help'}
-                    />
-                  ) : json ? (
-                    <textarea
-                      id={id}
-                      name={field}
-                      data-field={field}
-                      data-json={list ? undefined : 'true'}
-                      data-lines={list ? 'true' : undefined}
-                      data-form-builder={field === 'fields' ? 'true' : undefined}
-                      data-permissions={field === 'permissions' ? 'true' : undefined}
-                      required={required}
-                      rows={5}
-                      dir={list ? 'rtl' : 'ltr'}
-                      placeholder={
-                        list
-                          ? 'هر مورد در یک خط جداگانه'
-                          : field === 'permissions'
-                            ? '["content.manage"]'
-                            : '[]'
-                      }
-                    />
-                  ) : options ? (
-                    <select
-                      id={id}
-                      name={field}
-                      data-field={field}
-                      required={required}
-                      disabled={
-                        Boolean(initialValues[field]) &&
-                        ['type', 'kind', 'person_type'].includes(field)
-                      }
-                      defaultValue={initial ?? options[0]}
-                    >
-                      {options.map((value) => (
-                        <option key={value} value={value}>
-                          {labels[value] ?? value}
-                        </option>
-                      ))}
-                    </select>
-                  ) : lookup ? (
-                    <select
-                      id={id}
-                      name={field}
-                      data-field={field}
-                      data-lookup={lookupResource(lookup)}
-                      required={required}
-                    >
-                      <option value="">انتخاب کنید</option>
-                    </select>
-                  ) : long ? (
-                    <textarea
-                      id={id}
-                      name={field}
-                      data-field={field}
-                      rows={field === 'body' ? 8 : 4}
-                      required={required}
-                      maxLength={max || undefined}
-                      data-rich-text={
-                        ['body', 'bio', 'description', 'answer'].includes(field)
-                          ? 'true'
-                          : undefined
-                      }
-                    />
-                  ) : (
-                    <input
-                      id={id}
-                      name={field}
-                      data-field={field}
-                      type={
-                        field === 'password'
-                          ? 'password'
-                          : field === 'email'
-                            ? 'email'
-                            : date
-                              ? 'datetime-local'
-                              : numeric
-                                ? 'number'
-                                : 'text'
-                      }
-                      defaultValue={initial ?? (numeric ? '0' : undefined)}
-                      required={required && field !== 'password'}
-                      maxLength={!numeric && !date ? max || undefined : undefined}
-                      min={numeric ? 0 : undefined}
-                      dir={
-                        date ||
-                        numeric ||
-                        ['url', 'slug', 'username', 'email', 'mobile', 'phone'].includes(field)
-                          ? 'ltr'
-                          : undefined
-                      }
-                    />
-                  )}
-                  {multipleLookup && (
-                    <small id={id + '-help'}>
-                      برای انتخاب چند مورد، کلید Ctrl یا Command را نگه دارید.
-                    </small>
-                  )}
-                  {json && !list && !multipleLookup && (
-                    <small>
-                      {field === 'fields_schema'
-                        ? 'تعریف فیلدهای فرم به صورت آرایهٔ JSON'
-                        : 'مقدار را به صورت JSON وارد کنید.'}
-                    </small>
-                  )}
-                </>
-              )}
-            </div>
-          );
-        })}
+      {visible.filter(([field, rules]) => !adminFieldAdvanced(field, rules)).map(renderField)}
+      {visible.some(([field, rules]) => adminFieldAdvanced(field, rules)) && (
+        <details className="portal-form-additional">
+          <summary>تنظیمات بیشتر (اختیاری)</summary>
+          <p>این گزینه‌ها را فقط در صورت نیاز تغییر دهید.</p>
+          <div className="portal-form-additional-fields">
+            {visible.filter(([field, rules]) => adminFieldAdvanced(field, rules)).map(renderField)}
+          </div>
+        </details>
+      )}
       {(['slides', 'members', 'contents', 'advertisements', 'links', 'gallery-items'].includes(
         resource,
       ) ||
@@ -411,7 +451,7 @@ export function AdminResourceForm({
                 : 'media_id'
             }
           />
-          <small>تصاویر هنگام بارگذاری کوچک می‌شوند. حداکثر حجم فایل ۴ مگابایت است.</small>
+          <small>تصویر به WebP تبدیل و کوچک می‌شود. حداکثر حجم فایل ۴ مگابایت است.</small>
         </label>
       )}
     </form>

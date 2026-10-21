@@ -32,7 +32,7 @@ export const adminExtraPages: Record<
 
   '/admin/news': { title: 'مدیریت اخبار', resource: 'contents', defaults: { type: 'news' } },
   '/admin/pages': { title: 'صفحات داخلی', resource: 'contents', defaults: { type: 'page' } },
-  '/admin/counties': { title: 'مدیریت فرمانداری‌ها', resource: 'counties', defaults: {} },
+  '/admin/counties': { title: 'شهرستان‌ها و نقشه', resource: 'counties', defaults: {} },
   '/admin/services': { title: 'مدیریت خدمات', resource: 'services', defaults: {} },
   '/admin/galleries': { title: 'مدیریت گالری‌ها', resource: 'galleries', defaults: {} },
   '/admin/gallery-items': { title: 'تصاویر گالری', resource: 'gallery-items', defaults: {} },

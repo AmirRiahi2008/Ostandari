@@ -10,6 +10,9 @@ import { collectFields, fillFields } from '../src/features/admin/fields';
 import { AdminResourceForm } from '../src/components/admin/resource-form';
 import schemas from '../src/data/admin/resource-schema.json';
 import { adminExtraPages } from '../src/data/admin/extra-pages';
+import { AdminEditorPage } from '../src/components/admin/editor-page';
+import { adminModules } from '../src/data/admin/modules';
+import { adminResourcePage, resolveAdminEditor } from '../src/lib/admin-routes';
 import { AdminResourcePage } from '../src/components/admin/resource-page';
 
 const window = new JSDOM('', { url: 'http://localhost:3000', pretendToBeVisual: true }).window;
@@ -65,7 +68,11 @@ const sample: Row = {
   fields: [{ key: 'name', label: 'نام', type: 'text', required: true }],
 };
 
-function mount(path: string, initial?: Row[], handler?: (call: Call) => Response | undefined) {
+function mount(
+  path: string,
+  initial?: Row[],
+  handler?: (call: Call) => Response | Promise<Response> | undefined,
+) {
   const page = templates.find((page) => page.path === path) ?? {
     ...templates.find((page) => page.path === '/admin/calls')!,
     ...adminExtraPages[path],
@@ -131,14 +138,51 @@ function mount(path: string, initial?: Row[], handler?: (call: Call) => Response
     if (path === 'media' && method === 'GET') return json([{ id: 81, original_name: 'image.jpg' }]);
     return json(null);
   };
-  const abort = new AbortController();
-  const controller = adminController({ page, root, preview: false, signal: abort.signal, path });
+  let abort = new AbortController();
+  let controller = adminController({ page, root, preview: false, signal: abort.signal, path });
   controller.init();
+  function stage(id?: string | number, list = false) {
+    abort.abort();
+    abort = new AbortController();
+    const pathForView = list ? path : path + (id === undefined ? '/new' : '/' + id + '/edit');
+    const route = list ? undefined : resolveAdminEditor(pathForView)!;
+    const next = list
+      ? adminResourcePage(path)!
+      : {
+          ...route!.page,
+          id: 'AdminRecordEditor',
+          editor: { mode: route!.mode, id: route!.id, returnTo: path },
+        };
+    root.innerHTML = renderToStaticMarkup(
+      list
+        ? React.createElement(AdminResourcePage, { path })
+        : React.createElement(AdminEditorPage, { path: pathForView, route: route! }),
+    );
+    root.dataset.adminView = list ? 'list' : 'editor';
+    window.history.replaceState({}, '', pathForView);
+    controller = adminController({
+      page: next,
+      root,
+      preview: false,
+      signal: abort.signal,
+      path: pathForView,
+      navigate: () => {},
+    });
+    controller.init();
+  }
   return {
     page,
     root,
     calls,
-    controller,
+    get controller() {
+      return controller;
+    },
+    openEditor(id?: string | number) {
+      stage(id);
+    },
+    openList() {
+      stage(undefined, true);
+    },
     async ready() {
       for (let i = 0; i < 15; i++) await new Promise((resolve) => setImmediate(resolve));
     },
@@ -317,8 +361,18 @@ test('saving an empty required field performs no write and leaves the modal open
 });
 
 for (const page of [
-  ...templates.filter((page) => page.controller === 'admin' && schema[page.resource]),
-  ...Object.entries(adminExtraPages).map(([path, config]) => ({ ...config, path })),
+  ...templates.filter(
+    (page) =>
+      page.controller === 'admin' &&
+      schema[page.resource] &&
+      adminModules.find((module) => module.path === page.path)?.canCreate,
+  ),
+  ...Object.entries(adminExtraPages)
+    .filter(
+      ([path, config]) =>
+        schema[config.resource] && adminModules.find((module) => module.path === path)?.canCreate,
+    )
+    .map(([path, config]) => ({ ...config, path })),
 ]) {
   test(
     page.path + ' creates, reloads, edits and deletes through its actual form and controller',
@@ -328,8 +382,9 @@ for (const page of [
       window.confirm = () => true;
       try {
         await screen.ready();
-        (screen.root.querySelector('#cbnOpenCreateMenuModalBtn') as HTMLElement).click();
-        const modal = screen.root.querySelector<HTMLElement>('#cbnCreateMenuModalOverlay')!;
+        screen.openEditor();
+        await screen.ready();
+        let modal = screen.root.querySelector<HTMLElement>('[data-admin-record-editor]')!;
         assert.ok(modal, 'the administration page needs a working editor');
         fillFields(modal, {
           ...sample,
@@ -344,12 +399,12 @@ for (const page of [
           post,
           modal.querySelector('[data-form-error]')?.textContent ?? 'form failed to submit',
         );
+        screen.openList();
+        await screen.ready();
         assert.equal(screen.root.querySelectorAll('tbody tr[data-record]').length, 1);
-        const edit = screen.root.querySelector<HTMLElement>(
-          'tbody [data-command="editRecord"],tbody [data-command="openEditCommitmentModal"]',
-        )!;
-        assert.ok(edit);
-        await screen.controller.dispatch(edit.dataset.command!, edit);
+        screen.openEditor(17);
+        await screen.ready();
+        modal = screen.root.querySelector<HTMLElement>('[data-admin-record-editor]')!;
         const input = modal.querySelector<HTMLInputElement>(
           '[data-field="name"],[data-field="title"],[data-field="question"],[data-field="text"]',
         )!;
@@ -359,6 +414,8 @@ for (const page of [
           screen.calls.find((call) => call.method === 'PATCH')?.body?.[input.dataset.field!],
           input.value,
         );
+        screen.openList();
+        await screen.ready();
         const remove = screen.root.querySelector<HTMLElement>(
           'tbody [data-command="deleteRecord"]',
         )!;
@@ -468,7 +525,10 @@ test('media rows show their own image and authenticated download link without an
   }
 });
 
-for (const page of templates.filter(
+for (const page of [
+  ...templates,
+  ...Object.entries(adminExtraPages).map(([path, config]) => ({ ...config, path })),
+].filter(
   (page) =>
     page.resource === 'tickets' ||
     page.resource === 'submissions' ||
@@ -479,6 +539,8 @@ for (const page of templates.filter(
     async () => {
       const initial = {
         ...sample,
+        ...schema[page.resource]?.scope,
+        ...page.defaults,
         reference: ['tickets', 'submissions'].includes(page.resource)
           ? 'FIXTURE-TRACKING'
           : undefined,
@@ -487,12 +549,9 @@ for (const page of templates.filter(
       const screen = mount(page.path, [initial]);
       try {
         await screen.ready();
-        const edit = screen.root.querySelector<HTMLElement>(
-          'tbody [data-command="editRecord"],tbody [data-command="openEditCommitmentModal"]',
-        )!;
-        assert.ok(edit);
-        await screen.controller.dispatch(edit.dataset.command!, edit);
-        const modal = screen.root.querySelector<HTMLElement>('#cbnCreateMenuModalOverlay')!;
+        screen.openEditor(initial.reference ?? 17);
+        await screen.ready();
+        const modal = screen.root.querySelector<HTMLElement>('[data-admin-record-editor]')!;
         fillFields(modal, {
           organization_id: 41,
           status: page.resource.startsWith('moderation/')
@@ -507,10 +566,11 @@ for (const page of templates.filter(
         const patch = screen.calls.find((call) => call.method === 'PATCH');
         assert.equal(patch?.path, 'admin/' + page.resource + '/' + (initial.reference ?? 17));
         if (page.resource === 'tickets') {
-          assert.equal(patch?.body?.reply, undefined);
+          assert.equal(patch?.body?.reply, 'پاسخ آزمایشی');
           assert.equal(
-            screen.calls.find((call) => call.path.endsWith('/messages'))?.body?.body,
-            'پاسخ آزمایشی',
+            screen.calls.filter((call) => call.method !== 'GET').length,
+            1,
+            'reply and status are submitted together',
           );
         }
         assert.equal(
@@ -520,7 +580,7 @@ for (const page of templates.filter(
               call.path.includes('/moderation/') &&
               call.path.endsWith('/17'),
           ),
-          false,
+          page.resource.startsWith('moderation/'),
         );
       } finally {
         screen.dispose();
@@ -580,8 +640,9 @@ test('a content cover uploads as public media and its returned id is saved with 
   );
   try {
     await screen.ready();
-    (screen.root.querySelector('#cbnOpenCreateMenuModalBtn') as HTMLElement).click();
-    const modal = screen.root.querySelector<HTMLElement>('#cbnCreateMenuModalOverlay')!;
+    screen.openEditor();
+    await screen.ready();
+    const modal = screen.root.querySelector<HTMLElement>('[data-admin-record-editor]')!;
     fillFields(modal, { ...sample, type: 'news', status: 'draft' });
     const file = new File(['fixture'], 'fixture.png', { type: 'image/png' });
     Object.defineProperty(modal.querySelector('input[type="file"]'), 'files', {
@@ -620,9 +681,62 @@ test('a denied deletion shows a visible error while the original row remains ava
       screen.root.querySelector<HTMLElement>('tbody [data-command="deleteRecord"]')!,
     );
     assert.equal(screen.root.querySelectorAll('tbody tr[data-record]').length, 1);
-    assert.match(screen.root.querySelector('[role="status"]')?.textContent ?? '', /رکورد وابسته/);
+    assert.match(
+      screen.root.querySelector('#toast-container [role="status"]')?.textContent ?? '',
+      /رکورد وابسته/,
+    );
   } finally {
     window.confirm = confirm;
+    screen.dispose();
+  }
+});
+
+test('a late editor response cannot replace the record selected more recently', async () => {
+  const pending = new Map<string, (response: Response) => void>();
+  const screen = mount(
+    '/admin/faqs',
+    [
+      { ...sample, id: 17, question: 'اول' },
+      { ...sample, id: 18, question: 'دوم' },
+    ],
+    (call) => {
+      if (call.method === 'GET' && /^admin\/faqs\/(17|18)$/.test(call.path))
+        return new Promise<Response>((resolve) => pending.set(call.path, resolve));
+      return undefined;
+    },
+  );
+  try {
+    await screen.ready();
+    const rows = screen.root.querySelectorAll<HTMLTableRowElement>('tbody tr[data-record]');
+    const first = screen.controller.dispatch(
+      'editRecord',
+      rows[0].querySelector<HTMLElement>(
+        '[data-command="editRecord"],[data-command="openEditCommitmentModal"]',
+      )!,
+    );
+    const second = screen.controller.dispatch(
+      'editRecord',
+      rows[1].querySelector<HTMLElement>(
+        '[data-command="editRecord"],[data-command="openEditCommitmentModal"]',
+      )!,
+    );
+    await new Promise((resolve) => setImmediate(resolve));
+    pending.get('admin/faqs/18')!(
+      Response.json({ success: true, data: { ...sample, id: 18, question: 'دوم' } }),
+    );
+    await second;
+    pending.get('admin/faqs/17')!(
+      Response.json({ success: true, data: { ...sample, id: 17, question: 'اول' } }),
+    );
+    await first;
+    const modal = screen.root.querySelector<HTMLElement>('#cbnCreateMenuModalOverlay')!;
+    assert.equal(
+      modal.querySelector<HTMLInputElement | HTMLTextAreaElement>('[data-field="question"]')!.value,
+      'دوم',
+    );
+    await screen.controller.dispatch('saveRecord', modal);
+    assert.equal(screen.calls.find((call) => call.method === 'PATCH')?.path, 'admin/faqs/18');
+  } finally {
     screen.dispose();
   }
 });

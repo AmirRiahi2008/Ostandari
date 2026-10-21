@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/api/client';
 import { adminModules } from '@/data/admin/modules';
 import type { RecordData } from '@/types/portal';
+import { normalizeAdminSearch } from '@/lib/admin-search';
 import { adminSections } from '@/data/admin/sections';
 import { adminEditorHref } from '@/lib/admin-routes';
 import { useAdminWorkspace } from './workspace-provider';
@@ -31,13 +32,16 @@ export function AdminDashboard({ preview }: { preview: boolean }) {
   const permissions = Array.isArray(stats?.permissions) ? (stats.permissions as string[]) : null;
   const links = adminModules.filter(
     (page) =>
+      page.showInNavigation &&
       workspaceModuleAllowed(page, user) &&
       (!permissions || permissions.includes('*') || permissions.includes(page.permission)),
   );
   const visible = links.filter(
     (page) =>
       (!sectionId || page.section === sectionId) &&
-      (page.title + ' ' + page.description).includes(query.trim()),
+      normalizeAdminSearch(page.title + ' ' + page.description).includes(
+        normalizeAdminSearch(query),
+      ),
   );
   return (
     <div className="portal-dashboard">

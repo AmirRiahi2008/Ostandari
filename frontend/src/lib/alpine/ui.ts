@@ -30,6 +30,17 @@ export function bindUi(
   dispatch: (command: string, element: HTMLElement, args: string[], event: Event) => void,
 ): void {
   const { root, signal } = context;
+  if (context.page.controller === 'admin') {
+    const sidebar = one(root, '.sidebar');
+    one(root, '#clicksidebar')?.setAttribute(
+      'aria-expanded',
+      String(
+        window.innerWidth <= 900
+          ? Boolean(sidebar?.classList.contains('open'))
+          : !sidebar?.classList.contains('shrink'),
+      ),
+    );
+  }
   const listen = (type: string, action: EventListener) =>
     root.addEventListener(type, action, { signal });
   listen('click', (event) => {
@@ -53,7 +64,8 @@ export function bindUi(
         );
       }
     }
-    if (target.closest('#cbnOpenCreateMenuModalBtn')) {
+    const create = target.closest<HTMLElement>('#cbnOpenCreateMenuModalBtn');
+    if (create && !(create.tagName === 'A' && create.getAttribute('href')?.startsWith('/admin/'))) {
       event.preventDefault();
       toggleModal(root, true);
     }
@@ -80,8 +92,15 @@ export function bindUi(
     }
     if (target.closest('#clicksidebar')) {
       const sidebar = one(root, '.sidebar-parent,.sidebar');
-      if (window.innerWidth <= 900) sidebar?.classList.toggle('open');
-      else one(root, '.sidebar')?.classList.toggle('shrink');
+      const control = one(root, '#clicksidebar');
+      if (window.innerWidth <= 900) {
+        const open = sidebar?.classList.toggle('open') ?? false;
+        one(root, '#sidebarDarkBg,.dark-background-tablet')?.classList.toggle('open', open);
+        control?.setAttribute('aria-expanded', String(open));
+      } else {
+        const compact = one(root, '.sidebar')?.classList.toggle('shrink') ?? false;
+        control?.setAttribute('aria-expanded', String(!compact));
+      }
     }
     if (
       target.closest('#sidebarCloseBtn,.sidebar-close-btn,#sidebarDarkBg,.dark-background-tablet')
@@ -89,19 +108,32 @@ export function bindUi(
       all(root, '.sidebar-parent,.sidebar,.dark-background-tablet').forEach((element) =>
         element.classList.remove('open'),
       );
+      one(root, '#clicksidebar')?.setAttribute('aria-expanded', 'false');
+      one<HTMLElement>(root, '#clicksidebar')?.focus();
     }
     const accordion = target.closest<HTMLElement>('.sidebar-extended-pages-link');
     if (accordion?.closest('.menu-item')?.querySelector('.submenu-items')) {
       event.preventDefault();
       accordion.closest('.menu-item')?.querySelector('.submenu-items')?.classList.toggle('open');
     }
+    const quickCreate = one<HTMLDetailsElement>(root, '.portal-admin-create-menu');
+    if (quickCreate?.open && !target.closest('.portal-admin-create-menu')) quickCreate.open = false;
     const headerButton = target.closest<HTMLElement>('[id^=clickdiv]');
     if (headerButton) {
       const number = headerButton.id.replace('clickdiv', '');
       one(root, '#hiddendiv' + number)?.classList.toggle('active');
       headerButton.classList.toggle('highlight');
     }
-    if (target.closest('#clickforsearch')) window.location.assign('/search');
+    if (target.closest('#clickforsearch')) {
+      if (context.page.controller === 'admin') {
+        if (window.innerWidth <= 900) {
+          one(root, '.sidebar')?.classList.add('open');
+          one(root, '#sidebarDarkBg')?.classList.add('open');
+          one(root, '#clicksidebar')?.setAttribute('aria-expanded', 'true');
+        }
+        one<HTMLInputElement>(root, '[data-admin-menu-search]')?.focus();
+      } else window.location.assign('/search');
+    }
     if (target.closest('#theme-toggle')) {
       const dark = root.classList.toggle('portal-dark');
       try {
@@ -151,7 +183,17 @@ export function bindUi(
   document.addEventListener(
     'keydown',
     (event) => {
-      if (event.key === 'Escape') closeOverlays(root);
+      if (event.key === 'Escape') {
+        const sidebarOpen = Boolean(one(root, '.sidebar.open,.sidebar-parent.open'));
+        closeOverlays(root);
+        if (sidebarOpen) {
+          one(root, '#clicksidebar')?.setAttribute('aria-expanded', 'false');
+          one<HTMLElement>(root, '#clicksidebar')?.focus();
+        }
+        all<HTMLDetailsElement>(root, '.portal-admin-create-menu[open]').forEach((menu) => {
+          menu.open = false;
+        });
+      }
     },
     { signal },
   );

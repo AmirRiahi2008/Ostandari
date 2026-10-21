@@ -1,3 +1,4 @@
+import { normalizeAdminSearch } from '@/lib/admin-search';
 import { api, ApiError, jsonBody, upload } from '@/lib/api/client';
 import { all, date, feedback, fieldError, one, setImage, setOptions } from '@/lib/dom';
 import { closeOverlays, rowActions, toggleModal } from '@/lib/alpine/ui';
@@ -38,8 +39,9 @@ export function adminController(context: PageContext) {
     '#educationTableBody, .main-content table tbody',
   );
   const prototype = tbody?.querySelector('tr')?.cloneNode(true) as HTMLTableRowElement | undefined;
-  const headers = all(root, '.main-content table thead th').map((cell) =>
-    fieldForColumn(cell.textContent ?? '', page.resource),
+  const headers = all(root, '.main-content table thead th').map(
+    (cell) =>
+      cell.getAttribute('data-column') ?? fieldForColumn(cell.textContent ?? '', page.resource),
   );
   const modal = () =>
     one<HTMLElement>(root, '[data-admin-record-editor],#cbnCreateMenuModalOverlay');
@@ -104,6 +106,9 @@ export function adminController(context: PageContext) {
         locale: 'fa',
         priority: 0,
         is_active: true,
+        ...(root.dataset.organizationId
+          ? { organization_id: Number(root.dataset.organizationId) }
+          : {}),
         ...filters,
         ...resourceScope(page.resource),
         ...page.defaults,
@@ -191,6 +196,9 @@ export function adminController(context: PageContext) {
       all<HTMLAnchorElement>(row, '[data-related-resource="menu-items"]').forEach((link) => {
         link.href = '/admin/menu-items?menu_id=' + encodeURIComponent(String(record.id));
       });
+      all<HTMLAnchorElement>(row, '[data-download-media]').forEach((link) => {
+        link.href = '/api/backend/media/' + encodeURIComponent(String(record.id)) + '/download';
+      });
       if (page.resource === 'media')
         all(row, '[data-command="editRecord"],[data-command="openEditCommitmentModal"]').forEach(
           (button) => button.remove(),
@@ -221,6 +229,8 @@ export function adminController(context: PageContext) {
           return;
         }
         if (key === 'image') {
+          if (page.resource === 'media' && record.mime && !String(record.mime).startsWith('image/'))
+            return;
           setImage(
             one<HTMLImageElement>(cell, 'img'),
             record.image ?? record.cover ?? (page.resource === 'media' ? record : null),
@@ -239,8 +249,8 @@ export function adminController(context: PageContext) {
             ? (currentPage - 1) * 100 + index + 1
             : key === '_form_title'
               ? (record.form as RecordData | undefined)?.title
-              : key === 'created_at'
-                ? date(record.created_at)
+              : key?.endsWith('_at')
+                ? date(record[key])
                 : key === 'locale'
                   ? ({ fa: 'فارسی', en: 'انگلیسی', ar: 'عربی' }[String(record.locale) as 'fa'] ??
                     record.locale)
@@ -347,6 +357,14 @@ export function adminController(context: PageContext) {
     currentQuery = query;
     currentPage = result.meta?.current_page ?? selectedPage;
     records = resourceRows(page.resource, result.data);
+    if (query && ['roles', 'settings'].includes(page.resource)) {
+      const term = normalizeAdminSearch(query);
+      records = records.filter((record) =>
+        normalizeAdminSearch(
+          [record.label, record.name, record.key].filter(Boolean).join(' '),
+        ).includes(term),
+      );
+    }
     if (!records.length && currentPage > 1) return load(query, currentPage - 1);
     paint();
     if (listPages) {
@@ -813,7 +831,7 @@ export function adminController(context: PageContext) {
       });
     };
     if (preview) setProfile('مدیر محلی');
-    else
+    else if (!root.dataset.organizationId)
       void api<{ name: string; mobile?: string }>('auth/me', { signal })
         .then((result) => {
           setProfile(result.data.name, result.data.mobile);
@@ -848,9 +866,6 @@ export function adminController(context: PageContext) {
             .then((module) => module.logoutAdmin(preview))
             .catch((error) => feedback(root, error.message));
         }
-        if (target.closest('.sadyar-header-left-righ-createbtn'))
-          window.location.assign('/admin/menu-items');
-        if (target.closest('#openBtn,#openModalBtn')) window.location.assign('/assistant');
       },
       { signal },
     );
