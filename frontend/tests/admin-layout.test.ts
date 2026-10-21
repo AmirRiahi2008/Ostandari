@@ -8,7 +8,7 @@ import { AdminEditorPage } from '../src/components/admin/editor-page';
 import { resolveAdminEditor } from '../src/lib/admin-routes';
 
 test('the original fixed-height design gives long editor pages their own scroll area and readable navigation', () => {
-  const path = '/admin/news/new';
+  const path = '/panel/admin/news/new';
   const route = resolveAdminEditor(path)!;
   const window = new JSDOM(
     renderToStaticMarkup(React.createElement(AdminEditorPage, { path, route })),

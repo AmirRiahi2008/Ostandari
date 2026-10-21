@@ -52,7 +52,7 @@ export function AdminModuleMenu() {
       ).includes(normalizeAdminSearch(query)),
   );
   const current = (value: string) => path === value || path.startsWith(value + '/');
-  const dashboard = user?.portal_context?.dashboard_path ?? '/admin';
+  const dashboard = user?.portal_context?.dashboard_path ?? '/panel/admin';
   return (
     <nav className="portal-module-menu" aria-label="همهٔ بخش‌های مدیریت">
       <a
@@ -117,9 +117,9 @@ export function AdminModuleMenu() {
       })}
       {!modules.length && <p role="status">بخشی پیدا نشد. نام دیگری جستجو کنید.</p>}
       <div className="portal-menu-footer">
-        <a href="/admin/account">حساب کاربری</a>
+        <a href="/panel/admin/account">حساب کاربری</a>
         <a href={user?.portal_context?.public_path ?? '/'}>مشاهدهٔ سایت</a>
-        <a href="/admin/logout">خروج از حساب</a>
+        <a href="/panel/admin/logout">خروج از حساب</a>
       </div>
     </nav>
   );

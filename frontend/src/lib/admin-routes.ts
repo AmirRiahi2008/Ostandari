@@ -9,7 +9,11 @@ export function adminResourcePage(path: string): TemplatePage | undefined {
   const module = adminModules.find((item) => item.path === path);
   if (!module?.resource || adminUtilityTitles[path]) return;
   const page = adminExtraPages[path]
-    ? { ...templates.find((item) => item.path === '/admin/calls')!, ...adminExtraPages[path], path }
+    ? {
+        ...templates.find((item) => item.path === '/panel/admin/calls')!,
+        ...adminExtraPages[path],
+        path,
+      }
     : templates.find((item) => item.path === path);
   return page
     ? {
@@ -18,7 +22,7 @@ export function adminResourcePage(path: string): TemplatePage | undefined {
         defaults: {
           ...page.defaults,
           ...(page.resource === 'media'
-            ? { visibility: 'public', ...(path === '/admin/images' ? { kind: 'image' } : {}) }
+            ? { visibility: 'public', ...(path === '/panel/admin/images' ? { kind: 'image' } : {}) }
             : {}),
         },
       }
@@ -32,7 +36,7 @@ export function safeAdminReturn(base: string, value?: string | null): string {
     const url = new URL(value, 'https://admin.invalid');
     if (url.origin !== 'https://admin.invalid' || url.pathname !== base) return base;
     const query = new URLSearchParams(contextualFilters(url.search));
-    if (base === '/admin/reports') {
+    if (base === '/panel/admin/reports') {
       for (const key of ['status', 'type', 'urgency', 'order', 'overdue']) {
         const value = url.searchParams.get(key);
         if (value && /^[a-z0-9_]{1,30}$/.test(value)) query.set(key, value);
@@ -69,7 +73,7 @@ export function adminEditorHref(base: string, id?: string | number, search = '')
 export function resolveAdminEditor(
   path: string,
 ): { page: TemplatePage; mode: 'create' | 'edit'; id?: string } | undefined {
-  const match = path.match(/^(\/admin\/.+?)(?:\/(new)|\/([^/]+)\/edit|\/(edit))$/);
+  const match = path.match(/^(\/panel\/admin\/.+?)(?:\/(new)|\/([^/]+)\/edit|\/(edit))$/);
   if (!match) return;
   const [, base, create, rawId, singleton] = match;
   const page = adminResourcePage(base);
@@ -95,5 +99,5 @@ export function resolveAdminEditor(
 }
 
 export function resolveReportEditor(path: string): string | undefined {
-  return path.match(/^\/admin\/reports\/([a-zA-Z0-9_-]{1,100})\/edit$/)?.[1];
+  return path.match(/^\/panel\/admin\/reports\/([a-zA-Z0-9_-]{1,100})\/edit$/)?.[1];
 }

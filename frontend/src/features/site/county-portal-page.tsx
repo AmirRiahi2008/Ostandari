@@ -3,8 +3,15 @@ import type { ReactNode } from 'react';
 import { PortalLayout, Panel, EmptyState } from '@/components/site/portal-layout';
 import { OriginalDirectory, OriginalManagerCards } from '@/components/site/original-content';
 import { OriginalGallery } from '@/components/site/original-gallery';
-import { ContactForm, PollCard, CommentForm, ArticleActions, AssistantForm } from '@/components/site/public-forms';
+import {
+  ContactForm,
+  PollCard,
+  CommentForm,
+  ArticleActions,
+  AssistantForm,
+} from '@/components/site/public-forms';
 import { SafeRichText } from '@/components/site/safe-rich-text';
+import { ContentArticle, ArticleBreadcrumb } from '@/components/site/content-article';
 import { SearchForm } from '@/components/site/search-form';
 import { NewsCard } from '@/components/site/news-card';
 import { InstallGuide } from '@/components/site/install-guide';
@@ -117,23 +124,31 @@ export async function CountyPortalPage({ route, search = {} }: { route: Route; s
       (item) => Number(item.organization_id) === Number(organization?.id),
     );
     content = article ? (
-      <div className="source-article-grid">
-        <article className="card p-4">
-          <span className="portal-eyebrow">فرمانداری {county.name}</span>
-          <h2>{article.title}</h2>
-          {Boolean(article.published_at) && <time>{officialDate(article.published_at)}</time>}
-          {image && <img className="img-fluid radius10 inews" src={image} alt="" />}
-          {article.excerpt && <p className="portal-lead">{article.excerpt}</p>}
-          <SafeRichText html={String(article.body ?? '')} text={plainText(article.body)} />
-          <ArticleActions />
-          {article.comments_enabled === true && <CommentForm id={String(article.id)} />}
-        </article>
-        <aside className="card p-3">
-          <h2>مطالب مرتبط فرمانداری</h2>
-          {related.length ? news(related) : empty(false)}
-          <a href={href('/news')}>همهٔ اخبار</a>
-        </aside>
-      </div>
+      <>
+        <ArticleBreadcrumb
+          links={[
+            { title: 'صفحه اصلی فرمانداری', href: href('/') },
+            { title: 'اخبار و مطالب', href: href('/news') },
+          ]}
+          title={title}
+        />
+        <div className="portal-article-layout">
+          <ContentArticle
+            article={article}
+            image={image}
+            text={plainText(article.body)}
+            organization={'فرمانداری ' + county.name}
+          >
+            <ArticleActions />
+            {article.comments_enabled === true && <CommentForm id={String(article.id)} />}
+          </ContentArticle>
+          <aside className="portal-related-panel">
+            <h2>مطالب مرتبط فرمانداری</h2>
+            {related.length ? news(related) : empty(false)}
+            <a href={href('/news')}>همهٔ اخبار</a>
+          </aside>
+        </div>
+      </>
     ) : (
       empty(true)
     );
@@ -448,7 +463,13 @@ export async function CountyPortalPage({ route, search = {} }: { route: Route; s
       : empty(result.unavailable);
   }
   return (
-    <PortalLayout path={canonical} title={title} county={county} organization={organization}>
+    <PortalLayout
+      path={canonical}
+      title={title}
+      county={county}
+      organization={organization}
+      breadcrumbs={!contentId && section?.kind !== 'article'}
+    >
       <div className="county-portal-content">{content}</div>
     </PortalLayout>
   );

@@ -10,7 +10,7 @@ import { AuditLog } from './audit-log';
 import { adminUtilityTitles } from '@/data/admin/utility-pages';
 export function AdminUtilityPage({ path }: { path: string }) {
   const page = {
-    ...templates.find((page) => page.path === '/admin')!,
+    ...templates.find((page) => page.path === '/panel/admin')!,
     id: 'AdminUtility',
     path,
     resource: '',
@@ -29,13 +29,13 @@ export function AdminUtilityPage({ path }: { path: string }) {
                 <h1>{title}</h1>
               </div>
               <div className="portal-admin-content">
-                {path === '/admin/account' ? (
+                {path === '/panel/admin/account' ? (
                   <AdminAccount preview={templatePreview()} />
-                ) : path === '/admin/logout' ? (
+                ) : path === '/panel/admin/logout' ? (
                   <LogoutButton preview={templatePreview()} />
-                ) : path === '/admin/settings' ? (
+                ) : path === '/panel/admin/settings' ? (
                   <SiteSettings preview={templatePreview()} />
-                ) : path === '/admin/audit-logs' ? (
+                ) : path === '/panel/admin/audit-logs' ? (
                   <AuditLog preview={templatePreview()} />
                 ) : (
                   <ReportsPanel preview={templatePreview()} />

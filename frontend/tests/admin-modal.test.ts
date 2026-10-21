@@ -209,42 +209,42 @@ test('all dashboard modules have a group and only supported actions resolve to e
     assert.equal(Boolean(resolveAdminEditor(target)), module.canEdit, target);
   }
   for (const path of [
-    '/admin/news/0/edit',
-    '/admin/news/-1/edit',
-    '/admin/news/abc/edit',
-    '/admin/news/%2F/edit',
-    '/admin/unknown/new',
-    '/admin/reports/new',
-    '/admin/settings/new',
-    '/admin/subscribers/new',
-    '/admin/forum-topics/new',
-    '/admin/files/17/edit',
+    '/panel/admin/news/0/edit',
+    '/panel/admin/news/-1/edit',
+    '/panel/admin/news/abc/edit',
+    '/panel/admin/news/%2F/edit',
+    '/panel/admin/unknown/new',
+    '/panel/admin/reports/new',
+    '/panel/admin/settings/new',
+    '/panel/admin/subscribers/new',
+    '/panel/admin/forum-topics/new',
+    '/panel/admin/files/17/edit',
   ])
     assert.equal(resolveAdminEditor(path), undefined, path);
-  assert.equal(resolveReportEditor('/admin/reports/RPT-17/edit'), 'RPT-17');
-  assert.equal(resolveReportEditor('/admin/reports/%2F/edit'), undefined);
+  assert.equal(resolveReportEditor('/panel/admin/reports/RPT-17/edit'), 'RPT-17');
+  assert.equal(resolveReportEditor('/panel/admin/reports/%2F/edit'), undefined);
 });
 test('editor return targets keep list filters and reject external, sibling and malformed destinations', () => {
   assert.equal(
-    safeAdminReturn('/admin/news', '/admin/news?category_id=4&q=hello&page=2'),
-    '/admin/news?category_id=4&q=hello&page=2',
+    safeAdminReturn('/panel/admin/news', '/panel/admin/news?category_id=4&q=hello&page=2'),
+    '/panel/admin/news?category_id=4&q=hello&page=2',
   );
   for (const path of [
     'https://evil.test',
     '//evil.test',
-    '/admin/newsletter',
-    '/admin/news/17/edit',
-    '/admin/news\\evil',
-    '/admin/news\n',
+    '/panel/admin/newsletter',
+    '/panel/admin/news/17/edit',
+    '/panel/admin/news\\evil',
+    '/panel/admin/news\n',
   ])
-    assert.equal(safeAdminReturn('/admin/news', path), '/admin/news');
+    assert.equal(safeAdminReturn('/panel/admin/news', path), '/panel/admin/news');
   const target = new URL(
-    adminEditorHref('/admin/news', undefined, '?category_id=4&q=hello&page=2'),
+    adminEditorHref('/panel/admin/news', undefined, '?category_id=4&q=hello&page=2'),
     window.location.origin,
   );
-  assert.equal(target.pathname, '/admin/news/new');
+  assert.equal(target.pathname, '/panel/admin/news/new');
   assert.equal(target.searchParams.get('category_id'), '4');
-  assert.equal(target.searchParams.get('return'), '/admin/news?category_id=4&q=hello&page=2');
+  assert.equal(target.searchParams.get('return'), '/panel/admin/news?category_id=4&q=hello&page=2');
 });
 
 for (const module of modules) {
@@ -382,7 +382,7 @@ test('failed edit loads cannot write, retry reloads the record, and validation e
   let failed = true;
   override = (call) =>
     call.path === 'admin/faqs/17' && call.method === 'GET' && failed ? json(null, 503) : undefined;
-  const { root, cleanup, navigations } = await mount('/admin/faqs/17/edit', true);
+  const { root, cleanup, navigations } = await mount('/panel/admin/faqs/17/edit', true);
   try {
     assert.equal(root.querySelector<HTMLButtonElement>('[data-editor-save]')!.disabled, true);
     assert.match(root.querySelector('[data-editor-status]')!.textContent!, /دریافت|اطلاعات/);
@@ -415,7 +415,7 @@ test('failed edit loads cannot write, retry reloads the record, and validation e
 test('a mismatched record type cannot be converted into a different content section', async () => {
   override = (call) =>
     call.path === 'admin/contents/17' ? json({ ...sample(), type: 'announcement' }) : undefined;
-  const { root, cleanup } = await mount('/admin/news/17/edit', true);
+  const { root, cleanup } = await mount('/panel/admin/news/17/edit', true);
   try {
     assert.equal(root.querySelector<HTMLButtonElement>('[data-editor-save]')!.disabled, true);
     assert.match(root.querySelector('[data-editor-status]')!.textContent!, /متعلق/);
@@ -430,7 +430,7 @@ test('system roles stay read-only on their direct edit page and cannot submit an
     call.path === 'admin/roles/17' && call.method === 'GET'
       ? json({ ...sample(), is_system: true })
       : undefined;
-  const { root, cleanup, navigations } = await mount('/admin/roles/17/edit', true);
+  const { root, cleanup, navigations } = await mount('/panel/admin/roles/17/edit', true);
   try {
     const save = root.querySelector<HTMLButtonElement>('[data-editor-save]')!;
     assert.equal(save.disabled, true);
@@ -449,7 +449,7 @@ test('system roles stay read-only on their direct edit page and cannot submit an
 });
 
 test('list search changes are carried by both create and edit links and restored after saving', async () => {
-  const { root, cleanup } = await mount('/admin/news?category_id=91');
+  const { root, cleanup } = await mount('/panel/admin/news?category_id=91');
   try {
     const input = root.querySelector<HTMLInputElement>('#searchInput')!;
     input.value = 'خبر انتخاب‌شده';
@@ -477,7 +477,8 @@ test('list search changes are carried by both create and edit links and restored
 
 test('the full page CMS keeps images and tables and reuses a cover upload after a validation failure', async () => {
   const { root, cleanup, navigations } = await mount(
-    '/admin/news/new?return=' + encodeURIComponent('/admin/news?category_id=91&q=selected&page=2'),
+    '/panel/admin/news/new?return=' +
+      encodeURIComponent('/panel/admin/news?category_id=91&q=selected&page=2'),
     true,
   );
   let attempts = 0;
@@ -520,9 +521,9 @@ test('the full page CMS keeps images and tables and reuses a cover upload after 
   }
 });
 for (const [path, selector] of [
-  ['/admin/faqs/new', '.portal-cms'],
-  ['/admin/forms/new', '.portal-form-builder'],
-  ['/admin/roles/new', '.portal-permission-choices'],
+  ['/panel/admin/faqs/new', '.portal-cms'],
+  ['/panel/admin/forms/new', '.portal-form-builder'],
+  ['/panel/admin/roles/new', '.portal-permission-choices'],
 ]) {
   test('editor lifecycle remains safe when React remounts a form: ' + path, async () => {
     const { root, cleanup, page } = await mount(path, true);

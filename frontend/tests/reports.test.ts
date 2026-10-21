@@ -207,8 +207,10 @@ test('every supplied admin navigation opens the citizen reports page rather than
         React.createElement(templateViews[page.id as keyof typeof templateViews]),
       ),
     ).window.document;
-    for (const link of document.querySelectorAll('.portal-module-menu a[href="/admin/reports"]')) {
-      assert.equal(link.getAttribute('href'), '/admin/reports', page.path);
+    for (const link of document.querySelectorAll(
+      '.portal-module-menu a[href="/panel/admin/reports"]',
+    )) {
+      assert.equal(link.getAttribute('href'), '/panel/admin/reports', page.path);
       count++;
     }
   }
@@ -300,7 +302,7 @@ test('the reports list opens a separate response page with the full conversation
       container.querySelector('.reports-attachments a')?.getAttribute('href'),
       '/api/backend/media/99/download',
     );
-    assert.ok(container.querySelector('a[href="/admin/reports"]'));
+    assert.ok(container.querySelector('a[href="/panel/admin/reports"]'));
     assert.match(container.textContent!, /بازگشت به فهرست گزارش‌ها/);
   } finally {
     await unmount();
@@ -419,7 +421,7 @@ test('returning to the reports list restores filter controls, API filters and th
   window.history.replaceState(
     {},
     '',
-    '/admin/reports?status=review&county_id=2&q=selected&order=newest&page=2',
+    '/panel/admin/reports?status=review&county_id=2&q=selected&order=newest&page=2',
   );
   const service = server();
   const { container, unmount } = await mount(React.createElement(ReportsPanel, { preview: false }));
@@ -446,6 +448,6 @@ test('returning to the reports list restores filter controls, API filters and th
     assert.equal(back.searchParams.get('page'), '2');
   } finally {
     await unmount();
-    window.history.replaceState({}, '', '/admin/reports');
+    window.history.replaceState({}, '', '/panel/admin/reports');
   }
 });

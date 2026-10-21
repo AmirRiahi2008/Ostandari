@@ -23,6 +23,8 @@ export async function requireAdmin(path: string) {
   }
   const county = countyAdminRoute(path);
   redirect(
-    (county ? county.dashboard + '/login' : '/admin/login') + '?return=' + encodeURIComponent(path),
+    (county ? county.dashboard + '/login' : '/panel/admin/login') +
+      '?error=auth_required&return=' +
+      encodeURIComponent(path),
   );
 }

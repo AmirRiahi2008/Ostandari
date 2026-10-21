@@ -65,7 +65,7 @@ test('every admin module and every navigation link in the original admin templat
       resolveTemplate(path) ||
       adminExtraPages[path] ||
       adminUtilityTitles[path] ||
-      path === '/admin/login',
+      path === '/panel/admin/login',
     );
   assert.equal(new Set(adminModules.map((page) => page.path)).size, adminModules.length);
   for (const module of adminModules) {
@@ -79,7 +79,7 @@ test('every admin module and every navigation link in the original admin templat
     root.innerHTML = renderToStaticMarkup(React.createElement(View));
     for (const link of root.querySelectorAll<HTMLAnchorElement>('a[href]')) {
       const url = new URL(link.getAttribute('href')!, 'https://portal.example');
-      if (url.pathname.startsWith('/admin'))
+      if (url.pathname.startsWith('/panel/admin'))
         assert.ok(implemented(url.pathname), page.path + ' → ' + url.pathname);
       assert.ok(
         !(url.pathname === '/unit' && /مدیریت/.test(url.searchParams.get('name') ?? '')),
@@ -198,13 +198,13 @@ test('the dashboard shows named modules within the users permissions and include
       });
     const screen = await mount(React.createElement(AdminDashboard, { preview: false }));
     try {
-      assert.ok(screen.element.querySelector('a[href="/admin/governors"]'));
+      assert.ok(screen.element.querySelector('a[href="/panel/admin/governors"]'));
       assert.equal(
-        Boolean(screen.element.querySelector('a[href="/admin/settings"]')),
+        Boolean(screen.element.querySelector('a[href="/panel/admin/settings"]')),
         permissions.includes('*'),
       );
       assert.equal(
-        Boolean(screen.element.querySelector('a[href="/admin/internal-users"]')),
+        Boolean(screen.element.querySelector('a[href="/panel/admin/internal-users"]')),
         permissions.includes('*'),
       );
     } finally {
@@ -246,8 +246,11 @@ test('the dashboard contains every module in a named section and every add short
       screen.element.querySelectorAll('.portal-module-card').length,
       adminModules.filter((module) => module.showInNavigation && module.section === 'forms').length,
     );
-    assert.ok(screen.element.querySelector('a[href="/admin/forms"]'));
-    assert.equal(screen.element.querySelector('.portal-module-card a[href="/admin/news"]'), null);
+    assert.ok(screen.element.querySelector('a[href="/panel/admin/forms"]'));
+    assert.equal(
+      screen.element.querySelector('.portal-module-card a[href="/panel/admin/news"]'),
+      null,
+    );
   } finally {
     await screen.dispose();
     globalThis.fetch = original;
@@ -266,9 +269,9 @@ test('the shared sidebar exposes all modules and updates to the authenticated us
         }),
       ),
     );
-    assert.ok(screen.element.querySelector('a[href="/admin/governors"]'));
-    assert.equal(screen.element.querySelector('a[href="/admin/internal-users"]'), null);
-    assert.equal(screen.element.querySelector('a[href="/admin/news"]'), null);
+    assert.ok(screen.element.querySelector('a[href="/panel/admin/governors"]'));
+    assert.equal(screen.element.querySelector('a[href="/panel/admin/internal-users"]'), null);
+    assert.equal(screen.element.querySelector('a[href="/panel/admin/news"]'), null);
   } finally {
     await screen.dispose();
   }

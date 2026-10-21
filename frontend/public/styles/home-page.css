@@ -92,6 +92,64 @@
   box-shadow: 0 6px 24px #173b6007;
   overflow: hidden;
 }
+.source-home .home-experience .home-news-card {
+  display: flex;
+  flex-direction: column;
+  color: #193e5d;
+  text-align: start;
+  min-height: 0;
+}
+.source-home .home-experience .home-news-card .akhbar-scroll-wrapper {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  height: auto;
+  overflow: hidden;
+}
+.source-home .home-experience .home-news-card .akhbar-scroll-div {
+  flex: 1;
+  min-height: 0;
+  height: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.source-home .home-experience .home-news-card .akhbar-left {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  height: auto;
+  text-align: start;
+}
+.source-home .home-experience .home-news-card .akhbar-header {
+  display: flex;
+  flex-wrap: wrap;
+  height: auto;
+  position: static;
+}
+.source-home .home-experience .home-news-card .akhbar-onvan {
+  position: static;
+  height: auto;
+  max-height: none;
+  color: #193e5d;
+  font-size: 14px;
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+}
+.source-home .home-experience .home-news-card .akhbar-date {
+  position: static;
+  height: auto;
+  color: #586e81;
+  font-size: 11px;
+  line-height: 1.9;
+}
+.source-home .home-experience .home-news-card .tabs {
+  flex: 0 0 auto;
+}
+.source-home .home-experience .home-news-card .home-news-heading .home-kicker {
+  font-size: 12px;
+  color: #0a766f;
+}
 .source-home .home-experience .home-news-heading {
   flex-shrink: 0;
   padding: 19px 19px 14px;

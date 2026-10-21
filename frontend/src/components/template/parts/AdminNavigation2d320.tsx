@@ -4,7 +4,7 @@ export default function AdminNavigation2d320() {
       <div className="sidebar-extended">
         <div className="sidebar-extended-top">
           <a
-            href="/admin/images"
+            href="/panel/admin/images"
             className="nav-item av-item-active nav-item-new-mail remove-border"
           >
             <svg
@@ -26,17 +26,17 @@ export default function AdminNavigation2d320() {
         <div className="sidebar-extended-pages">
           <a
             className="sidebar-extended-pages-link sidebar-extended-pages-link-active"
-            href="/admin/images"
+            href="/panel/admin/images"
           >
             {' عکس های متفرقه '}
           </a>
-          <a className="sidebar-extended-pages-link" href="/admin/files">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/files">
             {' فایل های متفرقه '}
           </a>
-          <a className="sidebar-extended-pages-link" href="/admin/item-order">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/item-order">
             {' تنظیمات آیتم ها '}
           </a>
-          <a className="sidebar-extended-pages-link" href="/admin/item-order">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/item-order">
             {' تنظیمات متفرقه ها '}
           </a>
         </div>

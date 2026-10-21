@@ -25,7 +25,8 @@ import { first } from '@/features/site/search-params';
 import type { Search } from '@/features/site/public-pages';
 
 export async function AdminPortalRoute({ path, search }: { path: string; search: Search }) {
-  if (path === '/admin/organization-contact/new') redirect('/admin/organization-contact');
+  if (path === '/panel/admin/organization-contact/new')
+    redirect('/panel/admin/organization-contact');
   const county = countyAdminRoute(path);
   if (path.startsWith('/county-admin/') && !county) notFound();
   if (county?.login)
@@ -42,20 +43,21 @@ export async function AdminPortalRoute({ path, search }: { path: string; search:
       user.portal_context.county?.slug !== county.county.slug)
   )
     notFound();
-  if (path === '/admin' && user?.portal_context?.type === 'county')
+  if (path === '/panel/admin' && user?.portal_context?.type === 'county')
     redirect(user.portal_context.dashboard_path);
   const editor = resolveAdminEditor(path);
   const report = resolveReportEditor(path);
   const page = resolveTemplate(path);
   const module = adminModules.find(
     (module) =>
-      module.path === (editor?.page.path ?? (report ? '/admin/reports' : (page?.path ?? path))),
+      module.path ===
+      (editor?.page.path ?? (report ? '/panel/admin/reports' : (page?.path ?? path))),
   );
   if (module && !workspaceModuleAllowed(module, user)) notFound();
   if (editor && user?.portal_context?.can_write === false) redirect(editor.page.path);
   if (editor?.mode === 'create' && module && !workspaceCanCreate(module, user)) notFound();
   const base = {
-    ...templates.find((page) => page.path === '/admin')!,
+    ...templates.find((page) => page.path === '/panel/admin')!,
     id: 'CountyDashboard',
     path,
     resource: '',

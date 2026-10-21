@@ -29,7 +29,7 @@ export function AdminEditorPage({
     <AdminShell page={page} path={path}>
       <div className="portal-editor-heading">
         <nav aria-label="مسیر صفحه">
-          <a href="/admin">داشبورد</a>
+          <a href="/panel/admin">داشبورد</a>
           <span aria-hidden="true">/</span>
           <a href={back}>{resource.title}</a>
           <span aria-hidden="true">/</span>
@@ -43,7 +43,7 @@ export function AdminEditorPage({
         </p>
       </div>
       <section className="portal-editor-page" data-admin-record-editor="true" aria-label={title}>
-        {resource.path === '/admin/governors' && (
+        {resource.path === '/panel/admin/governors' && (
           <p className="portal-admin-help">
             فقط یک استاندار فعلیِ فعال مجاز است. برای نمایش در صفحهٔ اصلی، تصویر و مشخصات را تکمیل
             کنید و گزینه‌های «مسئول فعلی» و «فعال» را انتخاب کنید.

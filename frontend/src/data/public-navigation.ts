@@ -14,7 +14,7 @@ export const quickLinks = [
   ['پرسش‌های متداول', '/faq'],
   ['نظرسنجی', '/polls'],
   ['پیوندها', '/links'],
-  ['پنل مدیریت', '/admin'],
+  ['پنل شهروندی', '/citizen'],
 ] as const;
 export const publicTitles: Record<string, string> = {
   '/forgot-password': 'بازیابی رمز عبور',

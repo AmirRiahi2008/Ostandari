@@ -4,7 +4,7 @@ export default function AdminNavigation52d09() {
       <div className="sidebar-extended">
         <div className="sidebar-extended-top">
           <a
-            href="/admin/menu-groups"
+            href="/panel/admin/menu-groups"
             className="nav-item av-item-active nav-item-new-mail remove-border"
           >
             <svg
@@ -25,49 +25,49 @@ export default function AdminNavigation52d09() {
           </a>
         </div>
         <div className="sidebar-extended-pages">
-          <a className="sidebar-extended-pages-link" href="/admin/menu-groups">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/menu-groups">
             {' منو '}
           </a>
-          <a className="sidebar-extended-pages-link" href="/admin/slide-groups">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/slide-groups">
             {' اسلایدشوها '}
           </a>
-          <a className="sidebar-extended-pages-link" href="/admin/news-groups">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/news-groups">
             {' گروه های خبری '}
           </a>
-          <a className="sidebar-extended-pages-link" href="/admin/document-groups">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/document-groups">
             {' اسناد '}
           </a>
-          <a className="sidebar-extended-pages-link" href="/admin/tags">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/tags">
             {' تگ های خبری '}
           </a>
-          <a className="sidebar-extended-pages-link" href="/admin/organization-contact">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/organization-contact">
             {' تعیین موقعیت جغرافیایی '}
           </a>
-          <a className="sidebar-extended-pages-link" href="/admin/gallery-groups">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/gallery-groups">
             {' گالری تصاویر '}
           </a>
-          <a className="sidebar-extended-pages-link" href="/admin/media-groups">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/media-groups">
             {' چندرسانه ای '}
           </a>
-          <a className="sidebar-extended-pages-link" href="/admin/quotes">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/quotes">
             {' سخن روز '}
           </a>
-          <a className="sidebar-extended-pages-link" href="/admin/faqs">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/faqs">
             {' پرسش های متداول '}
           </a>
           <a
             className="sidebar-extended-pages-link sidebar-extended-pages-link-active"
-            href="/admin/polls"
+            href="/panel/admin/polls"
           >
             {' نظرسنجی '}
           </a>
-          <a className="sidebar-extended-pages-link" href="/admin/links">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/links">
             {' پیوندها '}
           </a>
-          <a className="sidebar-extended-pages-link" href="/admin/calls">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/calls">
             {' مدیریت فراخوانها '}
           </a>
-          <a className="sidebar-extended-pages-link" href="/admin/advertisements">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/advertisements">
             {' مدیریت تبلیغات '}
           </a>
         </div>

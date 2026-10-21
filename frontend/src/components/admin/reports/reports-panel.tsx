@@ -27,7 +27,7 @@ export function ReportsPanel({ preview }: { preview: boolean }) {
 
   useEffect(() => {
     const saved = safeAdminReturn(
-      '/admin/reports',
+      '/panel/admin/reports',
       window.location.pathname + window.location.search,
     );
     const params = new URL(saved, window.location.origin).searchParams;
@@ -312,10 +312,12 @@ export function ReportsPanel({ preview }: { preview: boolean }) {
                 <td>
                   <a
                     href={
-                      '/admin/reports/' +
+                      '/panel/admin/reports/' +
                       encodeURIComponent(report.reference) +
                       '/edit?' +
-                      new URLSearchParams({ return: '/admin/reports?' + query + '&page=' + page })
+                      new URLSearchParams({
+                        return: '/panel/admin/reports?' + query + '&page=' + page,
+                      })
                     }
                     className="reports-secondary"
                   >

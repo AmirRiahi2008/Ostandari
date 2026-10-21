@@ -4,7 +4,7 @@ export default function AdminNavigation85731() {
       <div className="sidebar-extended">
         <div className="sidebar-extended-top">
           <a
-            href="/admin/internal-users"
+            href="/panel/admin/internal-users"
             className="nav-item av-item-active nav-item-new-mail remove-border"
           >
             <svg
@@ -28,19 +28,19 @@ export default function AdminNavigation85731() {
           </a>
         </div>
         <div className="sidebar-extended-pages">
-          <a className="sidebar-extended-pages-link" href="/admin/internal-users">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/internal-users">
             {' کاربران درون سازمانی '}
           </a>
-          <a className="sidebar-extended-pages-link" href="/admin/external-users">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/external-users">
             {' کاربران برون سازمانی '}
           </a>
           <a
             className="sidebar-extended-pages-link sidebar-extended-pages-link-active"
-            href="/admin/roles"
+            href="/panel/admin/roles"
           >
             {' مدیریت نقش ها '}
           </a>
-          <a className="sidebar-extended-pages-link" href="/admin/document-groups">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/document-groups">
             {' لاگ کاربران '}
           </a>
         </div>

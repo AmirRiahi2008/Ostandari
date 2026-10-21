@@ -62,6 +62,6 @@ export function knownRoute(href: string): boolean {
     ].includes(url.pathname) ||
     resolveTemplate(url.pathname) ||
     routeAlias(url.pathname, url.searchParams) ||
-    url.pathname === '/admin/login',
+    url.pathname === '/panel/admin/login',
   );
 }

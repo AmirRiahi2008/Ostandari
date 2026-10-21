@@ -4,7 +4,7 @@ export default function AdminNavigation5b3bd() {
       <div className="sidebar-extended">
         <div className="sidebar-extended-top">
           <a
-            href="/admin/internal-users"
+            href="/panel/admin/internal-users"
             className="nav-item av-item-active nav-item-new-mail remove-border"
           >
             <svg
@@ -26,11 +26,11 @@ export default function AdminNavigation5b3bd() {
         <div className="sidebar-extended-pages">
           <a
             className="sidebar-extended-pages-link sidebar-extended-pages-link-active"
-            href="/admin/forum-groups"
+            href="/panel/admin/forum-groups"
           >
             {' تالار گفتوگو '}
           </a>
-          <a className="sidebar-extended-pages-link" href="/admin/forum-topics">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/forum-topics">
             {' موضوعات پیشنهادی کاربران '}
           </a>
         </div>

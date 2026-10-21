@@ -25,7 +25,7 @@ export interface TemplatePage {
 }
 
 export interface PortalWorkspace {
-  type: 'central' | 'province' | 'county';
+  type: 'central' | 'province' | 'county' | 'citizen';
   organization_id: number | null;
   organization_name: string | null;
   county: { id: number; name: string; slug: string } | null;

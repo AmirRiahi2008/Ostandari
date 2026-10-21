@@ -9,7 +9,7 @@ export function resolveTemplate(path: string): TemplatePage | undefined {
   if (exact) return exact;
   const original = clean.replace(/^\//, '');
   const alias = templates.find(
-    (page) => page.source === original || '/admin/' + page.source === clean,
+    (page) => page.source === original || '/panel/admin/' + page.source === clean,
   );
   if (alias) return alias;
   if (/^\/news\/[^/]+$/.test(clean)) return templates.find((page) => page.path === '/news');

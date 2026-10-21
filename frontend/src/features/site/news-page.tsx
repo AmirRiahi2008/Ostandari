@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation';
 import { PortalLayout, Panel, EmptyState, loadPortalChrome } from '@/components/site/portal-layout';
 import { NewsCard } from '@/components/site/news-card';
-import { SafeRichText } from '@/components/site/safe-rich-text';
 import { ArticleActions, CommentForm } from '@/components/site/public-forms';
 import { SearchForm } from '@/components/site/search-form';
 import { findCounty, countyQuery } from '@/data/counties';
@@ -15,6 +14,7 @@ import {
 import { templatePreview } from '@/lib/config';
 import { officeIdentity } from './office-page';
 import { first, type Search } from './search-params';
+import { ContentArticle, ArticleBreadcrumb } from '@/components/site/content-article';
 export async function NewsPage({ search }: { search: Search }) {
   const chrome = loadPortalChrome();
   const slug = first(search.name),
@@ -93,57 +93,48 @@ export async function ArticlePage({ id, search }: { id: string; search: Search }
       designPath="/news"
       chrome={chrome}
     >
-      <nav className="portal-breadcrumb" aria-label="مسیر صفحه">
-        <a href="/">صفحه اصلی</a>
-        <span aria-hidden="true">/</span>
-        <a href={'/news' + countyQuery(county)}>اخبار</a>
-      </nav>
-      <div className="source-article-grid">
-        <article className="card p-4">
-          {article ? (
-            <>
-              <span className="portal-eyebrow">
-                {article.sample ? 'محتوای نمونهٔ فایل طراحی' : 'اخبار استانداری مازندران'}
-              </span>
-              <h1>{article.title}</h1>
-              {Boolean(article.published_at) && (
-                <time dateTime={String(article.published_at)}>
-                  {new Date(String(article.published_at)).toLocaleDateString('fa-IR')}
-                </time>
-              )}
-              {image && <img className="img-fluid radius10 inews" src={image} alt="" />}
-              {article.excerpt && <p className="portal-lead">{article.excerpt}</p>}
-              <SafeRichText html={String(article.body ?? '')} text={plainText(article.body)} />
-              <ArticleActions />
-              {Boolean(result.data.comments?.length) && (
-                <section className="portal-comments">
-                  <h2>دیدگاه‌ها</h2>
-                  {result.data.comments!.map((comment) => (
-                    <article key={String(comment.id)}>
-                      <strong>
-                        {String((comment.author as PublicRecord | undefined)?.name ?? 'کاربر')}
-                      </strong>
-                      <p>{plainText(comment.body)}</p>
-                      {Boolean(comment.reply) && (
-                        <blockquote>{plainText(comment.reply)}</blockquote>
-                      )}
-                    </article>
-                  ))}
-                </section>
-              )}
-              {!article.sample && article.comments_enabled === true && (
-                <section>
-                  <h2>ارسال دیدگاه</h2>
-                  <CommentForm id={id} />
-                </section>
-              )}
-            </>
-          ) : (
-            <EmptyState unavailable />
-          )}
-        </article>
+      <ArticleBreadcrumb
+        links={[
+          { title: 'صفحه اصلی', href: '/' },
+          { title: 'اخبار و مطالب', href: '/news' + countyQuery(county) },
+        ]}
+        title={String(article?.title ?? 'جزئیات مطلب')}
+      />
+      <div className="portal-article-layout">
+        {article ? (
+          <ContentArticle
+            article={article}
+            image={image}
+            text={plainText(article.body)}
+            organization={county ? 'فرمانداری ' + county.name : 'استانداری مازندران'}
+          >
+            <ArticleActions />
+            {Boolean(result.data.comments?.length) && (
+              <section className="portal-comments">
+                <h2>دیدگاه‌ها</h2>
+                {result.data.comments!.map((comment) => (
+                  <article key={String(comment.id)}>
+                    <strong>
+                      {String((comment.author as PublicRecord | undefined)?.name ?? 'کاربر')}
+                    </strong>
+                    <p>{plainText(comment.body)}</p>
+                    {Boolean(comment.reply) && <blockquote>{plainText(comment.reply)}</blockquote>}
+                  </article>
+                ))}
+              </section>
+            )}
+            {!article.sample && article.comments_enabled === true && (
+              <section>
+                <h2>ارسال دیدگاه</h2>
+                <CommentForm id={id} />
+              </section>
+            )}
+          </ContentArticle>
+        ) : (
+          <EmptyState unavailable />
+        )}
         <aside>
-          <section className="card p-3">
+          <section className="portal-related-panel">
             <h2>اخبار مرتبط</h2>
             <a href={'/news' + countyQuery(county)}>همهٔ اخبار</a>
             {related.length ? (

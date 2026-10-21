@@ -65,7 +65,10 @@ export function bindUi(
       }
     }
     const create = target.closest<HTMLElement>('#cbnOpenCreateMenuModalBtn');
-    if (create && !(create.tagName === 'A' && create.getAttribute('href')?.startsWith('/admin/'))) {
+    if (
+      create &&
+      !(create.tagName === 'A' && create.getAttribute('href')?.startsWith('/panel/admin/'))
+    ) {
       event.preventDefault();
       toggleModal(root, true);
     }

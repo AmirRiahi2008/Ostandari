@@ -291,10 +291,10 @@ export function SiteHeader({
             </div>
             <div className="sabtnam-container">
               <div className="sabtnan">
-                <a href="/register">ثبت نام</a>
+                <a href="/register">ثبت‌نام شهروندان</a>
               </div>
               <div className="vorod">
-                <a href="/login">ورود به حساب</a>
+                <a href="/login">ورود شهروندان</a>
               </div>
             </div>
           </div>

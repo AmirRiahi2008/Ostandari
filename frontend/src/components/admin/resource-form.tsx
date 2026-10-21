@@ -469,7 +469,7 @@ export function AdminResourceForm({
             type="file"
             required
             accept={
-              path === '/admin/images'
+              path === '/panel/admin/images'
                 ? 'image/jpeg,image/png,image/webp'
                 : 'image/jpeg,image/png,image/webp,.pdf,.docx,.xlsx,.mp4,.mp3,.txt'
             }

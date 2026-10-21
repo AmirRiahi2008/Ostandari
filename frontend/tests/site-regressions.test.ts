@@ -156,7 +156,7 @@ test('all CMS lists use the administration design and keep editing on a separate
 test('new article pages render source images and related links', async () => {
   for (const id of ['design-1', 'design-2', 'design-3']) {
     const document = verifyDocument(await renderPublic('/news/' + id), '/news/' + id);
-    assert.ok(document.querySelector('.source-article-grid article img.inews'));
+    assert.ok(document.querySelector('.portal-article-layout article .portal-article-cover img'));
   }
 });
 test('an unknown county is a 404, not a fallback to another office', async () => {

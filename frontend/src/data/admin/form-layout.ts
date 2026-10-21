@@ -134,7 +134,7 @@ export function adminFieldIncluded(
   )
     return false;
   if (
-    path === '/admin/organization-contact' &&
+    path === '/panel/admin/organization-contact' &&
     !['name', 'email', 'phone', 'fax', 'sms_number', 'address'].includes(field)
   )
     return false;

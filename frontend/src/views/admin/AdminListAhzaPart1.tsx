@@ -91,7 +91,7 @@ export default function AdminListAhzaPart1() {
                           <td>
                             <button
                               className="button-designv1"
-                              data-navigate="/admin/member-groups"
+                              data-navigate="/panel/admin/member-groups"
                             >
                               {'مشاهده اعضاء گروه'}
                             </button>

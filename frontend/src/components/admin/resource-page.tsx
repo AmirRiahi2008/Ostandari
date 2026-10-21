@@ -19,7 +19,7 @@ export function AdminResourcePage({ path, user }: { path: string; user?: PortalU
       </div>
       <section className="portal-admin-content portal-resource-list" aria-label={title}>
         <p className="portal-admin-help">{module.description}</p>
-        {path === '/admin/governors' && (
+        {path === '/panel/admin/governors' && (
           <p className="portal-admin-help">
             برای تغییر تصویر یا مشخصات استاندار فعلی، همان رکورد را ویرایش کنید. فقط یک استاندار
             فعلیِ فعال در صفحهٔ اصلی نمایش داده می‌شود.
@@ -59,7 +59,7 @@ export function AdminResourcePage({ path, user }: { path: string; user?: PortalU
               </button>
             </div>
           </form>
-          <a href={user?.portal_context?.dashboard_path ?? '/admin'}>بازگشت به داشبورد</a>
+          <a href={user?.portal_context?.dashboard_path ?? '/panel/admin'}>بازگشت به داشبورد</a>
         </div>
         <div className="portal-admin-table">
           <table className="education-table">

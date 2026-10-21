@@ -74,7 +74,7 @@ function mount(
   handler?: (call: Call) => Response | Promise<Response> | undefined,
 ) {
   const page = templates.find((page) => page.path === path) ?? {
-    ...templates.find((page) => page.path === '/admin/calls')!,
+    ...templates.find((page) => page.path === '/panel/admin/calls')!,
     ...adminExtraPages[path],
     path,
   };
@@ -195,7 +195,7 @@ function mount(
 }
 
 test('roles returned in Laravel data.roles render and populate user role choices', async () => {
-  const screen = mount('/admin/roles');
+  const screen = mount('/panel/admin/roles');
   try {
     await screen.ready();
     assert.equal(screen.root.querySelectorAll('tbody tr[data-record]').length, 1);
@@ -203,7 +203,7 @@ test('roles returned in Laravel data.roles render and populate user role choices
   } finally {
     screen.dispose();
   }
-  const users = mount('/admin/internal-users');
+  const users = mount('/panel/admin/internal-users');
   try {
     await users.ready();
     assert.ok(users.root.querySelector('select[data-field="role_id"] option[value="31"]'));
@@ -213,7 +213,7 @@ test('roles returned in Laravel data.roles render and populate user role choices
 });
 
 test('a submenu parent uses menu-items rather than the MySQL menu_items table as its API path', async () => {
-  const screen = mount('/admin/menu-items');
+  const screen = mount('/panel/admin/menu-items');
   try {
     await screen.ready();
     assert.equal(
@@ -227,8 +227,8 @@ test('a submenu parent uses menu-items rather than the MySQL menu_items table as
 });
 
 for (const [path, kind] of [
-  ['/admin/calls', 'call'],
-  ['/admin/publications', 'publication'],
+  ['/panel/admin/calls', 'call'],
+  ['/panel/admin/publications', 'publication'],
 ] as const) {
   test(path + ' creates the correct scoped content type without choosing news', async () => {
     const screen = mount(path);
@@ -266,7 +266,7 @@ test('employee and expert types can be edited, and the user scope choices match 
 });
 
 test('creating a staff user accepts the real roles response and does not stop at roles.find', async () => {
-  const screen = mount('/admin/internal-users', []);
+  const screen = mount('/panel/admin/internal-users', []);
   try {
     await screen.ready();
     (screen.root.querySelector('#cbnOpenCreateMenuModalBtn') as HTMLElement).click();
@@ -281,7 +281,7 @@ test('creating a staff user accepts the real roles response and does not stop at
 });
 
 test('a failed active-status update restores the displayed checkbox and reports the error', async () => {
-  const screen = mount('/admin/internal-users', undefined, (call) =>
+  const screen = mount('/panel/admin/internal-users', undefined, (call) =>
     call.method === 'PATCH' ? Response.json({ message: 'ذخیره نشد.' }, { status: 409 }) : undefined,
   );
   try {
@@ -300,8 +300,8 @@ test('a failed active-status update restores the displayed checkbox and reports 
 
 test('poll and quote lists display their actual fields, not empty title/body columns', async () => {
   for (const [path, expected] of [
-    ['/admin/polls', 'پرسش آزمایشی'],
-    ['/admin/quotes', 'سخن آزمایشی'],
+    ['/panel/admin/polls', 'پرسش آزمایشی'],
+    ['/panel/admin/quotes', 'سخن آزمایشی'],
   ] as const) {
     const screen = mount(path, [
       {
@@ -322,7 +322,7 @@ test('poll and quote lists display their actual fields, not empty title/body col
 });
 
 test('lookups include records on subsequent API pages', async () => {
-  const screen = mount('/admin/menu-items', [], (call) =>
+  const screen = mount('/panel/admin/menu-items', [], (call) =>
     call.path === 'admin/menus'
       ? Response.json({
           success: true,
@@ -345,7 +345,7 @@ test('lookups include records on subsequent API pages', async () => {
 });
 
 test('saving an empty required field performs no write and leaves the modal open for correction', async () => {
-  const screen = mount('/admin/faqs');
+  const screen = mount('/panel/admin/faqs');
   try {
     await screen.ready();
     (screen.root.querySelector('#cbnOpenCreateMenuModalBtn') as HTMLElement).click();
@@ -436,7 +436,7 @@ for (const page of [
 }
 
 test('an API read failure clears the copied prototype data and reports the problem', async () => {
-  const screen = mount('/admin/faqs', undefined, (call) =>
+  const screen = mount('/panel/admin/faqs', undefined, (call) =>
     call.path === 'admin/faqs'
       ? Response.json({ message: 'خطای پایگاه داده' }, { status: 503 })
       : undefined,
@@ -452,7 +452,7 @@ test('an API read failure clears the copied prototype data and reports the probl
 });
 
 test('list pagination reaches the next page and keeps the current search query', async () => {
-  const screen = mount('/admin/faqs', [], (call) =>
+  const screen = mount('/panel/admin/faqs', [], (call) =>
     call.path === 'admin/faqs' && call.method === 'GET'
       ? Response.json({
           success: true,
@@ -489,12 +489,12 @@ test('list pagination reaches the next page and keeps the current search query',
 });
 
 test('the menu group keeps the link to its own items after real data replaces the template', async () => {
-  const screen = mount('/admin/menu-groups');
+  const screen = mount('/panel/admin/menu-groups');
   try {
     await screen.ready();
     assert.equal(
       screen.root.querySelector('tbody [data-related-resource]')?.getAttribute('href'),
-      '/admin/menu-items?menu_id=17',
+      '/panel/admin/menu-items?menu_id=17',
     );
   } finally {
     screen.dispose();
@@ -502,7 +502,7 @@ test('the menu group keeps the link to its own items after real data replaces th
 });
 
 test('media rows show their own image and authenticated download link without an unsupported edit action', async () => {
-  for (const path of ['/admin/images', '/admin/files']) {
+  for (const path of ['/panel/admin/images', '/panel/admin/files']) {
     const screen = mount(path, [
       { id: 17, original_name: 'sample.jpg', url: 'https://example.test/sample.jpg' },
     ]);
@@ -590,7 +590,7 @@ for (const page of [
 }
 
 test('settings submit one PUT containing the edited settings rather than POSTing a resource', async () => {
-  const screen = mount('/admin/item-order', [
+  const screen = mount('/panel/admin/item-order', [
     { id: 17, key: 'site.name', value: 'نام فعلی', is_public: true },
   ]);
   try {
@@ -612,7 +612,7 @@ test('settings submit one PUT containing the edited settings rather than POSTing
 });
 
 test('newsletter subscriber review updates the existing subscription without creating an account', async () => {
-  const screen = mount('/admin/subscribers');
+  const screen = mount('/panel/admin/subscribers');
   try {
     await screen.ready();
     const edit = screen.root.querySelector<HTMLElement>(
@@ -633,7 +633,7 @@ test('newsletter subscriber review updates the existing subscription without cre
 });
 
 test('a content cover uploads as public media and its returned id is saved with the content', async () => {
-  const screen = mount('/admin/news', [], (call) =>
+  const screen = mount('/panel/admin/news', [], (call) =>
     call.path === 'media' && call.method === 'POST'
       ? Response.json({ success: true, data: { id: 81 } }, { status: 201 })
       : undefined,
@@ -667,7 +667,7 @@ test('a content cover uploads as public media and its returned id is saved with 
 });
 
 test('a denied deletion shows a visible error while the original row remains available', async () => {
-  const screen = mount('/admin/faqs', undefined, (call) =>
+  const screen = mount('/panel/admin/faqs', undefined, (call) =>
     call.method === 'DELETE'
       ? Response.json({ message: 'رکورد وابسته وجود دارد.' }, { status: 409 })
       : undefined,
@@ -694,7 +694,7 @@ test('a denied deletion shows a visible error while the original row remains ava
 test('a late editor response cannot replace the record selected more recently', async () => {
   const pending = new Map<string, (response: Response) => void>();
   const screen = mount(
-    '/admin/faqs',
+    '/panel/admin/faqs',
     [
       { ...sample, id: 17, question: 'اول' },
       { ...sample, id: 18, question: 'دوم' },

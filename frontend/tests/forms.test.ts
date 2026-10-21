@@ -54,7 +54,7 @@ function pageRoot(route: string) {
 }
 
 test('the supplied FAQ modal produces the Laravel request without duplicated input ID collisions', () => {
-  const { root } = pageRoot('/admin/faqs');
+  const { root } = pageRoot('/panel/admin/faqs');
   const modal = root.querySelector('#cbnCreateMenuModalOverlay')!;
   fillFields(modal, { locale: 'fa', priority: 2, question: 'پرسش اصلی', answer: 'پاسخ صحیح' });
   const fields = collectFields(modal);
@@ -64,18 +64,18 @@ test('the supplied FAQ modal produces the Laravel request without duplicated inp
   assert.equal(fields.locale, 'fa');
 });
 
-test('the original slide modal keeps the title, subtitle and numeric priority independent', () => {
-  const { root } = pageRoot('/admin/slides');
+test('the slide form keeps title and numeric priority independent and omits the unused subtitle', () => {
+  const { root } = pageRoot('/panel/admin/slides');
   const modal = root.querySelector('#cbnCreateMenuModalOverlay')!;
   fillFields(modal, { title: 'عنوان اصلی', subtitle: 'عنوان فرعی', priority: 3, locale: 'en' });
   const fields = collectFields(modal);
   assert.equal(fields.title, 'عنوان اصلی');
-  assert.equal(fields.subtitle, 'عنوان فرعی');
+  assert.equal(fields.subtitle, undefined);
   assert.equal(fields.priority, 3);
 });
 
 test('existing modal controls open, cancel and dispatch save through the same source markup', () => {
-  const { root, page } = pageRoot('/admin/faqs');
+  const { root, page } = pageRoot('/panel/admin/faqs');
   const abort = new AbortController();
   let action = '';
   bindUi({ root, page, preview: true, signal: abort.signal, path: page.path }, (command) => {
@@ -239,7 +239,7 @@ test('the provided gallery opens SVG media and its next/close controls work', ()
 
 test('Alpine initializes the page once and disposes listeners when React unmounts the scope', async () => {
   const { mountPortal } = await import('../src/lib/alpine/runtime');
-  const { root, page } = pageRoot('/admin/faqs');
+  const { root, page } = pageRoot('/panel/admin/faqs');
   const dispose = mountPortal(root, { page, preview: true, path: page.path });
   await new Promise((resolve) => setTimeout(resolve, 100));
   assert.equal(root.getAttribute('x-data'), 'portalPage');

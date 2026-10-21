@@ -1,6 +1,7 @@
 import { api, jsonBody } from '@/lib/api/client';
 import { all, digits, feedback, fieldError, one } from '@/lib/dom';
 import type { PageContext, PortalUser } from '@/types/portal';
+import { adminDestination, citizenDestination } from '@/lib/auth/destinations';
 
 export function safeReturn(path: string | null): string {
   return path &&
@@ -8,7 +9,7 @@ export function safeReturn(path: string | null): string {
     !path.startsWith('//') &&
     !/[\\\u0000-\u001f\u007f]/.test(path)
     ? path
-    : '/admin';
+    : '/panel/admin';
 }
 
 export function initAuth(context: PageContext): void {
@@ -40,7 +41,7 @@ export function initAuth(context: PageContext): void {
     input.setAttribute('aria-label', input.placeholder || (i === 0 ? 'نام کاربری' : 'رمز عبور'));
     if (page.path.includes('login')) input.autocomplete = i === 0 ? 'username' : 'current-password';
   });
-  if (page.path === '/admin/login') {
+  if (page.path === '/panel/admin/login') {
     const title = one(root, '.login-row-title');
     if (title) title.textContent = 'ورود به مدیریت استانداری';
   }
@@ -52,10 +53,8 @@ export function initAuth(context: PageContext): void {
       if (submit?.disabled || !form.reportValidity()) return;
       if (submit) submit.disabled = true;
       try {
-        if (page.path === '/login' || page.path === '/admin/login') {
-          const local =
-            context.preview &&
-            (page.path === '/admin/login' || inputs[0]?.value.trim() === 'admin');
+        if (page.path === '/login' || page.path === '/panel/admin/login') {
+          const local = context.preview && page.path === '/panel/admin/login';
           const body = jsonBody({
             login: digits(inputs[0]?.value.trim() ?? ''),
             password: inputs[1]?.value,
@@ -75,16 +74,16 @@ export function initAuth(context: PageContext): void {
                 body: jsonBody({
                   login: digits(inputs[0]?.value.trim() ?? ''),
                   password: inputs[1]?.value,
+                  audience: page.path === '/panel/admin/login' ? 'staff' : 'citizen',
                 }),
               });
-          const fallback =
-            result.data.user.person_type === 'citizen'
-              ? '/citizen'
-              : (result.data.user.portal_context?.dashboard_path ?? '/admin');
           window.location.assign(
-            new URLSearchParams(window.location.search).has('return')
-              ? safeReturn(new URLSearchParams(window.location.search).get('return'))
-              : fallback,
+            page.path === '/panel/admin/login'
+              ? adminDestination(
+                  result.data.user,
+                  new URLSearchParams(window.location.search).get('return'),
+                )
+              : citizenDestination(result.data.user),
           );
         } else if (page.path === '/register') {
           sessionStorage.setItem(

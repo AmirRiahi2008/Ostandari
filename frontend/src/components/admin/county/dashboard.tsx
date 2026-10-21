@@ -53,10 +53,10 @@ const contentPaths: Record<string, string> = {
   duty: 'duties',
 };
 const quick = [
-  ['/admin/news', 'ثبت خبر', 'خبر و گزارش فعالیت‌های فرمانداری'],
-  ['/admin/galleries', 'ساخت گالری', 'تصاویر بازدیدها و رویدادهای شهرستان'],
-  ['/admin/county-governors', 'مشخصات فرماندار', 'معرفی، تصویر و راه‌های ارتباط'],
-  ['/admin/reports', 'گزارش‌های مردم', 'بررسی، ارجاع و پاسخ‌گویی'],
+  ['/panel/admin/news', 'ثبت خبر', 'خبر و گزارش فعالیت‌های فرمانداری'],
+  ['/panel/admin/galleries', 'ساخت گالری', 'تصاویر بازدیدها و رویدادهای شهرستان'],
+  ['/panel/admin/county-governors', 'مشخصات فرماندار', 'معرفی، تصویر و راه‌های ارتباط'],
+  ['/panel/admin/reports', 'گزارش‌های مردم', 'بررسی، ارجاع و پاسخ‌گویی'],
 ];
 
 function validStats(data: CountyStats): boolean {
@@ -170,7 +170,7 @@ export function CountyDashboard({ user }: { user: PortalUser }) {
           </p>
           <div className="county-hero-actions">
             <a href={workspace.public_path}>مشاهدهٔ پرتال فرمانداری ↗</a>
-            <a href="/admin/account">حساب کاربری</a>
+            <a href="/panel/admin/account">حساب کاربری</a>
           </div>
         </div>
         <div className="county-identity">
@@ -209,7 +209,9 @@ export function CountyDashboard({ user }: { user: PortalUser }) {
           .map(([path, title, detail], index) => (
             <a
               href={
-                path === '/admin/news' || path === '/admin/galleries' ? adminEditorHref(path) : path
+                path === '/panel/admin/news' || path === '/panel/admin/galleries'
+                  ? adminEditorHref(path)
+                  : path
               }
               key={path}
             >
@@ -252,12 +254,12 @@ export function CountyDashboard({ user }: { user: PortalUser }) {
               <span className="county-eyebrow">ارتباط با مردم</span>
               <h2>تازه‌ترین گزارش‌های مردمی</h2>
             </div>
-            <a href="/admin/reports">همهٔ گزارش‌ها ←</a>
+            <a href="/panel/admin/reports">همهٔ گزارش‌ها ←</a>
           </header>
           {stats?.recent_reports.map((ticket) => (
             <a
               className="county-inbox-item"
-              href={'/admin/reports/' + encodeURIComponent(ticket.reference) + '/edit'}
+              href={'/panel/admin/reports/' + encodeURIComponent(ticket.reference) + '/edit'}
               key={ticket.reference}
             >
               <strong>{ticket.subject}</strong>
@@ -277,12 +279,12 @@ export function CountyDashboard({ user }: { user: PortalUser }) {
             <span className="county-eyebrow">مدیریت انتشار</span>
             <h2>آخرین محتواهای فرمانداری</h2>
           </div>
-          <a href="/admin/news">فهرست اخبار ←</a>
+          <a href="/panel/admin/news">فهرست اخبار ←</a>
         </header>
         <div className="county-content-list">
           {stats?.recent_contents.map((item) => (
             <a
-              href={adminEditorHref('/admin/' + (contentPaths[item.type] ?? 'news'), item.id)}
+              href={adminEditorHref('/panel/admin/' + (contentPaths[item.type] ?? 'news'), item.id)}
               key={item.id}
             >
               <span className="county-content-dot" aria-hidden="true" />

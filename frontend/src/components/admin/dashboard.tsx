@@ -48,7 +48,7 @@ export function AdminDashboard({ preview }: { preview: boolean }) {
       <div className="portal-dashboard-heading">
         <h2>مدیریت پرتال استانداری مازندران</h2>
         <a href="/">مشاهدهٔ سایت</a>
-        <a href="/admin/account">حساب کاربری</a>
+        <a href="/panel/admin/account">حساب کاربری</a>
       </div>
       <p className="portal-dashboard-intro">
         {canWrite

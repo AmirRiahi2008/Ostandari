@@ -8,7 +8,7 @@ export function countyPortalHref(county: Pick<County, 'slug'>, destination = '/'
   const current = findCounty(url.pathname.split('/')[1]);
   if (current) return destination;
   if (
-    /^\/(?:admin|county-admin|citizen|login|register|forgot-password|password)(?:\/|$)/.test(
+    /^\/(?:panel\/admin|admin|county-admin|citizen|login|register|forgot-password|password)(?:\/|$)/.test(
       url.pathname,
     )
   )
@@ -89,7 +89,7 @@ export function canonicalNavigation(items: NavigationItem[]): NavigationItem[] {
 
 export function countyQuickLinks(county: County) {
   return quickLinks
-    .filter(([, href]) => href !== '/counties' && href !== '/admin')
+    .filter(([, href]) => href !== '/counties')
     .map(([label, href]) => ({
       title: countyTitle(label, county),
       href: countyPortalHref(county, href),

@@ -18,14 +18,14 @@ export function workspaceModuleAllowed(
     return false;
   if (user?.portal_context?.type === 'county')
     return ![
-      '/admin/governors',
-      '/admin/counties',
-      '/admin/settings',
-      '/admin/item-order',
-      '/admin/roles',
-      '/admin/internal-users',
-      '/admin/external-users',
-      '/admin/subscribers',
+      '/panel/admin/governors',
+      '/panel/admin/counties',
+      '/panel/admin/settings',
+      '/panel/admin/item-order',
+      '/panel/admin/roles',
+      '/panel/admin/internal-users',
+      '/panel/admin/external-users',
+      '/panel/admin/subscribers',
     ].includes(module.path);
   return true;
 }
@@ -53,14 +53,14 @@ export function workspaceModuleTitle(
   return (
     (
       {
-        '/admin/county-governors': 'فرماندار شهرستان',
-        '/admin/members': 'مدیران شهرستان',
-        '/admin/advisors': 'مشاوران فرماندار',
-        '/admin/organization-contact': 'اطلاعات تماس فرمانداری',
-        '/admin/organizations': 'اطلاعات فرمانداری',
-        '/admin/slides': 'اسلایدهای فرمانداری',
-        '/admin/governor/pending': 'پیام‌های تازهٔ فرمانداری',
-        '/admin/governor/replied': 'پیام‌های پاسخ‌داده‌شدهٔ فرمانداری',
+        '/panel/admin/county-governors': 'فرماندار شهرستان',
+        '/panel/admin/members': 'مدیران شهرستان',
+        '/panel/admin/advisors': 'مشاوران فرماندار',
+        '/panel/admin/organization-contact': 'اطلاعات تماس فرمانداری',
+        '/panel/admin/organizations': 'اطلاعات فرمانداری',
+        '/panel/admin/slides': 'اسلایدهای فرمانداری',
+        '/panel/admin/governor/pending': 'پیام‌های تازهٔ فرمانداری',
+        '/panel/admin/governor/replied': 'پیام‌های پاسخ‌داده‌شدهٔ فرمانداری',
       } as Record<string, string>
     )[path] ?? title
   );

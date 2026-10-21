@@ -18,7 +18,7 @@ export function ReportEditor({
   const [error, setError] = useState('');
   const [revision, setRevision] = useState(0);
   const [busy, setBusy] = useState(false);
-  const back = safeAdminReturn('/admin/reports', returnTo);
+  const back = safeAdminReturn('/panel/admin/reports', returnTo);
   useEffect(() => {
     if (preview) return;
     const controller = new AbortController();

@@ -6,49 +6,49 @@ import { adminUtilityTitles } from './utility-pages';
 import { adminSectionFor, adminSectionOrder, reviewResource } from './sections';
 
 const names: Record<string, string> = {
-  '/admin/menu-items': 'گزینه‌های منو و مگامنو',
-  '/admin/menu-groups': 'منوهای سایت',
-  '/admin/slide-groups': 'گروه‌بندی اسلایدها',
-  '/admin/slides': 'اسلایدهای صفحهٔ اصلی',
-  '/admin/member-groups': 'گروه‌بندی مدیران و اعضا',
-  '/admin/members': 'مدیران و اعضای سازمان',
-  '/admin/document-groups': 'گروه‌های اسناد',
-  '/admin/service-groups': 'گروه‌های خدمات',
-  '/admin/calls': 'فراخوان‌ها',
-  '/admin/form-groups': 'گروه‌بندی ویژگی‌های فرم',
-  '/admin/gallery-groups': 'گروه‌های گالری',
-  '/admin/item-order': 'تنظیمات پیشرفته',
-  '/admin/external-users': 'کاربران مردمی',
-  '/admin/internal-users': 'کاربران مدیریتی',
-  '/admin/news-groups': 'گروه‌های خبر',
-  '/admin/publications': 'انتشارات',
-  '/admin/forms': 'فرم‌ساز',
-  '/admin/employee-list': 'فهرست کارمندان',
-  '/admin/employees': 'مدیریت کارمندان',
-  '/admin/experts': 'کارشناسان فرم',
-  '/admin/subscribers': 'اعضای خبرنامه',
-  '/admin/organizations': 'واحدهای سازمانی و فرمانداری‌ها',
-  '/admin/files': 'کتابخانهٔ فایل‌ها',
-  '/admin/images': 'کتابخانهٔ تصاویر',
-  '/admin/submissions': 'درخواست‌های ثبت‌شدهٔ فرم‌ها',
-  '/admin/media-groups': 'گروه‌های چندرسانه‌ای',
-  '/admin/roles': 'نقش‌ها و دسترسی‌ها',
-  '/admin/comments/pending': 'نظرات در انتظار',
-  '/admin/comments/replied': 'نظرات تأییدشده',
-  '/admin/polls': 'نظرسنجی‌ها',
-  '/admin/governor/pending': 'پیام‌های تازه به استاندار',
-  '/admin/governor/replied': 'پیام‌های پاسخ‌داده‌شده به استاندار',
-  '/admin/links': 'پیوندها',
-  '/admin/forum-topics': 'موضوعات تالار گفتگو',
-  '/admin/faqs': 'پرسش‌های متداول',
-  '/admin/quotes': 'سخن روز',
-  '/admin/advertisements': 'تبلیغات و بنرها',
-  '/admin/tags': 'برچسب‌های خبر',
-  '/admin/forum-groups': 'گروه‌های تالار گفتگو',
-  '/admin/organization-contact': 'اطلاعات تماس واحدهای سازمانی',
-  '/admin/contact/pending': 'پیام‌های تازهٔ تماس با ما',
-  '/admin/contact/replied': 'پیام‌های پاسخ‌داده‌شدهٔ تماس با ما',
-  '/admin/contact/approved': 'پیام‌های تماس در حال بررسی',
+  '/panel/admin/menu-items': 'گزینه‌های منو و مگامنو',
+  '/panel/admin/menu-groups': 'منوهای سایت',
+  '/panel/admin/slide-groups': 'گروه‌بندی اسلایدها',
+  '/panel/admin/slides': 'اسلایدهای صفحهٔ اصلی',
+  '/panel/admin/member-groups': 'گروه‌بندی مدیران و اعضا',
+  '/panel/admin/members': 'مدیران و اعضای سازمان',
+  '/panel/admin/document-groups': 'گروه‌های اسناد',
+  '/panel/admin/service-groups': 'گروه‌های خدمات',
+  '/panel/admin/calls': 'فراخوان‌ها',
+  '/panel/admin/form-groups': 'گروه‌بندی ویژگی‌های فرم',
+  '/panel/admin/gallery-groups': 'گروه‌های گالری',
+  '/panel/admin/item-order': 'تنظیمات پیشرفته',
+  '/panel/admin/external-users': 'کاربران مردمی',
+  '/panel/admin/internal-users': 'کاربران مدیریتی',
+  '/panel/admin/news-groups': 'گروه‌های خبر',
+  '/panel/admin/publications': 'انتشارات',
+  '/panel/admin/forms': 'فرم‌ساز',
+  '/panel/admin/employee-list': 'فهرست کارمندان',
+  '/panel/admin/employees': 'مدیریت کارمندان',
+  '/panel/admin/experts': 'کارشناسان فرم',
+  '/panel/admin/subscribers': 'اعضای خبرنامه',
+  '/panel/admin/organizations': 'واحدهای سازمانی و فرمانداری‌ها',
+  '/panel/admin/files': 'کتابخانهٔ فایل‌ها',
+  '/panel/admin/images': 'کتابخانهٔ تصاویر',
+  '/panel/admin/submissions': 'درخواست‌های ثبت‌شدهٔ فرم‌ها',
+  '/panel/admin/media-groups': 'گروه‌های چندرسانه‌ای',
+  '/panel/admin/roles': 'نقش‌ها و دسترسی‌ها',
+  '/panel/admin/comments/pending': 'نظرات در انتظار',
+  '/panel/admin/comments/replied': 'نظرات تأییدشده',
+  '/panel/admin/polls': 'نظرسنجی‌ها',
+  '/panel/admin/governor/pending': 'پیام‌های تازه به استاندار',
+  '/panel/admin/governor/replied': 'پیام‌های پاسخ‌داده‌شده به استاندار',
+  '/panel/admin/links': 'پیوندها',
+  '/panel/admin/forum-topics': 'موضوعات تالار گفتگو',
+  '/panel/admin/faqs': 'پرسش‌های متداول',
+  '/panel/admin/quotes': 'سخن روز',
+  '/panel/admin/advertisements': 'تبلیغات و بنرها',
+  '/panel/admin/tags': 'برچسب‌های خبر',
+  '/panel/admin/forum-groups': 'گروه‌های تالار گفتگو',
+  '/panel/admin/organization-contact': 'اطلاعات تماس واحدهای سازمانی',
+  '/panel/admin/contact/pending': 'پیام‌های تازهٔ تماس با ما',
+  '/panel/admin/contact/replied': 'پیام‌های پاسخ‌داده‌شدهٔ تماس با ما',
+  '/panel/admin/contact/approved': 'پیام‌های تماس در حال بررسی',
 };
 const specialPermissions: Record<string, string> = {
   users: 'users.manage',
@@ -87,15 +87,15 @@ export const adminModules = [
         resource: page.resource,
       })),
       ...Object.entries(adminUtilityTitles)
-        .filter(([path]) => !['/admin/logout', '/admin/account'].includes(path))
+        .filter(([path]) => !['/panel/admin/logout', '/panel/admin/account'].includes(path))
         .map(([path, title]) => ({
           path,
           title,
           resource: '',
           permission:
-            path === '/admin/reports'
+            path === '/panel/admin/reports'
               ? 'tickets.manage'
-              : path === '/admin/settings'
+              : path === '/panel/admin/settings'
                 ? 'settings.manage'
                 : 'audit.view',
         })),
@@ -105,12 +105,12 @@ export const adminModules = [
   .map((page) => ({
     ...page,
     section: adminSectionFor(page.path),
-    showInNavigation: page.path !== '/admin/employee-list',
+    showInNavigation: page.path !== '/panel/admin/employee-list',
     canCreate:
       Boolean(page.resource) &&
       !reviewResource(page.resource) &&
       page.resource !== 'settings' &&
-      page.path !== '/admin/organization-contact',
+      page.path !== '/panel/admin/organization-contact',
     canEdit: Boolean(page.resource) && page.resource !== 'media',
     ...adminModuleCopy(page.path, page.resource, page.title),
   }))

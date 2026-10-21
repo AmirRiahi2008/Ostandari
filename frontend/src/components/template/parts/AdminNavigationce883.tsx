@@ -4,7 +4,7 @@ export default function AdminNavigationce883() {
       <div className="sidebar-extended">
         <div className="sidebar-extended-top">
           <a
-            href="/admin/service-groups"
+            href="/panel/admin/service-groups"
             className="nav-item av-item-active nav-item-new-mail remove-border"
           >
             <svg
@@ -119,17 +119,17 @@ export default function AdminNavigationce883() {
         <div className="sidebar-extended-pages">
           <a
             className="sidebar-extended-pages-link sidebar-extended-pages-link-active"
-            href="/admin/service-groups"
+            href="/panel/admin/service-groups"
           >
             {' مدیریت خدمات '}
           </a>
-          <a className="sidebar-extended-pages-link" href="/admin/publications">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/publications">
             {' لیست انتشارات '}
           </a>
-          <a className="sidebar-extended-pages-link" href="/admin/contact/approved">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/contact/approved">
             {' اطلاعات تماس سازمان '}
           </a>
-          <a className="sidebar-extended-pages-link" href="/admin/organization-contact">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/organization-contact">
             {' اطلاعات تماس رئیس سازمان '}
           </a>
         </div>

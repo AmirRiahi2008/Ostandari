@@ -4,7 +4,7 @@ export default function AdminNavigation6f69e() {
       <div className="sidebar-extended">
         <div className="sidebar-extended-top">
           <a
-            href="/admin/employees"
+            href="/panel/admin/employees"
             className="nav-item av-item-active nav-item-new-mail remove-border"
           >
             <svg
@@ -27,22 +27,22 @@ export default function AdminNavigation6f69e() {
           </a>
         </div>
         <div className="sidebar-extended-pages">
-          <a className="sidebar-extended-pages-link" href="/admin/employees">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/employees">
             {' مدیریت کارمندان '}
           </a>
           <a
             className="sidebar-extended-pages-link sidebar-extended-pages-link-active"
-            href="/admin/experts"
+            href="/panel/admin/experts"
           >
             {' مدیریت کارشناسان فرم '}
           </a>
-          <a className="sidebar-extended-pages-link" href="/admin/form-groups">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/form-groups">
             {' لیست گروه بندی ویژگی ها '}
           </a>
-          <a className="sidebar-extended-pages-link" href="/admin/forms">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/forms">
             {' لیست فرم ها '}
           </a>
-          <a className="sidebar-extended-pages-link" href="/admin/submissions">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/submissions">
             {' متقاضیان فرم ها '}
           </a>
         </div>

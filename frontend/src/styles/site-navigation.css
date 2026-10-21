@@ -300,6 +300,17 @@
   margin: 0;
   color: white;
 }
+[data-section='site'] [data-react-header] .sabtnam-container {
+  width: fit-content;
+  min-width: 190px;
+  flex-shrink: 0;
+  padding-inline: 10px;
+  gap: 10px;
+}
+[data-section='site'] [data-react-header] .sabtnam-container :is(.sabtnan, .vorod) {
+  width: auto;
+  flex: 0 0 auto;
+}
 [data-react-header] .mm-item > .mm-row > .mm-link {
   padding-block: 14px;
   color: #234d70;
@@ -783,9 +794,16 @@
   [data-section='site'] [data-react-header] .install-app-menu-item .rast > a {
     align-self: center;
     height: auto;
-    min-height: 40px;
-    padding: 8px;
+    min-height: 34px;
+    padding: 5px 9px;
+    line-height: 1.5;
     box-sizing: border-box;
+  }
+  [data-section='site'] [data-react-header] .install-app-menu-item > .rast {
+    align-self: center;
+    height: auto !important;
+    min-height: 34px !important;
+    padding: 0;
   }
   [data-section='site'] [data-react-header] .ai-menu-item > .rast {
     align-self: center;

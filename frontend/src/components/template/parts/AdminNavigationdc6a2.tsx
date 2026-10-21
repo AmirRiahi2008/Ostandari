@@ -4,7 +4,7 @@ export default function AdminNavigationdc6a2() {
       <div className="sidebar-extended">
         <div className="sidebar-extended-top">
           <a
-            href="/admin/internal-users"
+            href="/panel/admin/internal-users"
             className="nav-item av-item-active nav-item-new-mail remove-border"
           >
             <svg
@@ -27,12 +27,12 @@ export default function AdminNavigationdc6a2() {
           </a>
         </div>
         <div className="sidebar-extended-pages">
-          <a className="sidebar-extended-pages-link" href="/admin/organizations">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/organizations">
             {' مدیریت سازمان ها '}
           </a>
           <a
             className="sidebar-extended-pages-link sidebar-extended-pages-link-active"
-            href="/admin/members"
+            href="/panel/admin/members"
           >
             {' اعضاء سازمان '}
           </a>

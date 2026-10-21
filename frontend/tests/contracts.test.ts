@@ -32,7 +32,10 @@ test('the two supplied archives map to 70 distinct routes', () => {
   assert.equal(new Set(templates.map((page) => page.path)).size, 70);
   assert.equal(resolveTemplate('/')?.source, 'asli.html');
   assert.equal(resolveTemplate('/pages/khadamatelectronic.htm')?.path, '/services');
-  assert.equal(resolveTemplate('/admin/karbaran-daron.html')?.path, '/admin/internal-users');
+  assert.equal(
+    resolveTemplate('/panel/admin/karbaran-daron.html')?.path,
+    '/panel/admin/internal-users',
+  );
   assert.equal(resolveTemplate('/news/23')?.path, '/news');
   assert.equal(resolveTemplate('/unprovided-page'), undefined);
 });
@@ -48,7 +51,7 @@ test('the supplied embedded citizen, gallery and admin form styles survive conve
   assert.match(styles('/citizen'), /\.poll-opt/);
   assert.match(styles('/citizen'), /\.screen/);
   assert.match(styles('/gallery'), /\.gal-/);
-  assert.ok(styles('/admin/internal-users').length > 4000);
+  assert.ok(styles('/panel/admin/internal-users').length > 4000);
 });
 
 for (const page of templates) {
@@ -104,9 +107,9 @@ test('the backend proxy rejects traversal, unknown endpoints and cross-origin wr
     ),
     true,
   );
-  assert.equal(safeReturn('//evil.invalid'), '/admin');
-  assert.equal(safeReturn('/admin/faqs'), '/admin/faqs');
-  assert.equal(safeReturn('/\\evil.invalid'), '/admin');
+  assert.equal(safeReturn('//evil.invalid'), '/panel/admin');
+  assert.equal(safeReturn('/panel/admin/faqs'), '/panel/admin/faqs');
+  assert.equal(safeReturn('/\\evil.invalid'), '/panel/admin');
 });
 
 test('login stores a private session cookie and removes bearer tokens from the response', async () => {

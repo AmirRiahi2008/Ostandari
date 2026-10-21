@@ -8,7 +8,7 @@ export async function logoutAdmin(preview: boolean) {
   const target =
     document.querySelector<HTMLElement>('[data-workspace-login]')?.dataset.workspaceLogin;
   window.location.assign(
-    target && /^\/county-admin\/[a-z0-9-]+\/login$/.test(target) ? target : '/admin/login',
+    target && /^\/county-admin\/[a-z0-9-]+\/login$/.test(target) ? target : '/panel/admin/login',
   );
 }
 export function LogoutButton({ preview }: { preview: boolean }) {

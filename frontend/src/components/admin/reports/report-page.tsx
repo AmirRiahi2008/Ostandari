@@ -14,17 +14,17 @@ export function AdminReportPage({
   returnTo?: string;
 }) {
   const page = {
-    ...templates.find((page) => page.path === '/admin')!,
+    ...templates.find((page) => page.path === '/panel/admin')!,
     id: 'AdminReportEditor',
     path,
     resource: '',
   };
-  const back = safeAdminReturn('/admin/reports', returnTo);
+  const back = safeAdminReturn('/panel/admin/reports', returnTo);
   return (
     <AdminShell page={page} path={path}>
       <div className="portal-editor-heading">
         <nav aria-label="مسیر صفحه">
-          <a href="/admin">داشبورد</a>
+          <a href="/panel/admin">داشبورد</a>
           <span aria-hidden="true">/</span>
           <a href={back}>گزارش‌های مردمی</a>
         </nav>

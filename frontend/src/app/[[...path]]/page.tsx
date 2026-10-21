@@ -19,6 +19,7 @@ import { adminUtilityTitles } from '@/data/admin/utility-pages';
 import { resolveAdminEditor, resolveReportEditor } from '@/lib/admin-routes';
 import { resolveCountyPortal, countyTitle } from '@/lib/county-portal';
 import { CountyPortalPage } from '@/features/site/county-portal-page';
+import { AuthenticationPage } from '@/components/auth/authentication-page';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -26,6 +27,11 @@ type Props = { params: Promise<{ path?: string[] }>; searchParams: Promise<Searc
 
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const path = '/' + ((await params).path ?? []).join('/');
+  if (path === '/panel/admin/login') return { title: 'ورود به پنل مدیریت | استانداری مازندران' };
+  if (path === '/login' || path === '/register')
+    return {
+      title: (path === '/login' ? 'ورود شهروندان' : 'ثبت‌نام شهروندان') + ' | استانداری مازندران',
+    };
   const countyPortal = resolveCountyPortal(path);
   if (countyPortal)
     return {
@@ -72,6 +78,17 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 export default async function TemplateRoute({ params, searchParams }: Props) {
   const path = '/' + ((await params).path ?? []).join('/');
   const search = await searchParams;
+  if (path === '/admin' || path.startsWith('/admin/')) notFound();
+  if (['/login', '/register', '/panel/admin/login'].includes(path))
+    return (
+      <AuthenticationPage
+        key={path}
+        mode={path === '/panel/admin/login' ? 'staff' : path === '/register' ? 'register' : 'login'}
+        preview={templatePreview()}
+        returnTo={first(search.return)}
+        denied={first(search.error) === 'auth_required'}
+      />
+    );
   const countyPortal = resolveCountyPortal(path);
   if (countyPortal) {
     if (countyPortal.canonical !== path)
@@ -93,7 +110,8 @@ export default async function TemplateRoute({ params, searchParams }: Props) {
     return <CountyPortalPage route={countyPortal} search={search} />;
   }
   if (
-    ((path === '/admin' || path.startsWith('/admin/')) && path !== '/admin/login') ||
+    ((path === '/panel/admin' || path.startsWith('/panel/admin/')) &&
+      path !== '/panel/admin/login') ||
     path.startsWith('/county-admin/')
   )
     return <AdminPortalRoute path={path} search={search} />;
@@ -113,10 +131,12 @@ export default async function TemplateRoute({ params, searchParams }: Props) {
   if (isPublicRoute(path) || (path === '/gallery' && search.name))
     return <PublicPage path={path} search={search} />;
   const page =
-    path === '/admin/login'
-      ? { ...resolveTemplate('/login')!, path: '/admin/login', title: 'ورود مدیریت' }
+    path === '/panel/admin/login'
+      ? { ...resolveTemplate('/login')!, path: '/panel/admin/login', title: 'ورود مدیریت' }
       : resolveTemplate(path);
   if (!page) notFound();
+  if (page.controller === 'auth' && ['/login', '/register'].includes(page.path))
+    redirect(page.path);
   const preview = templatePreview();
   if (page.group === 'admin') return <AdminPortalRoute path={page.path} search={search} />;
   const View = templateViews[page.id as keyof typeof templateViews];

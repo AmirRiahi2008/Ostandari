@@ -56,7 +56,7 @@ export default function AdminManageSiteSlidePart1() {
                           <td>{'1'}</td>
                           <td>{'استانداری'}</td>
                           <td>
-                            <button className="button-designv1" data-navigate="/admin/slides">
+                            <button className="button-designv1" data-navigate="/panel/admin/slides">
                               {'مشاهده اسلایدشو های گروه'}
                             </button>
                           </td>

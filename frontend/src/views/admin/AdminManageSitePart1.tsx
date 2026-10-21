@@ -63,7 +63,7 @@ export default function AdminManageSitePart1() {
                           <td>
                             <a
                               className="button-designv1"
-                              href="/admin/menu-items"
+                              href="/panel/admin/menu-items"
                               data-related-resource="menu-items"
                             >
                               {'مشاهده منوهای گروه'}

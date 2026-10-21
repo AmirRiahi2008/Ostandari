@@ -29,26 +29,26 @@ export default function AdminHeader9ef4c() {
   const user = useAdminWorkspace();
   const context = user?.portal_context;
   const create = [
-    '/admin/news',
-    '/admin/announcements',
-    '/admin/slides',
-    '/admin/galleries',
-    '/admin/members',
-    '/admin/services',
-    '/admin/forms',
-    '/admin/images',
+    '/panel/admin/news',
+    '/panel/admin/announcements',
+    '/panel/admin/slides',
+    '/panel/admin/galleries',
+    '/panel/admin/members',
+    '/panel/admin/services',
+    '/panel/admin/forms',
+    '/panel/admin/images',
   ].flatMap((path) => {
     const module = adminModules.find((item) => item.path === path);
     return module && workspaceModuleAllowed(module, user) && workspaceCanCreate(module, user)
       ? [module]
       : [];
   });
-  const reports = adminModules.find((item) => item.path === '/admin/reports')!;
+  const reports = adminModules.find((item) => item.path === '/panel/admin/reports')!;
   return (
     <header className="sadyar-header portal-admin-header" data-admin-header="true">
       <div className="sadyar-header-right makecenter">
         <a
-          href={context?.dashboard_path ?? '/admin'}
+          href={context?.dashboard_path ?? '/panel/admin'}
           className="sadyar-header-right-text portal-admin-brand"
         >
           <span>{context?.type === 'county' ? 'پنل فرمانداری' : 'پنل استانداری'}</span>
@@ -103,7 +103,7 @@ export default function AdminHeader9ef4c() {
         </button>
         {workspaceModuleAllowed(reports, user) && (
           <a
-            href="/admin/reports"
+            href="/panel/admin/reports"
             className="header-smallitem makecenter"
             aria-label="گزارش‌های مردمی"
             title="گزارش‌های مردمی"
@@ -136,7 +136,7 @@ export default function AdminHeader9ef4c() {
           </Icon>
         </button>
         <a
-          href="/admin/account"
+          href="/panel/admin/account"
           className="portal-admin-account"
           aria-label="حساب کاربری"
           title="حساب کاربری"

@@ -23,6 +23,7 @@ import {
   type OfficialSection,
 } from './official-data';
 import { first, type Search } from './search-params';
+import { ContentArticle, ArticleBreadcrumb } from '@/components/site/content-article';
 import { OfficialGallery } from './official-gallery';
 
 function SectionLinks({ ids }: { ids: string[] }) {
@@ -157,40 +158,53 @@ export async function OfficialSectionPage({
   if (id === 'menu-195') content = <TransparencyContent />;
   else if (kind === 'article')
     content = (
-      <div className="source-article-grid">
-        <article className="card p-4">
-          <div className="d-flex flex-row mb-1">
-            <div className="Dottedstocol ml-3" />
-            <div className="singletitle">
-              <span>استانداری مازندران</span>
-              <h2>{article?.title ?? section.title}</h2>
-            </div>
-          </div>
-          {Boolean(article?.published_at) && <time>{officialDate(article?.published_at)}</time>}
-          {image && <img className="img-fluid radius10 inews" src={image} alt="" />}
-          <div id="content">
-            {article?.excerpt && (!article.body || !partial) && <p>{article.excerpt}</p>}
-            {article?.body && <SafeRichText html={article.body} text={plainText(article.body)} />}
-            {!article && <EmptyState unavailable={unavailable}>این مطلب در دسترس نیست.</EmptyState>}
-            {article && partial && (
-              <p className="source-reference">
-                این متن، چکیدهٔ منتشرشده در صفحهٔ اصلی سایت قدیمی است. متن کامل در منبع قرار دارد.
-              </p>
-            )}
-          </div>
-        </article>
-        <aside className="card p-3">
-          <h3>مطالب مرتبط</h3>
-          <SectionLinks
-            ids={
-              sectionById
-                .get(section.record_type === 'document' ? 'regulations' : 'news')
-                ?.children.filter((child) => child !== id)
-                .slice(0, 6) ?? []
-            }
-          />
-        </aside>
-      </div>
+      <>
+        <ArticleBreadcrumb
+          links={[
+            { title: 'صفحه اصلی', href: '/' },
+            {
+              title:
+                section.record_type === 'document' || section.record_type === 'resolution'
+                  ? 'اسناد و مصوبات'
+                  : 'اخبار و مطالب',
+              href:
+                section.record_type === 'document' || section.record_type === 'resolution'
+                  ? '/regulations'
+                  : '/news',
+            },
+          ]}
+          title={String(article?.title ?? section.title)}
+        />
+        <div className="portal-article-layout">
+          {article ? (
+            <ContentArticle
+              article={article}
+              image={image}
+              text={plainText(article.body)}
+              showSummary={!article.body || !partial}
+            >
+              {partial && (
+                <p className="source-reference">
+                  این متن، چکیدهٔ منتشرشده در صفحهٔ اصلی سایت قدیمی است. متن کامل در منبع قرار دارد.
+                </p>
+              )}
+            </ContentArticle>
+          ) : (
+            <EmptyState unavailable={unavailable}>این مطلب در دسترس نیست.</EmptyState>
+          )}
+          <aside className="portal-related-panel">
+            <h3>مطالب مرتبط</h3>
+            <SectionLinks
+              ids={
+                sectionById
+                  .get(section.record_type === 'document' ? 'regulations' : 'news')
+                  ?.children.filter((child) => child !== id)
+                  .slice(0, 6) ?? []
+              }
+            />
+          </aside>
+        </div>
+      </>
     );
   else if (kind === 'governors')
     content = (
@@ -477,6 +491,7 @@ export async function OfficialSectionPage({
     );
   return (
     <PortalLayout
+      breadcrumbs={kind !== 'article'}
       path={new URL(section.href, 'https://portal.invalid').pathname}
       title={section.title}
       designPath={designPath}

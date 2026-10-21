@@ -107,8 +107,9 @@ const paths: Record<AdminSectionId, readonly string[]> = {
 
 export function adminSectionFor(path: string): AdminSectionId {
   return (
-    adminSections.find((section) => paths[section.id].includes(path.replace(/^\/admin\//, '')))
-      ?.id ?? 'system'
+    adminSections.find((section) =>
+      paths[section.id].includes(path.replace(/^\/panel\/admin\//, '')),
+    )?.id ?? 'system'
   );
 }
 
@@ -120,7 +121,7 @@ export function reviewResource(resource: string): boolean {
 }
 
 export function adminSectionOrder(path: string): number {
-  const key = path.replace(/^\/admin\//, '');
+  const key = path.replace(/^\/panel\/admin\//, '');
   const section = adminSections.findIndex((item) => paths[item.id].includes(key));
   return section < 0 ? 10000 : section * 100 + paths[adminSections[section].id].indexOf(key);
 }

@@ -1,7 +1,8 @@
 import { PortalLayout } from '@/components/site/portal-layout';
 import { CountyMap } from '@/components/site/county-map';
 import { HomeSlider, type HomeSlide } from '@/components/site/home-slider';
-import { OriginalNews, type OriginalNewsItem } from '@/components/site/original-news';
+import { type OriginalNewsItem } from '@/components/site/original-news';
+import { HomeLatestNews } from '@/components/site/home-latest-news';
 import { OriginalTabs } from '@/components/site/original-tabs';
 import { OriginalManagerCards } from '@/components/site/original-content';
 import { OriginalIcon } from '@/components/site/original-icons';
@@ -138,18 +139,7 @@ export async function HomePage() {
         <h1 className="source-sr-only">درگاه الکترونیکی استانداری مازندران</h1>
         <section className="home-intro" aria-label="تازه‌های استانداری">
           <div className="container-body d-f6279acc73263f">
-            <div className="container-body-center" data-home-reveal="true">
-              <div className="home-news-heading">
-                <div>
-                  <span className="home-kicker">روایت پیشرفت مازندران</span>
-                  <h2>تازه‌های استان</h2>
-                </div>
-                <a href="/news" className="home-text-link">
-                  همهٔ اخبار <span aria-hidden="true">←</span>
-                </a>
-              </div>
-              <OriginalNews items={newsItems} />
-            </div>
+            <HomeLatestNews items={newsItems} />
             <div className="container-body-right">
               <HomeSlider slides={slides} />
             </div>

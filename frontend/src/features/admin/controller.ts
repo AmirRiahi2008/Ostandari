@@ -205,7 +205,7 @@ export function adminController(context: PageContext) {
           );
         });
       all<HTMLAnchorElement>(row, '[data-related-resource="menu-items"]').forEach((link) => {
-        link.href = '/admin/menu-items?menu_id=' + encodeURIComponent(String(record.id));
+        link.href = '/panel/admin/menu-items?menu_id=' + encodeURIComponent(String(record.id));
       });
       all<HTMLAnchorElement>(row, '[data-download-media]').forEach((link) => {
         link.href = '/api/backend/media/' + encodeURIComponent(String(record.id)) + '/download';
@@ -754,8 +754,8 @@ export function adminController(context: PageContext) {
   }
 
   function init() {
-    const homePath = root.dataset.workspaceHome ?? '/admin';
-    const loginPath = root.dataset.workspaceLogin ?? '/admin/login';
+    const homePath = root.dataset.workspaceHome ?? '/panel/admin';
+    const loginPath = root.dataset.workspaceLogin ?? '/panel/admin/login';
     if (root.dataset.workspaceName) {
       const main = one<HTMLElement>(root, '.main-content');
       if (main) {
@@ -892,7 +892,7 @@ export function adminController(context: PageContext) {
     all<HTMLElement>(root, '.bigitem-menu-bottom-item').forEach((item) => {
       const label = item.textContent?.trim();
       if (label === 'خروج') item.setAttribute('data-admin-logout', 'true');
-      else if (label === 'تنظیمات حساب') item.setAttribute('data-navigate', '/admin/account');
+      else if (label === 'تنظیمات حساب') item.setAttribute('data-navigate', '/panel/admin/account');
       else if (label === 'وظایف') item.setAttribute('data-navigate', '/duties');
       if (label === 'خروج' || label === 'تنظیمات حساب' || label === 'وظایف') {
         item.setAttribute('role', 'button');
@@ -908,7 +908,7 @@ export function adminController(context: PageContext) {
           void load(currentQuery, Number(paging.dataset.adminPage)).catch((error) =>
             feedback(root, error.message),
           );
-        if (target.closest('[data-admin-logout],a[href="/admin/logout"]')) {
+        if (target.closest('[data-admin-logout],a[href="/panel/admin/logout"]')) {
           event.preventDefault();
           void import('@/components/admin/account')
             .then((module) => module.logoutAdmin(preview))

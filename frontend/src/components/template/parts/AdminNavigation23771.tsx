@@ -4,7 +4,7 @@ export default function AdminNavigation23771() {
       <div className="sidebar-extended">
         <div className="sidebar-extended-top">
           <a
-            href="/admin/comments/replied"
+            href="/panel/admin/comments/replied"
             className="nav-item av-item-active nav-item-new-mail remove-border"
           >
             <svg
@@ -27,11 +27,11 @@ export default function AdminNavigation23771() {
         <div className="sidebar-extended-pages">
           <a
             className="sidebar-extended-pages-link sidebar-extended-pages-link-active"
-            href="/admin/comments/replied"
+            href="/panel/admin/comments/replied"
           >
             {' نظرات تائید شده '}
           </a>
-          <a className="sidebar-extended-pages-link" href="/admin/comments/pending">
+          <a className="sidebar-extended-pages-link" href="/panel/admin/comments/pending">
             {' نظرات تائید نشده '}
           </a>
         </div>

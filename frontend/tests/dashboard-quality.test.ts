@@ -50,8 +50,8 @@ const user: PortalUser = {
     county: null,
     can_write: true,
     is_global: true,
-    dashboard_path: '/admin',
-    login_path: '/admin/login',
+    dashboard_path: '/panel/admin',
+    login_path: '/panel/admin/login',
     public_path: '/',
   },
 };
@@ -94,9 +94,9 @@ test('every creatable list has a real server-rendered destination and no hidden 
   }
 });
 test('native create links are not intercepted as modal triggers', () => {
-  const root = markup(React.createElement(AdminResourcePage, { path: '/admin/news', user }));
+  const root = markup(React.createElement(AdminResourcePage, { path: '/panel/admin/news', user }));
   const abort = new AbortController();
-  const page = adminResourcePage('/admin/news')!;
+  const page = adminResourcePage('/panel/admin/news')!;
   bindUi({ root, page, path: page.path, preview: true, signal: abort.signal }, () =>
     assert.fail('native link'),
   );
@@ -108,11 +108,11 @@ test('native create links are not intercepted as modal triggers', () => {
 test('mobile menu state, opening, Escape and focus return remain consistent', () => {
   const old = window.innerWidth;
   Object.defineProperty(window, 'innerWidth', { value: 390, configurable: true });
-  const root = markup(React.createElement(AdminResourcePage, { path: '/admin/news', user }));
+  const root = markup(React.createElement(AdminResourcePage, { path: '/panel/admin/news', user }));
   document.body.append(root);
   const abort = new AbortController();
   try {
-    const page = adminResourcePage('/admin/news')!;
+    const page = adminResourcePage('/panel/admin/news')!;
     bindUi({ root, page, path: page.path, preview: true, signal: abort.signal }, () => {});
     const toggle = root.querySelector<HTMLButtonElement>('#clicksidebar')!;
     assert.equal(toggle.getAttribute('aria-expanded'), 'false');
@@ -164,7 +164,7 @@ test('expanded menu groups survive remount and authenticated permissions ignore 
   assert.ok(
     screen.element.querySelector<HTMLDetailsElement>('[data-menu-group="appearance"]')!.open,
   );
-  assert.equal(screen.element.querySelector('a[href="/admin/employee-list"]'), null);
+  assert.equal(screen.element.querySelector('a[href="/panel/admin/employee-list"]'), null);
   await act(async () => screen.root.unmount());
 });
 test('management search normalizes Persian and Arabic spelling and spaces', () => {
@@ -174,7 +174,7 @@ test('management search normalizes Persian and Arabic spelling and spaces', () =
   );
 });
 test('fixed types remain in submitted data and advanced optional fields replace raw metadata', () => {
-  const root = editor('/admin/news/new');
+  const root = editor('/panel/admin/news/new');
   const type = root.querySelector<HTMLInputElement>('[data-field="type"]')!;
   assert.equal(type.type, 'hidden');
   assert.equal(collectFields(root).type, 'news');
@@ -184,7 +184,7 @@ test('fixed types remain in submitted data and advanced optional fields replace 
   assert.equal(more.querySelector('[required]'), null);
 });
 test('contact editing cannot create a new organization and contains only contact fields', () => {
-  const root = editor('/admin/organization-contact/1/edit');
+  const root = editor('/panel/admin/organization-contact/1/edit');
   const keys = Array.from(root.querySelectorAll('[data-field]')).map((x) =>
     x.getAttribute('data-field'),
   );
@@ -192,12 +192,12 @@ test('contact editing cannot create a new organization and contains only contact
   assert.ok(
     keys.every((key) => ['name', 'email', 'phone', 'fax', 'sms_number', 'address'].includes(key!)),
   );
-  assert.equal(resolveAdminEditor('/admin/organization-contact/new'), undefined);
+  assert.equal(resolveAdminEditor('/panel/admin/organization-contact/new'), undefined);
 });
 test('create requires a password while edit can keep the current password', () => {
   for (const [path, required] of [
-    ['/admin/internal-users/new', true],
-    ['/admin/internal-users/1/edit', false],
+    ['/panel/admin/internal-users/new', true],
+    ['/panel/admin/internal-users/1/edit', false],
   ] as const) {
     const input = editor(path).querySelector<HTMLInputElement>('[data-field="password"]')!;
     assert.equal(input.required, required);
@@ -205,12 +205,13 @@ test('create requires a password while edit can keep the current password', () =
   }
 });
 test('image and file libraries have the right restrictions and image-list filter', () => {
-  assert.equal(adminResourcePage('/admin/images')!.defaults.kind, 'image');
-  assert.equal(adminResourcePage('/admin/files')!.defaults.kind, undefined);
-  const image = editor('/admin/images/new').querySelector<HTMLInputElement>('input[type="file"]')!;
+  assert.equal(adminResourcePage('/panel/admin/images')!.defaults.kind, 'image');
+  assert.equal(adminResourcePage('/panel/admin/files')!.defaults.kind, undefined);
+  const image =
+    editor('/panel/admin/images/new').querySelector<HTMLInputElement>('input[type="file"]')!;
   assert.equal(image.accept, 'image/jpeg,image/png,image/webp');
   assert.ok(
-    editor('/admin/files/new')
+    editor('/panel/admin/files/new')
       .querySelector<HTMLInputElement>('input[type="file"]')!
       .accept.includes('.pdf'),
   );

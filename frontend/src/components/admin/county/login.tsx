@@ -26,6 +26,7 @@ export function CountyLogin({ slug, name }: { slug: string; name: string }) {
         body: jsonBody({
           login: String(fields.get('login')).trim(),
           password: fields.get('password'),
+          audience: 'staff',
           county_slug: slug,
         }),
         signal: controller.signal,

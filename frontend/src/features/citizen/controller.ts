@@ -344,6 +344,8 @@ export function citizenController(context: PageContext) {
         });
       void api<PortalUser>('auth/me', { signal })
         .then((result) => {
+          if (result.data.person_type !== 'citizen')
+            throw new Error('برای استفاده از پنل شهروندی، با حساب شهروندی وارد شوید.');
           user = result.data;
           enter();
           return refresh();
