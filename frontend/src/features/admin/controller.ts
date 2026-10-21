@@ -474,7 +474,8 @@ export function adminController(context: PageContext) {
           }
         } catch {
           if (signal.aborted) return;
-          if (select.hasAttribute('data-image-value')) {
+          if (select.multiple) setOptions(select, []);
+          else if (select.hasAttribute('data-image-value')) {
             if (!select.value)
               select.replaceChildren(
                 new Option('کتابخانه دریافت نشد؛ می‌توانید همین‌جا عکس بارگذاری کنید', ''),

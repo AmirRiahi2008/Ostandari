@@ -21,6 +21,31 @@ export const date = (input: unknown) =>
     : '';
 
 export function setOptions(select: HTMLSelectElement, records: RecordData[], label = 'name'): void {
+  if (select.multiple) {
+    const retained = Array.from(select.selectedOptions)
+      .filter((option) => !option.disabled && option.value.trim() !== '')
+      .map((option) => option.cloneNode(true) as HTMLOptionElement);
+    const options = records
+      .filter(
+        (record) =>
+          record.id !== null && record.id !== undefined && String(record.id).trim() !== '',
+      )
+      .map(
+        (record) =>
+          new Option(String(record[label] ?? record.title ?? record.id), String(record.id)),
+      );
+    for (const option of retained)
+      if (!options.some((next) => next.value === option.value)) options.push(option);
+    const selected = new Set(retained.map((option) => option.value));
+    for (const option of options) option.selected = selected.has(option.value);
+    if (!options.length) {
+      const empty = new Option('هنوز موردی برای انتخاب وجود ندارد', '');
+      empty.disabled = true;
+      options.push(empty);
+    }
+    select.replaceChildren(...options);
+    return;
+  }
   const current = select.value;
   select.replaceChildren(
     new Option('یک گزینه را انتخاب کنید', ''),

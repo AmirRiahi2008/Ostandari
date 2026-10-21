@@ -1,6 +1,7 @@
 import { api } from '@/lib/api/client';
 import { all, setSafeHtml } from '@/lib/dom';
 import { sanitizedFragment } from '@/lib/html';
+import { imageAlbumButton, imageAlbumClasses } from './image-album';
 
 const tags = new Set([
   'P',
@@ -27,13 +28,18 @@ const tags = new Set([
   'TR',
   'TH',
   'TD',
+  'DIV',
 ]);
 
 export function cleanEditorHtml(html: string): string {
   const container = document.createElement('div');
   container.append(sanitizedFragment(html));
   for (const node of all(container, '*').reverse()) {
-    if (node.tagName === 'DIV') {
+    if (
+      node.tagName === 'DIV' &&
+      !node.classList.contains('portal-image-album') &&
+      !node.classList.contains('portal-image-album-item')
+    ) {
       const paragraph = document.createElement('p');
       paragraph.append(...node.childNodes);
       node.replaceWith(paragraph);
@@ -45,11 +51,27 @@ export function cleanEditorHtml(html: string): string {
       node.remove();
     for (const attribute of Array.from(node.attributes))
       if (
-        !['src', 'alt', 'title', 'width', 'height', 'href', 'colspan', 'rowspan', 'scope'].includes(
-          attribute.name,
-        )
+        ![
+          'class',
+          'src',
+          'alt',
+          'title',
+          'width',
+          'height',
+          'href',
+          'colspan',
+          'rowspan',
+          'scope',
+        ].includes(attribute.name)
       )
         node.removeAttribute(attribute.name);
+    const classes = Array.from(node.classList).filter(
+      (name) =>
+        ['DIV', 'P'].includes(node.tagName) &&
+        imageAlbumClasses.some((allowed) => allowed === name),
+    );
+    if (classes.length) node.className = classes.join(' ');
+    else node.removeAttribute('class');
   }
   return container.innerHTML;
 }
@@ -131,6 +153,7 @@ export function mountRichText(root: HTMLElement, signal: AbortSignal, preview: b
     let mode: 'visual' | 'source' | 'preview' = 'visual';
     let history: string[] = [];
     let position = 0;
+    let recordVersion = 0;
     const remember = () => {
       const selection = window.getSelection();
       if (selection?.rangeCount && surface.contains(selection.anchorNode))
@@ -190,6 +213,40 @@ export function mountRichText(root: HTMLElement, signal: AbortSignal, preview: b
       sync();
       restore();
     };
+    const insertBlock = (node: HTMLElement) => {
+      restore();
+      const range = window.getSelection()!.getRangeAt(0);
+      range.deleteContents();
+      const anchor =
+        range.startContainer.nodeType === 1
+          ? (range.startContainer as Element)
+          : range.startContainer.parentElement;
+      const existingAlbum = anchor?.closest('.portal-image-album');
+      const paragraph = anchor?.closest('p,h2,h3,h4');
+      let following: HTMLElement;
+      if (!existingAlbum && paragraph && surface.contains(paragraph)) {
+        const tail = range.cloneRange();
+        tail.setEnd(paragraph, paragraph.childNodes.length);
+        following = paragraph.cloneNode(false) as HTMLElement;
+        following.append(tail.extractContents());
+        paragraph.after(node, following);
+        if (!paragraph.hasChildNodes()) paragraph.append(document.createElement('br'));
+      } else {
+        if (existingAlbum && surface.contains(existingAlbum)) {
+          range.setStartAfter(existingAlbum);
+          range.collapse(true);
+        }
+        range.insertNode(node);
+        following = document.createElement('p');
+        node.after(following);
+      }
+      if (!following.hasChildNodes()) following.append(document.createElement('br'));
+      saved = document.createRange();
+      saved.selectNodeContents(following);
+      saved.collapse(true);
+      sync();
+      restore();
+    };
     const format = (command: string, value?: string) => {
       if (command === 'undo' || command === 'redo') {
         undo(command === 'undo' ? -1 : 1);
@@ -223,6 +280,7 @@ export function mountRichText(root: HTMLElement, signal: AbortSignal, preview: b
     ])
       toolbar.append(button(label, () => format(command, value)));
     const openTools = (content: Node[]) => {
+      if (wrapper.dataset.uploading === 'true') return;
       remember();
       tools.replaceChildren(...content);
       tools.hidden = false;
@@ -238,6 +296,20 @@ export function mountRichText(root: HTMLElement, signal: AbortSignal, preview: b
       field.append(element);
       return { field, element };
     };
+    if (source.dataset.field === 'body')
+      toolbar.append(
+        imageAlbumButton({
+          wrapper,
+          surface,
+          tools,
+          status,
+          signal,
+          preview,
+          version: () => recordVersion,
+          openTools,
+          insert: insertBlock,
+        }),
+      );
     toolbar.append(
       button('پیوند', () => {
         const url = input('نشانی پیوند', 'url');
@@ -404,6 +476,10 @@ export function mountRichText(root: HTMLElement, signal: AbortSignal, preview: b
       ['preview', 'پیش‌نمایش'],
     ] as const) {
       const tab = button(label, () => {
+        if (wrapper.dataset.uploading === 'true') {
+          status.textContent = 'ابتدا بارگذاری تصاویر را کامل کنید.';
+          return;
+        }
         sync();
         mode = value;
         surface.hidden = mode === 'source';
@@ -458,6 +534,11 @@ export function mountRichText(root: HTMLElement, signal: AbortSignal, preview: b
     root.addEventListener(
       'portal:fields-filled',
       () => {
+        recordVersion++;
+        if (wrapper.dataset.albumUploading === 'true') {
+          wrapper.dataset.uploading = 'false';
+          delete wrapper.dataset.albumUploading;
+        }
         mode = 'visual';
         source.hidden = true;
         surface.hidden = false;

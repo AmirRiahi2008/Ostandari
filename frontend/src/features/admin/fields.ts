@@ -30,6 +30,7 @@ export function collectFields(root: ParentNode): RecordData {
     if (input instanceof HTMLInputElement && input.type === 'file') continue;
     if (input instanceof HTMLSelectElement && input.multiple) {
       record[key] = Array.from(input.selectedOptions)
+        .filter((option) => !option.disabled && option.value.trim() !== '')
         .map((option) => Number(option.value))
         .filter(Number.isFinite);
       continue;
@@ -87,7 +88,9 @@ export function fillFields(root: ParentNode, record: RecordData): void {
           : input.dataset.field === 'tag_ids' && Array.isArray(record.tags)
             ? (record.tags as RecordData[]).map((tag) => tag.id)
             : input.dataset.field === 'media_ids' && Array.isArray(record.media)
-              ? (record.media as RecordData[]).map((file) => file.id)
+              ? (record.media as RecordData[])
+                  .filter((file) => (file.pivot as RecordData | undefined)?.purpose !== 'inline')
+                  .map((file) => file.id)
               : [];
         if (input.dataset.lookup)
           for (const value of values)
