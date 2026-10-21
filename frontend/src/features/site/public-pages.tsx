@@ -16,7 +16,7 @@ import { SearchForm } from '@/components/site/search-form';
 import { publicData, plainText, designNews, type PublicRecord } from '@/lib/public-content';
 import { findCounty } from '@/data/counties';
 import { publicTitles, collectionRoutes } from '@/data/public-navigation';
-import { OfficePage, CountyNavigation } from './office-page';
+import { OfficePage } from './office-page';
 import { NewsPage, ArticlePage } from './news-page';
 import { ManagersPage } from './managers-page';
 import { CountyGallery } from './gallery-page';
@@ -133,7 +133,6 @@ export async function PublicPage({ path, search }: { path: string; search: Searc
     if (slug && !county) notFound();
     content = (
       <>
-        {county && <CountyNavigation county={county} active="contact" />}
         <Panel title={county ? 'ارتباط با فرمانداری ' + county.name : title}>
           <ContactForm
             county={county}

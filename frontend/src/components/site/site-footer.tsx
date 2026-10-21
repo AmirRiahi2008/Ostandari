@@ -1,3 +1,5 @@
+import type { County } from '@/data/counties';
+import { countyPortalHref, countyTitle } from '@/lib/county-portal';
 import { OriginalIcon } from './original-icons';
 import type { PublicRecord } from '@/lib/public-content';
 import { officialSite } from '@/features/site/official-data';
@@ -58,10 +60,15 @@ const columns = [
   },
 ];
 
-export function SiteFooter({ contact }: { contact?: PublicRecord } = {}) {
+export function SiteFooter({ contact, county }: { contact?: PublicRecord; county?: County } = {}) {
+  const href = (path: string) => (county ? countyPortalHref(county, path) : path);
   const field = (key: keyof typeof officialSite.contact) => {
     const value = contact?.[key];
-    return typeof value === 'string' && value.trim() ? value : String(officialSite.contact[key]);
+    return typeof value === 'string' && value.trim()
+      ? value
+      : county
+        ? ''
+        : String(officialSite.contact[key]);
   };
   const phone = field('phone');
   return (
@@ -70,7 +77,10 @@ export function SiteFooter({ contact }: { contact?: PublicRecord } = {}) {
         <div className="iconostandari">
           <OriginalIcon name="footer" />
         </div>
-        <footer className="icx-footer-root" aria-label="پاورقی استانداری مازندران">
+        <footer
+          className="icx-footer-root"
+          aria-label={county ? 'پاورقی فرمانداری ' + county.name : 'پاورقی استانداری مازندران'}
+        >
           <div className="icx-footer-wrap">
             {columns.map((column) => (
               <nav className="icx-footer-col" key={column.title} aria-label={column.title}>
@@ -78,8 +88,8 @@ export function SiteFooter({ contact }: { contact?: PublicRecord } = {}) {
                 <ul className="icx-footer-list">
                   {column.items.map((item) => (
                     <li key={item.href}>
-                      <a className="icx-footer-link" href={item.href}>
-                        {item.title}
+                      <a className="icx-footer-link" href={href(item.href)}>
+                        {county ? countyTitle(item.title, county) : item.title}
                       </a>
                     </li>
                   ))}
@@ -87,32 +97,45 @@ export function SiteFooter({ contact }: { contact?: PublicRecord } = {}) {
               </nav>
             ))}
             <address className="icx-footer-col icx-footer-contact">
-              <h4 className="icx-footer-title">اطلاعات تماس</h4>
-              <p className="icx-footer-text">
-                <ContactIcon kind="address" />
-                <span>{field('address')}</span>
-              </p>
-              <p className="icx-footer-text">
-                <ContactIcon kind="email" />
-                <a href={'mailto:' + field('email')}>
-                  <bdi>{field('email')}</bdi>
-                </a>
-              </p>
-              <p className="icx-footer-text">
-                <ContactIcon kind="phone" />
-                <a
-                  href={'tel:' + phone.split('-')[0].replace(/[^\d+]/g, '')}
-                  aria-label={'تلفن ' + phone}
-                >
-                  <bdi>{phone}</bdi>
-                </a>
-              </p>
-              <p className="icx-footer-text">
-                <ContactIcon kind="phone" />
-                <span aria-label="نمابر">
-                  <bdi>{field('fax')}</bdi>
-                </span>
-              </p>
+              <h4 className="icx-footer-title">
+                {county ? 'فرمانداری ' + county.name : 'اطلاعات تماس'}
+              </h4>
+              {county && !field('address') && !phone && (
+                <p className="icx-footer-text">اطلاعات تماس این فرمانداری هنوز ثبت نشده است.</p>
+              )}
+              {field('address') && (
+                <p className="icx-footer-text">
+                  <ContactIcon kind="address" />
+                  <span>{field('address')}</span>
+                </p>
+              )}
+              {field('email') && (
+                <p className="icx-footer-text">
+                  <ContactIcon kind="email" />
+                  <a href={'mailto:' + field('email')}>
+                    <bdi>{field('email')}</bdi>
+                  </a>
+                </p>
+              )}
+              {phone && (
+                <p className="icx-footer-text">
+                  <ContactIcon kind="phone" />
+                  <a
+                    href={'tel:' + phone.split('-')[0].replace(/[^\d+]/g, '')}
+                    aria-label={'تلفن ' + phone}
+                  >
+                    <bdi>{phone}</bdi>
+                  </a>
+                </p>
+              )}
+              {field('fax') && (
+                <p className="icx-footer-text">
+                  <ContactIcon kind="phone" />
+                  <span aria-label="نمابر">
+                    <bdi>{field('fax')}</bdi>
+                  </span>
+                </p>
+              )}
             </address>
           </div>
         </footer>

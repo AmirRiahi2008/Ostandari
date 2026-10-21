@@ -1,6 +1,8 @@
 import { useId, type SVGProps } from 'react';
 
 export type OriginalIconName =
+  | 'about'
+  | 'people'
   | 'iran'
   | 'english'
   | 'arabic'
@@ -23,6 +25,34 @@ export function OriginalIcon({
 }: SVGProps<SVGSVGElement> & { name: OriginalIconName }) {
   const prefix = 'original-' + useId().replace(/:/g, '');
   switch (name) {
+    case 'about':
+    case 'people':
+      return (
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+          focusable="false"
+          {...props}
+        >
+          {name === 'people' ? (
+            <>
+              <circle cx="9" cy="7" r="3" />
+              <path d="M2 21v-2a7 7 0 0 1 14 0v2M16 4a3 3 0 0 1 0 6M19 13a6 6 0 0 1 3 6v2" />
+            </>
+          ) : (
+            <>
+              <path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6ZM9 3v15M15 6v15" />
+            </>
+          )}
+        </svg>
+      );
     case 'iran':
       return (
         <svg

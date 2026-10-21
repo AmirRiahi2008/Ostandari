@@ -110,7 +110,7 @@ test('the map contains 22 distinct keyboard-accessible county links, including N
     );
     assert.ok(link.getAttribute('aria-label')?.includes(county.name));
   }
-  assert.ok(links.some((link) => link.getAttribute('href') === '/office?name=nur'));
+  assert.ok(links.some((link) => link.getAttribute('href') === '/nur'));
   assert.equal(findCounty('noor')?.slug, 'nur');
   assert.equal(findCounty('gov_tonekabon')?.slug, 'tonekabon');
   assert.equal(findCounty('not-a-county'), undefined);
@@ -144,12 +144,13 @@ test('county news, gallery and contact keep the office query', async () => {
   const html = await renderPublic('/contact-us', { name: 'nur' });
   assert.ok(html.includes('فرمانداری نور'));
 });
-test('all new CMS destinations render an editor in the administration design', () => {
+test('all CMS lists use the administration design and keep editing on a separate page', () => {
   for (const route of Object.keys(adminExtraPages)) {
     const html = renderToStaticMarkup(React.createElement(AdminResourcePage, { path: route }));
     verifyDocument(html, route);
-    assert.ok(html.includes('cbnCreateMenuModalOverlay'));
-    assert.ok(html.includes('data-field='));
+    assert.ok(html.includes('education-table'));
+    assert.ok(!html.includes('cbnCreateMenuModalOverlay'));
+    assert.ok(html.includes('portal-module-menu'));
   }
 });
 test('new article pages render source images and related links', async () => {

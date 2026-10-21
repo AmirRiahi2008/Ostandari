@@ -1,3 +1,5 @@
+import { countyNavigation, countyPortalHref } from '@/lib/county-portal';
+import type { County } from '@/data/counties';
 import { cache, type ReactNode } from 'react';
 import { SiteHeader, type SiteBranding } from './site-header';
 import { SiteFooter } from './site-footer';
@@ -26,6 +28,8 @@ export async function PortalLayout({
   home = false,
   branding,
   chrome,
+  county,
+  organization,
 }: {
   children: ReactNode;
   title?: string;
@@ -36,6 +40,8 @@ export async function PortalLayout({
   home?: boolean;
   branding?: SiteBranding;
   chrome?: PublicRecord | Promise<PublicRecord>;
+  county?: County;
+  organization?: PublicRecord;
 }) {
   const resolvedChrome = await (chrome ?? loadPortalChrome());
   const settings = (resolvedChrome.settings ?? {}) as PublicRecord;
@@ -47,30 +53,40 @@ export async function PortalLayout({
     resource: '',
   };
   const configuredBranding = {
-    banner: recordImage(settings['site.banner']),
+    banner: county ? recordImage(organization?.banner) : recordImage(settings['site.banner']),
     logo: recordImage(settings['site.logo']),
     sloganImage: recordImage(settings['site.slogan']),
     sloganText:
       typeof settings['site.slogan_text'] === 'string' ? settings['site.slogan_text'] : undefined,
-    name: typeof settings['site.name'] === 'string' ? settings['site.name'] : undefined,
+    name: county
+      ? 'فرمانداری شهرستان ' + county.name
+      : typeof settings['site.name'] === 'string'
+        ? settings['site.name']
+        : undefined,
     ...branding,
   };
+  const countyMenus =
+    county && organization?.id
+      ? await officialRead('menus?key=official-main&organization_id=' + organization.id)
+      : undefined;
+  const navigation =
+    headerItems ??
+    (county
+      ? countyNavigation(county, navigationFromMenus(countyMenus?.data))
+      : navigationFromMenus(resolvedChrome.menus));
   return (
     <>
       <link rel="stylesheet" href={page.css} precedence="design" />
       <PageFrame page={page} preview={templatePreview()} path={path}>
-        <div className="container-asli source-portal">
-          <SiteHeader
-            items={headerItems ?? navigationFromMenus(resolvedChrome.menus)}
-            branding={configuredBranding}
-          />
+        <div className="container-asli source-portal" data-county-portal={county?.slug}>
+          <SiteHeader items={navigation} county={county} branding={configuredBranding} />
           <main
             id="main-content"
             className={home ? 'source-main source-home' : 'source-main source-content'}
           >
             {title && breadcrumbs && (
               <nav className="source-breadcrumb" aria-label="مسیر صفحه">
-                <a href="/">صفحه اصلی</a>
+                <a href={county ? countyPortalHref(county) : '/'}>صفحه اصلی</a>
                 <span aria-hidden="true">/</span>
                 <h1>{title}</h1>
               </nav>
@@ -78,7 +94,10 @@ export async function PortalLayout({
             {children}
           </main>
         </div>
-        <SiteFooter contact={settings['site.contact'] as PublicRecord | undefined} />
+        <SiteFooter
+          county={county}
+          contact={county ? organization : (settings['site.contact'] as PublicRecord | undefined)}
+        />
       </PageFrame>
     </>
   );

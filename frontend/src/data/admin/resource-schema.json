@@ -112,7 +112,9 @@
       "address": ["nullable", "string", "max:100000"],
       "description": ["nullable", "string", "max:100000"],
       "priority": ["sometimes", "integer", "min:0", "max:100000"],
-      "is_active": ["sometimes", "boolean"]
+      "is_active": ["sometimes", "boolean"],
+      "banner_media_id": ["nullable", "exists:media,id"],
+      "aerial_media_id": ["nullable", "exists:media,id"]
     },
     "soft_deletes": true,
     "table": "organizations"

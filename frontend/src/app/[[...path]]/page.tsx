@@ -17,6 +17,8 @@ import { OfficialSectionPage } from '@/features/site/official-section-page';
 import { resolveOfficialSection } from '@/features/site/official-data';
 import { adminUtilityTitles } from '@/data/admin/utility-pages';
 import { resolveAdminEditor, resolveReportEditor } from '@/lib/admin-routes';
+import { resolveCountyPortal, countyTitle } from '@/lib/county-portal';
+import { CountyPortalPage } from '@/features/site/county-portal-page';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -24,6 +26,21 @@ type Props = { params: Promise<{ path?: string[] }>; searchParams: Promise<Searc
 
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const path = '/' + ((await params).path ?? []).join('/');
+  const countyPortal = resolveCountyPortal(path);
+  if (countyPortal)
+    return {
+      title:
+        countyPortal.path === '/'
+          ? 'فرمانداری شهرستان ' + countyPortal.county.name
+          : countyTitle(
+              publicTitles[countyPortal.path] ??
+                resolveOfficialSection(countyPortal.path, await searchParams)?.title ??
+                'پرتال فرمانداری',
+              countyPortal.county,
+            ) +
+            ' | فرمانداری ' +
+            countyPortal.county.name,
+    };
   const countyAdmin = countyAdminRoute(path);
   if (countyAdmin)
     return {
@@ -55,6 +72,26 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 export default async function TemplateRoute({ params, searchParams }: Props) {
   const path = '/' + ((await params).path ?? []).join('/');
   const search = await searchParams;
+  const countyPortal = resolveCountyPortal(path);
+  if (countyPortal) {
+    if (countyPortal.canonical !== path)
+      redirect(
+        countyPortal.canonical +
+          (new URLSearchParams(
+            Object.entries(search).flatMap(([key, value]) =>
+              value === undefined ? [] : [[key, Array.isArray(value) ? value[0] : value]],
+            ),
+          ).size
+            ? '?' +
+              new URLSearchParams(
+                Object.entries(search).flatMap(([key, value]) =>
+                  value === undefined ? [] : [[key, Array.isArray(value) ? value[0] : value]],
+                ),
+              )
+            : ''),
+      );
+    return <CountyPortalPage route={countyPortal} search={search} />;
+  }
   if (
     ((path === '/admin' || path.startsWith('/admin/')) && path !== '/admin/login') ||
     path.startsWith('/county-admin/')

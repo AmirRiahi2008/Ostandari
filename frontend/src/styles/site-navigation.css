@@ -1,3 +1,6 @@
+[data-section='site'][data-page='PortalPage'] {
+  overflow-x: clip;
+}
 [data-section='site'] [data-react-header] .header-box {
   position: relative;
   z-index: 2;
@@ -342,5 +345,274 @@
   [data-react-header] .header-box {
     animation: none !important;
     transition: none !important;
+  }
+}
+[data-section='site'] [data-react-header] .nav-bala {
+  height: auto;
+  min-height: 54px;
+  margin-block: 0 !important;
+  padding-block: 10px !important;
+  gap: 16px;
+  align-items: center;
+  padding-inline: 20px;
+  box-sizing: border-box;
+  position: relative;
+  z-index: auto;
+}
+[data-section='site'] [data-react-header] .nav-bala-right {
+  display: flex;
+  flex: 1 1 auto;
+  width: auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 0;
+  height: auto;
+  min-height: 26px;
+  min-width: 0;
+  z-index: auto;
+}
+[data-react-header] .source-skip:not(:focus) {
+  inset-inline-start: 0;
+  inset-block-start: 0;
+  margin: 0;
+}
+[data-section='site'] [data-react-header] .top-header {
+  position: relative;
+  z-index: 2;
+}
+[data-react-header] .nav-bala-right > a {
+  color: #46627b;
+  font-size: 11px;
+  line-height: 1.9;
+  text-decoration: none;
+  white-space: nowrap;
+}
+[data-react-header] .nav-bala-right > a:hover {
+  color: #008c95;
+}
+[data-section='site'] [data-react-header] .nav-bala-left {
+  width: auto;
+  flex-shrink: 0;
+  padding: 0;
+}
+[data-section='site'] [data-react-header] .imageeee {
+  margin-block: 0 !important;
+}
+[data-section='site'] [data-react-header] .source-direct-menu {
+  position: static;
+}
+[data-react-header] .source-direct-menu > .rast {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+[data-react-header] .source-direct-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border: 0;
+  border-radius: 6px;
+  color: #335674;
+  background: transparent;
+  cursor: pointer;
+}
+[data-react-header] .source-direct-toggle svg {
+  transition: transform 180ms;
+}
+[data-react-header] .source-direct-menu.is-open .source-direct-toggle svg {
+  transform: translateY(2px);
+}
+[data-section='site'] [data-react-header] .source-direct-panel {
+  position: absolute;
+  inset: 100% 0 auto;
+  width: 100%;
+  padding: 24px;
+  max-height: min(480px, 65dvh);
+  overflow: auto;
+  border: 1px solid #dce6ef;
+  border-radius: 0 0 18px 18px;
+  background: #fff;
+  box-shadow: 0 22px 38px -16px #12385838;
+  animation: ostanMegaEnter 210ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  box-sizing: border-box;
+  z-index: 85;
+}
+[data-react-header] .source-direct-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+[data-react-header] .source-direct-grid > div {
+  border: 1px solid #e4ecf3;
+  border-radius: 12px;
+  padding: 14px;
+  background: #f7fafc;
+}
+[data-react-header] .source-direct-grid a {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: #17466c;
+  text-decoration: none;
+  font-size: 12px;
+  line-height: 1.9;
+}
+[data-react-header] .source-direct-grid .source-direct-title {
+  font-weight: 700;
+}
+[data-react-header] .source-direct-grid .source-direct-child {
+  font-weight: 400;
+  color: #5c7487;
+  margin-top: 10px;
+}
+[data-react-header] .source-direct-grid a:hover {
+  color: #008a97;
+}
+[data-react-header] .mm-utility {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  border-block: 1px solid #e4ecf3;
+}
+[data-react-header] .mm-utility a {
+  color: #365d7c;
+  font-size: 12px;
+  text-decoration: none;
+}
+[data-react-header] .mm-footer {
+  display: grid;
+  padding-inline: 18px;
+}
+[data-react-header] .mm-footer a {
+  color: #365d7c;
+  font-size: 12px;
+  text-decoration: none;
+}
+[data-react-header] .county-portal-banner > .icx-responsive-img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  aspect-ratio: 1380/180;
+}
+[data-react-header] .county-banner-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: clamp(120px, 13vw, 180px);
+  padding: 22px 16%;
+  box-sizing: border-box;
+  background:
+    radial-gradient(ellipse at 80% 0, #2b6b9b80, transparent 55%),
+    repeating-linear-gradient(60deg, #ffffff07 0 1px, transparent 1px 18px),
+    linear-gradient(105deg, #15375f, #0d4c7e);
+  color: #fff;
+}
+[data-react-header] .county-banner-fallback > div {
+  display: grid;
+  gap: 7px;
+  text-align: center;
+}
+[data-react-header] .county-banner-fallback strong {
+  font-size: clamp(19px, 3vw, 40px);
+  line-height: 1.6;
+}
+[data-react-header] .county-banner-fallback span {
+  font-size: clamp(9px, 1vw, 12px);
+  color: #cde4f4;
+}
+@media (min-width: 1181px) {
+  [data-section='site'] [data-react-header] .desktop-menu {
+    display: flex !important;
+    gap: 160px;
+    padding-inline: 18px;
+    box-sizing: border-box;
+  }
+  [data-section='site'] [data-react-header] :is(.header-hamburger, .hum-logo) {
+    display: none !important;
+  }
+  [data-section='site'] [data-react-header] .logo-wrapper {
+    left: 50%;
+  }
+  [data-section='site'] [data-react-header] :is(.menu-right, .menu-left) {
+    flex: 1 1 0;
+    min-width: 0;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0 6px !important;
+  }
+  [data-section='site'] [data-react-header] .menu-item > .rast > a {
+    font-size: 12px !important;
+    padding-inline: 3px;
+  }
+  [data-section='site'] [data-react-header] .menu-item > .rast {
+    padding: 0;
+    min-height: 38px;
+  }
+}
+@media (max-width: 1180px) {
+  [data-section='site'] [data-react-header] .hum-logo {
+    flex: 0 0 auto;
+    width: auto;
+    margin-inline: 20px;
+  }
+  [data-section='site'] [data-react-header] .county-portal-banner {
+    height: auto !important;
+    margin-bottom: 24px !important;
+  }
+  [data-section='site'] [data-react-header] .county-portal-banner > .icx-responsive-img {
+    height: auto !important;
+  }
+}
+@media (min-width: 1181px) and (max-width: 1450px) {
+  [data-section='site'] [data-react-header] :is(.menu-right, .menu-left) {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    justify-content: center;
+    align-items: center;
+    column-gap: 22px !important;
+  }
+}
+@media (max-width: 760px) {
+  [data-section='site'] [data-react-header] .nav-bala {
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  [data-section='site'] [data-react-header] .nav-bala-right {
+    justify-content: center;
+    width: 100%;
+    gap: 5px 12px;
+    position: static;
+    inset: auto;
+    flex: 1 1 100%;
+    flex-direction: row;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    transform: none;
+    background: transparent;
+    box-shadow: none;
+    border: 0;
+  }
+  [data-section='site'] [data-react-header] .nav-bala-left {
+    width: 100%;
+    justify-content: center;
+  }
+  [data-react-header] .county-banner-fallback {
+    padding: 18px 12%;
+  }
+  [data-section='site'] [data-react-header] .imageeee {
+    display: block !important;
+    height: auto !important;
+    margin-bottom: 24px !important;
+  }
+  [data-section='site'] [data-react-header] .imageeee > .icx-responsive-img {
+    height: auto !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-react-header] .source-direct-panel {
+    animation: none !important;
   }
 }

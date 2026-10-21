@@ -709,3 +709,49 @@
     font-size: 25px;
   }
 }
+.county-aerial-panel {
+  margin: 0 0 26px;
+  overflow: hidden;
+  border: 1px solid #dce7f0;
+  border-radius: 18px;
+  background: #edf4f8;
+}
+.county-aerial-panel > img {
+  display: block;
+  width: 100%;
+  max-height: 520px;
+  object-fit: contain;
+}
+.county-aerial-panel figcaption {
+  padding: 12px 20px;
+  color: #385f7d;
+  background: #fff;
+  font-size: 13px;
+}
+.county-manager-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.county-manager-groups > a {
+  padding: 10px 18px;
+  border: 1px solid #dce7f0;
+  border-radius: 10px;
+  background: #fff;
+  color: #17466c;
+  text-decoration: none;
+}
+.county-manager-groups > a[aria-current='page'] {
+  background: #00477a;
+  color: #fff;
+}
+.county-portal-content {
+  min-width: 0;
+}
+.county-portal-content .portal-news-grid {
+  margin-block: 22px;
+}
+.county-portal-content .portal-search {
+  margin-block: 12px 24px;
+}

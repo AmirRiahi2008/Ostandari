@@ -4,6 +4,7 @@ import React, { act, cloneElement, isValidElement, type ReactElement, type React
 import { createRoot } from 'react-dom/client';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { JSDOM } from 'jsdom';
+import { counties } from '../src/data/counties';
 import { SiteHeader } from '../src/components/site/site-header';
 import { InstallGuide } from '../src/components/site/install-guide';
 import { PublicPage } from '../src/features/site/public-pages';
@@ -61,11 +62,14 @@ test('ArrowDown opens the attached navigation and enters its categories; Escape 
     assert.equal(window.document.activeElement, categories[0]);
     assert.equal(container.querySelector('.header-box')?.getAttribute('data-mega-open'), 'true');
     await act(async () => categories[1].click());
-    assert.equal(panel.querySelector('.source-mega-heading h2')?.textContent, 'خدمات الکترونیکی');
+    assert.equal(
+      panel.querySelector('.source-mega-heading h2')?.textContent,
+      'بیانیه سطح توافق خدمات',
+    );
     assert.equal(categories[1].getAttribute('aria-expanded'), 'true');
     assert.equal(
       panel.querySelector('.source-mega-heading > a')?.getAttribute('href'),
-      '/services',
+      '/service-agreement',
     );
     await act(async () => key(categories[1], 'Escape'));
     assert.equal(panel.hidden, true);
@@ -109,25 +113,22 @@ test('pointer travel into the mega panel cancels its close delay while leaving t
   }
 });
 
-test('the county submenu and outside dismissal remain usable in the refreshed mega menu', async () => {
+test('the promoted about menu retains all counties and dismisses on an outside click', async () => {
   const { container, unmount } = await mount(React.createElement(SiteHeader));
   try {
-    await act(async () => container.querySelector<HTMLButtonElement>('#khadmat')!.click());
-    const about = [...container.querySelectorAll<HTMLButtonElement>('.categories button')].find(
-      (button) => button.textContent?.includes('آشنایی با مازندران'),
+    const about = container.querySelector<HTMLButtonElement>(
+      '.source-direct-menu button[aria-label="زیرمنوی آشنایی با مازندران"]',
     )!;
     await act(async () => about.click());
-    const county = [
-      ...container.querySelectorAll<HTMLButtonElement>('.submenu.active .nested-categories button'),
-    ].find((button) => button.textContent?.includes('شهرستان'))!;
-    await act(async () => county.click());
-    const visible = container.querySelector('.submenu.active .nested-submenu.active')!;
-    assert.equal(visible.querySelectorAll('a[href^="/office?name="]').length, 22);
-    assert.ok(visible.querySelector('a[href="/office?name=abbasabad"]'));
+    const panel = container.querySelector<HTMLElement>('#' + about.getAttribute('aria-controls'))!;
+    assert.equal(panel.hidden, false);
+    for (const county of counties)
+      assert.ok(panel.querySelector('a[href="/' + county.slug + '"]'), county.slug);
     await act(async () =>
-      window.document.body.dispatchEvent(new window.MouseEvent('pointerdown', { bubbles: true })),
+      document.body.dispatchEvent(new window.MouseEvent('pointerdown', { bubbles: true })),
     );
-    assert.equal(container.querySelector<HTMLElement>('#source-services-menu')?.hidden, true);
+    assert.equal(panel.hidden, true);
+    assert.equal(about.getAttribute('aria-expanded'), 'false');
   } finally {
     await unmount();
   }

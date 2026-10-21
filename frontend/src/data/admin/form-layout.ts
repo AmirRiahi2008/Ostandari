@@ -42,6 +42,10 @@ export function adminFieldHelp(
   field: string,
   editing: boolean,
 ): string | undefined {
+  if (field === 'banner_media_id')
+    return 'بنر اختصاصی همین فرمانداری را از کتابخانهٔ تصاویر انتخاب کنید؛ نسبت پیشنهادی ۱۳۸۰ در ۱۸۰.';
+  if (field === 'aerial_media_id')
+    return 'تصویر هوایی همین شهرستان را از کتابخانهٔ تصاویر انتخاب کنید؛ عکس شهر دیگر انتخاب نشود.';
   if (field === 'slug') return 'اختیاری؛ اگر خالی باشد، نشانی از روی عنوان ساخته می‌شود.';
   if (field === 'priority') return 'عدد کوچک‌تر، بالاتر نمایش داده می‌شود.';
   if (field === 'password')

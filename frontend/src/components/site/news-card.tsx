@@ -1,14 +1,26 @@
 import { recordImage, plainText, type PublicRecord } from '@/lib/public-content';
-export function NewsCard({ item, county }: { item: PublicRecord; county?: string }) {
+import { findCounty } from '@/data/counties';
+import { countyPortalHref } from '@/lib/county-portal';
+export function NewsCard({
+  item,
+  county,
+  canonicalCounty = false,
+}: {
+  item: PublicRecord;
+  county?: string;
+  canonicalCounty?: boolean;
+}) {
   const image = recordImage(item.cover ?? item.image);
   return (
     <article className="portal-news-card source-news-card">
       <a
         className="akhbar-container"
         href={
-          '/news/' +
-          encodeURIComponent(String(item.id)) +
-          (county ? '?name=' + encodeURIComponent(county) : '')
+          canonicalCounty && findCounty(county)
+            ? countyPortalHref(findCounty(county)!, '/news/' + encodeURIComponent(String(item.id)))
+            : '/news/' +
+              encodeURIComponent(String(item.id)) +
+              (county ? '?name=' + encodeURIComponent(county) : '')
         }
       >
         {image && <img src={image} alt="" loading="lazy" />}

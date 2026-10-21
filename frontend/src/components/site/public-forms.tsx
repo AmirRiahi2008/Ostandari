@@ -246,7 +246,7 @@ export function PollCard({
     </article>
   );
 }
-export function AssistantForm() {
+export function AssistantForm({ organizationId }: { organizationId?: number } = {}) {
   const [reply, setReply] = useState('');
   const [busy, setBusy] = useState(false);
   async function submit(e: FormEvent<HTMLFormElement>) {
@@ -257,7 +257,11 @@ export function AssistantForm() {
     try {
       const r = await api<{ answer: string }>('assistant/query', {
         method: 'POST',
-        body: jsonBody({ question, locale: 'fa' }),
+        body: jsonBody({
+          question,
+          locale: 'fa',
+          ...(organizationId ? { organization_id: organizationId } : {}),
+        }),
       });
       setReply(r.data.answer);
     } catch (error) {

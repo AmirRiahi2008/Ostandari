@@ -92,7 +92,11 @@ export function findCounty(value: string | undefined): County | undefined {
   );
 }
 export function officeHref(county: Pick<County, 'slug'>, section?: string): string {
-  return '/office?' + new URLSearchParams({ name: county.slug, ...(section ? { section } : {}) });
+  return (
+    '/' +
+    county.slug +
+    (section === 'about' ? '/about' : section ? '/' + encodeURIComponent(section) : '')
+  );
 }
 export function countyQuery(county?: Pick<County, 'slug'>): string {
   return county ? '?name=' + encodeURIComponent(county.slug) : '';

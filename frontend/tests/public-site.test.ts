@@ -14,7 +14,7 @@ import {
   articleHref,
 } from '../src/features/site/official-data';
 import { officialNavigation, type NavigationItem } from '../src/data/official-navigation';
-import { knownRoute } from '../src/lib/routes';
+import { knownRoute, routeAlias } from '../src/lib/routes';
 import { managerGroups } from '../src/data/manager-groups';
 import { GET as rss } from '../src/app/rss/route';
 
@@ -219,16 +219,21 @@ test('home preserves the supplied header, section order, ornaments and footer in
   );
 });
 
-test('every original official main-menu destination remains available in the restored desktop mega menu', async () => {
+test('original menu destinations remain reachable after promoting main items and moving utility links', async () => {
   process.env.TEMPLATE_PREVIEW = 'true';
   const page = new JSDOM(await render(await HomePage())).window.document;
   const links = new Set(
-    [...page.querySelectorAll('.desktop-menu a[href]')].map((link) => link.getAttribute('href')),
+    [...page.querySelectorAll('.header-container a[href]')].map((link) =>
+      link.getAttribute('href'),
+    ),
   );
   function check(items: NavigationItem[]) {
     for (const item of items) {
-      assert.ok(links.has(item.href), item.href);
-      check(item.children);
+      const url = new URL(item.href, 'https://portal.invalid');
+      const destination = routeAlias(url.pathname, url.searchParams) ?? item.href;
+      assert.ok(links.has(destination), destination);
+      if (item.href !== '/duties') check(item.children);
+      else for (const child of item.children) assert.ok(knownRoute(child.href));
     }
   }
   check(officialNavigation.main);

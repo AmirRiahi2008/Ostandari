@@ -1,7 +1,9 @@
+import { cache } from 'react';
+import { countyPortalHref } from '@/lib/county-portal';
 import type { ReactNode } from 'react';
 import { notFound, redirect } from 'next/navigation';
 import { OriginalCountyNews, type OriginalNewsItem } from '@/components/site/original-news';
-import { counties, findCounty, officeHref, countyQuery, type County } from '@/data/counties';
+import { counties, findCounty, officeHref, type County } from '@/data/counties';
 import { PortalLayout, EmptyState, loadPortalChrome } from '@/components/site/portal-layout';
 import { CountyArtwork } from '@/components/site/county-artwork';
 import { NewsletterForm } from '@/components/site/public-forms';
@@ -9,9 +11,9 @@ import { OriginalManagerCards } from '@/components/site/original-content';
 import { SafeRichText } from '@/components/site/safe-rich-text';
 import { publicData, recordImage, plainText, type PublicRecord } from '@/lib/public-content';
 import { safeDestination } from '@/lib/urls';
-import { articleHref, officialDate } from './official-data';
+import { officialDate } from './official-data';
 
-export async function officeIdentity(slug: string | undefined) {
+export const officeIdentity = cache(async (slug: string | undefined) => {
   const county = findCounty(slug);
   if (!county) notFound();
   if (slug !== county.slug) redirect(officeHref(county));
@@ -22,7 +24,7 @@ export async function officeIdentity(slug: string | undefined) {
   }>('counties/by-slug/' + county.slug, {}, {});
   const record = countyResult.data.county;
   const organizations = countyResult.data.organizations ?? [];
-  const organization = organizations.find((org) => org.type === 'county') ?? organizations[0];
+  const organization = organizations.find((org) => org.type === 'county');
   // A missing county organization must never fall back to records from another county.
   return {
     county,
@@ -34,7 +36,7 @@ export async function officeIdentity(slug: string | undefined) {
     members: countyResult.data.members ?? [],
     unavailable: countyResult.unavailable,
   };
-}
+});
 
 export async function officeContent(slug: string | undefined) {
   const identity = await officeIdentity(slug);
@@ -50,34 +52,11 @@ export async function officeContent(slug: string | undefined) {
     organization
       ? publicData<PublicRecord[]>('galleries?per_page=4' + filter, [], [])
       : Promise.resolve({ data: [], unavailable: false }),
-    publicData<PublicRecord[]>('links?per_page=8', [], []),
+    organization
+      ? publicData<PublicRecord[]>('links?per_page=8' + filter, [], [])
+      : Promise.resolve({ data: [], unavailable: false }),
   ]);
   return { ...identity, news, announcements, galleries, links };
-}
-
-type OfficeSection = 'home' | 'about' | 'news' | 'gallery' | 'contact';
-export function CountyNavigation({ county, active }: { county: County; active?: OfficeSection }) {
-  const q = countyQuery(county);
-  const links = [
-    { key: 'home', title: 'صفحه فرمانداری', href: officeHref(county) },
-    { key: 'about', title: 'معرفی شهرستان', href: officeHref(county, 'about') },
-    { key: 'news', title: 'اخبار فرمانداری', href: '/news' + q },
-    { key: 'gallery', title: 'گالری تصاویر', href: '/gallery' + q },
-    { key: 'contact', title: 'ارتباط با فرماندار', href: '/contact-us' + q + '&type=normal' },
-    { key: 'counties', title: 'همه فرمانداری‌ها', href: '/counties' },
-  ];
-  return (
-    <nav
-      className="portal-office-nav portal-county-navigation"
-      aria-label={'بخش‌های فرمانداری ' + county.name}
-    >
-      {links.map((link) => (
-        <a key={link.key} href={link.href} aria-current={active === link.key ? 'page' : undefined}>
-          {link.title}
-        </a>
-      ))}
-    </nav>
-  );
 }
 
 function OfficePanel({
@@ -130,10 +109,7 @@ function OfficeGovernor({ county, governor }: { county: County; governor?: Publi
           : 'پرتال اطلاع‌رسانی شهرستان ' + county.name}
       </p>
       <div className="portal-office-actions">
-        <a
-          className="portal-office-button"
-          href={'/contact-us' + countyQuery(county) + '&type=normal'}
-        >
+        <a className="portal-office-button" href={countyPortalHref(county, '/contact?type=normal')}>
           ارتباط با فرماندار
         </a>
         <a className="portal-office-button is-outline" href={officeHref(county, 'about')}>
@@ -223,9 +199,19 @@ function CountyLocator({ county, record }: { county: County; record?: PublicReco
 
 export async function OfficePage({ slug, section }: { slug?: string; section?: string }) {
   const chrome = loadPortalChrome();
-  const { county, record, governor, news, announcements, galleries, links, members, unavailable } =
-    await officeContent(slug);
-  const q = countyQuery(county);
+  const {
+    county,
+    record,
+    organization,
+    governor,
+    news,
+    announcements,
+    galleries,
+    links,
+    members,
+    unavailable,
+  } = await officeContent(slug);
+  const href = (path: string) => countyPortalHref(county, path);
   const about = section === 'about';
   const people = members.filter((person) => person.kind !== 'county_governor');
   const newsItems = (items: PublicRecord[], type: string): OriginalNewsItem[] =>
@@ -236,12 +222,13 @@ export async function OfficePage({ slug, section }: { slug?: string; section?: s
       date: officialDate(item.published_at),
       image: recordImage(item.cover ?? item.image),
       type,
-      href:
-        articleHref(item) + (articleHref(item).includes('?') ? '&' : '?') + 'name=' + county.slug,
+      href: href('/news/' + encodeURIComponent(String(item.id))),
     }));
   return (
     <PortalLayout
-      path="/office"
+      path={officeHref(county, about ? 'about' : undefined)}
+      county={county}
+      organization={organization}
       title={'فرمانداری شهرستان ' + county.name}
       designPath="/county"
       chrome={chrome}
@@ -251,7 +238,6 @@ export async function OfficePage({ slug, section }: { slug?: string; section?: s
         data-county-office={county.slug}
         data-office-view={about ? 'about' : 'home'}
       >
-        <CountyNavigation county={county} active={about ? 'about' : 'home'} />
         <div className="portal-office-lead">
           <section className="portal-office-identity" aria-label={'معرفی فرمانداری ' + county.name}>
             <div className="portal-office-intro">
@@ -260,7 +246,7 @@ export async function OfficePage({ slug, section }: { slug?: string; section?: s
                 فرمانداری شهرستان <strong>{county.name}</strong>
               </h2>
               <p>اخبار، اطلاعیه‌ها و راه‌های ارتباط با فرمانداری شهرستان {county.name}</p>
-              <a className="portal-office-button" href={'/news' + q}>
+              <a className="portal-office-button" href={href('/news')}>
                 اخبار شهرستان<span aria-hidden="true">←</span>
               </a>
             </div>
@@ -270,6 +256,16 @@ export async function OfficePage({ slug, section }: { slug?: string; section?: s
           </section>
           <OfficeGovernor county={county} governor={governor} />
         </div>
+        {recordImage(organization?.aerial) && (
+          <figure className="county-aerial-panel">
+            <img
+              src={recordImage(organization?.aerial)}
+              alt={'تصویر هوایی شهرستان ' + county.name}
+              loading="lazy"
+            />
+            <figcaption>تصویر هوایی شهرستان {county.name}</figcaption>
+          </figure>
+        )}
         <div className="portal-office-content-grid">
           <div className="portal-office-main-column">
             {about ? (
@@ -288,7 +284,7 @@ export async function OfficePage({ slug, section }: { slug?: string; section?: s
             ) : (
               <OfficePanel
                 title="اخبار و اطلاعیه‌ها"
-                href={'/news' + q}
+                href={href('/news')}
                 className="portal-office-news"
               >
                 <OriginalCountyNews
@@ -300,7 +296,7 @@ export async function OfficePage({ slug, section }: { slug?: string; section?: s
                 />
               </OfficePanel>
             )}
-            <OfficePanel title="گالری تصاویر" href={'/gallery' + q}>
+            <OfficePanel title="گالری تصاویر" href={href('/gallery')}>
               {galleries.data.length ? (
                 <div className="portal-office-gallery">
                   {galleries.data.map((album) => {
@@ -308,7 +304,7 @@ export async function OfficePage({ slug, section }: { slug?: string; section?: s
                       album.cover ?? (album.items as PublicRecord[] | undefined)?.[0]?.image,
                     );
                     return (
-                      <a key={String(album.id)} href={'/gallery' + q + '&album=' + album.id}>
+                      <a key={String(album.id)} href={href('/gallery?album=' + album.id)}>
                         <div className="portal-office-gallery-image">
                           {image ? (
                             <img src={image} alt="" loading="lazy" width={420} height={270} />
@@ -336,8 +332,8 @@ export async function OfficePage({ slug, section }: { slug?: string; section?: s
               {people.length ? (
                 <OriginalManagerCards
                   people={people}
-                  profilePath={'/managers' + q}
-                  contactHref={'/contact-us' + q}
+                  profilePath={href('/managers')}
+                  contactHref={href('/contact')}
                 />
               ) : (
                 <EmptyState unavailable={unavailable}>
@@ -347,10 +343,10 @@ export async function OfficePage({ slug, section }: { slug?: string; section?: s
             </OfficePanel>
             <OfficePanel title="دسترسی سریع">
               <div className="portal-office-shortcuts">
-                <a href="/services">
+                <a href={href('/services')}>
                   میز خدمت الکترونیکی<span aria-hidden="true">←</span>
                 </a>
-                <a href={'/contact-us' + q}>
+                <a href={href('/contact')}>
                   ارتباط با فرمانداری<span aria-hidden="true">←</span>
                 </a>
                 <a href="/citizen">
@@ -367,7 +363,7 @@ export async function OfficePage({ slug, section }: { slug?: string; section?: s
                 <ul className="portal-office-links">
                   {links.data.map((item) => (
                     <li key={String(item.id)}>
-                      <a href={safeDestination(item.url, '/links')}>
+                      <a href={href(safeDestination(item.url, '/links'))}>
                         {String(item.title ?? item.name)}
                       </a>
                     </li>

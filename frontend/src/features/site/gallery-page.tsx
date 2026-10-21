@@ -2,7 +2,7 @@ import { OriginalGallery } from '@/components/site/original-gallery';
 import { notFound } from 'next/navigation';
 import { PortalLayout, EmptyState, loadPortalChrome } from '@/components/site/portal-layout';
 import { publicData, recordImage, type PublicRecord } from '@/lib/public-content';
-import { CountyNavigation, officeIdentity } from './office-page';
+import { officeIdentity } from './office-page';
 import { first, type Search } from './search-params';
 export async function CountyGallery({ search }: { search: Search }) {
   const chrome = loadPortalChrome();
@@ -38,7 +38,6 @@ export async function CountyGallery({ search }: { search: Search }) {
       designPath="/gallery"
       chrome={chrome}
     >
-      <CountyNavigation county={county} active="gallery" />
       <div className="gal-wrap">
         <div className="gal-head">
           <h2>گالری تصاویر</h2>

@@ -330,7 +330,7 @@ test('county keyboard focus, list hover and select share the same preview; a bro
       container.querySelector('.portal-county-nameplate')?.textContent?.trim(),
       'فرمانداری آمل',
     );
-    assert.equal(container.querySelector('.left-ksks')?.getAttribute('href'), '/office?name=amol');
+    assert.equal(container.querySelector('.left-ksks')?.getAttribute('href'), '/amol');
     await act(async () => {
       select.value = 'nur';
       select.dispatchEvent(new window.Event('change', { bubbles: true }));
@@ -339,7 +339,7 @@ test('county keyboard focus, list hover and select share the same preview; a bro
       container.querySelector('.portal-county-nameplate')?.textContent?.trim(),
       'فرمانداری نور',
     );
-    assert.equal(container.querySelector('.left-ksks')?.getAttribute('href'), '/office?name=nur');
+    assert.equal(container.querySelector('.left-ksks')?.getAttribute('href'), '/nur');
   } finally {
     await act(async () => root.unmount());
   }

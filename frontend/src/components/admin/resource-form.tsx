@@ -31,6 +31,8 @@ export const fieldLabels: Record<string, string> = {
   role_id: 'نقش کاربری',
   menu_id: 'منو',
   media_id: 'تصویر',
+  banner_media_id: 'بنر بالای پورتال فرمانداری',
+  aerial_media_id: 'تصویر هوایی شهرستان',
   cover_media_id: 'تصویر شاخص',
   gallery_id: 'گالری',
   content_id: 'محتوا',

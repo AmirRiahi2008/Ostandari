@@ -13,7 +13,7 @@ import {
   type PublicRecord,
 } from '@/lib/public-content';
 import { templatePreview } from '@/lib/config';
-import { CountyNavigation, officeIdentity } from './office-page';
+import { officeIdentity } from './office-page';
 import { first, type Search } from './search-params';
 export async function NewsPage({ search }: { search: Search }) {
   const chrome = loadPortalChrome();
@@ -43,7 +43,6 @@ export async function NewsPage({ search }: { search: Search }) {
   const title = county ? 'اخبار فرمانداری ' + county.name : 'اخبار و اطلاعیه‌ها';
   return (
     <PortalLayout path="/news" title={title} chrome={chrome}>
-      {county && <CountyNavigation county={county} active="news" />}
       <Panel title={title}>
         <SearchForm action="/news" query={query} county={county?.slug} />
         {items.length ? (
@@ -99,7 +98,6 @@ export async function ArticlePage({ id, search }: { id: string; search: Search }
         <span aria-hidden="true">/</span>
         <a href={'/news' + countyQuery(county)}>اخبار</a>
       </nav>
-      {county && <CountyNavigation county={county} active="news" />}
       <div className="source-article-grid">
         <article className="card p-4">
           {article ? (

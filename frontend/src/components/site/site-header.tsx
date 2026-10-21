@@ -2,6 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { officialNavigation, type NavigationItem } from '@/data/official-navigation';
+import type { County } from '@/data/counties';
+import { countyPortalHref, countyBannerAssets, canonicalNavigation } from '@/lib/county-portal';
+import { DirectMenu } from './direct-menu';
 import { OriginalIcon, type OriginalIconName } from './original-icons';
 
 export type SiteBranding = {
@@ -103,12 +106,15 @@ function MobileItems({ items }: { items: NavigationItem[] }) {
 }
 
 export function SiteHeader({
-  items = officialNavigation.main,
+  items: providedItems = officialNavigation.main,
   branding = {},
+  county,
 }: {
   items?: NavigationItem[];
   branding?: SiteBranding;
+  county?: County;
 }) {
+  const items = canonicalNavigation(providedItems);
   const [mobile, setMobile] = useState(false);
   const [mega, setMega] = useState(false);
   const [category, setCategory] = useState(0);
@@ -119,8 +125,12 @@ export function SiteHeader({
   const drawer = useRef<HTMLDivElement>(null);
   const megaCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const focusMegaCategory = useRef(false);
-  const groups = ['/managers', '/services', '/duties', '/service-agreement', '/about'].flatMap(
-    (path) => items.filter((item) => item.href === path),
+  const href = (path: string) => (county ? countyPortalHref(county, path) : path);
+  const localPath = (path: string) =>
+    county && path.startsWith('/' + county.slug) ? path.slice(county.slug.length + 1) || '/' : path;
+  const rootLink = (path: string) => items.find((item) => localPath(item.href) === path);
+  const groups = ['/services', '/service-agreement'].flatMap((path) =>
+    items.filter((item) => localPath(item.href) === path),
   );
   const extra = items.filter(
     (item) =>
@@ -133,11 +143,22 @@ export function SiteHeader({
         '/service-agreement',
         '/about',
         '/polls',
-      ].includes(item.href),
+      ].includes(localPath(item.href)),
   );
   const categories = groups.concat(extra);
   const selected = Math.min(category, Math.max(0, categories.length - 1));
-  const rootLink = (path: string) => items.find((item) => item.href === path);
+  const utility = [
+    ['تماس با ما', '/contact'],
+    ['دسترسی سریع', '/quick-access'],
+    ['سامانه شفافیت', '/transparency'],
+    ['شرح وظایف واحدها', '/duties'],
+    ['قوانین و مقررات', '/regulations'],
+    ['دسترسی آزاد به اطلاعات', '/information'],
+  ];
+  const portalName = county
+    ? 'فرمانداری شهرستان ' + county.name
+    : (branding.name ?? 'استانداری مازندران');
+  const banner = branding.banner || (county ? countyBannerAssets[county.slug] : undefined);
   const image = (value: string | undefined, fallback: string) =>
     value && /^(?:\/(?!\/)|https?:\/\/)/.test(value) ? value : fallback;
   const logo = image(branding.logo, '/design/site/assets/image/logo.png');
@@ -209,6 +230,7 @@ export function SiteHeader({
     <header
       className="header-container"
       data-react-header="true"
+      data-county-header={county?.slug}
       ref={header}
       onKeyDown={(event) => {
         if (event.key === 'Escape') {
@@ -225,20 +247,14 @@ export function SiteHeader({
         رفتن به محتوای صفحه
       </a>
       <div className="nav-bala">
-        <div className="nav-bala-right">
-          <div className="tamas">
-            <a href="/contact">تماس با ما</a>
-          </div>
-          <div className="dastresi">
-            <a href="/quick-access">دسترسی سریع</a>
-          </div>
-          <div className="ghavanin">
-            <a href="/regulations">قوانین و مقررات</a>
-          </div>
-          <div className="etelaat">
-            <a href="/information">دسترسی آزاد به اطلاعات</a>
-          </div>
-        </div>
+        <nav className="nav-bala-right" aria-label="پیوندهای بالای سایت">
+          {utility.map(([title, path]) => (
+            <a key={path} href={href(path)}>
+              {title}
+            </a>
+          ))}
+          {county && <a href="/">پرتال استانداری</a>}
+        </nav>
         <div className="nav-bala-left">
           <div className="iran-container">
             <div className="iran-img">
@@ -267,7 +283,7 @@ export function SiteHeader({
                 </a>
               </div>
             </div>
-            <a className="search" href="/search" aria-label="جستجو در سایت">
+            <a className="search" href={href('/search')} aria-label="جستجو در سایت">
               <OriginalIcon name="search" />
             </a>
           </div>
@@ -281,18 +297,30 @@ export function SiteHeader({
           </div>
         </div>
       </div>
-      <div className="imageeee">
-        <img
-          className="icx-responsive-img"
-          src={image(branding.banner, '/design/site/assets/image/baner.png')}
-          width={1380}
-          height={180}
-          alt={
-            branding.name ??
-            'استانداری مازندران؛ که مازندران شهر ما یاد باد، همیشه بر و بومش آباد باد'
-          }
-          fetchPriority="high"
-        />
+      <div className={'imageeee' + (county ? ' county-portal-banner' : '')}>
+        {county && !banner ? (
+          <div className="county-banner-fallback" role="img" aria-label={portalName}>
+            <div>
+              <span>وزارت کشور · استانداری مازندران</span>
+              <strong>{portalName}</strong>
+              <span>پرتال رسمی اطلاع‌رسانی و خدمات الکترونیکی</span>
+            </div>
+          </div>
+        ) : (
+          <img
+            className="icx-responsive-img"
+            src={image(banner, '/design/site/assets/image/baner.png')}
+            width={1380}
+            height={180}
+            alt={
+              county
+                ? portalName
+                : (branding.name ??
+                  'استانداری مازندران؛ که مازندران شهر ما یاد باد، همیشه بر و بومش آباد باد')
+            }
+            fetchPriority="high"
+          />
+        )}
         <div className="shoar-sal">
           <img
             src={image(branding.sloganImage, '/design/site/assets/image/شعار پ.png')}
@@ -317,8 +345,8 @@ export function SiteHeader({
             <span />
           </button>
           <div className="hum-logo">
-            <a href="/" aria-label="صفحه اصلی">
-              <img src={logo} width={150} height={162} alt="نشان استانداری مازندران" />
+            <a href={href('/')} aria-label="صفحه اصلی">
+              <img src={logo} width={150} height={162} alt={portalName} />
             </a>
           </div>
           <nav className="desktop-menu" aria-label="منوی اصلی">
@@ -391,7 +419,7 @@ export function SiteHeader({
                   id="source-services-menu"
                   hidden={!mega}
                   role="region"
-                  aria-label="خدمات و بخش‌های استانداری"
+                  aria-label={'خدمات و بخش‌های ' + portalName}
                 >
                   <ul className="categories">
                     {categories.map((item, number) => (
@@ -408,7 +436,7 @@ export function SiteHeader({
                           onClick={() => setCategory(number)}
                         >
                           <span className="category-text">
-                            {item.href === '/services' ? 'خدمات الکترونیکی' : item.title}
+                            {localPath(item.href) === '/services' ? 'خدمات الکترونیکی' : item.title}
                           </span>
                           <OriginalIcon name="arrow" className="arrow10" />
                         </button>
@@ -419,9 +447,9 @@ export function SiteHeader({
                     {categories[selected] && (
                       <div className="source-mega-heading">
                         <div>
-                          <span>دسترسی به بخش‌های استانداری</span>
+                          <span>دسترسی به بخش‌های {county ? 'فرمانداری' : 'استانداری'}</span>
                           <h2>
-                            {categories[selected].href === '/services'
+                            {localPath(categories[selected].href) === '/services'
                               ? 'خدمات الکترونیکی'
                               : categories[selected].title}
                           </h2>
@@ -461,7 +489,7 @@ export function SiteHeader({
               </div>
               <div className="menu-item install-app-menu-item">
                 <div className="rast">
-                  <a href="/install">
+                  <a href={href('/install')}>
                     <OriginalIcon name="app" className="source-install-icon" />
                     <span>نصب اپلیکیشن</span>
                   </a>
@@ -470,13 +498,17 @@ export function SiteHeader({
               {navItem('/polls', 'poll')}
             </div>
             <div className="logo-wrapper">
-              <a href="/" aria-label="صفحه اصلی استانداری مازندران">
-                <img src={logo} width={150} height={162} alt="استانداری مازندران" />
+              <a href={href('/')} aria-label={'صفحه اصلی ' + portalName}>
+                <img src={logo} width={150} height={162} alt={portalName} />
               </a>
             </div>
             <div className="menu-left">
-              {navItem('/transparency', 'transparency')}
-              {navItem('/duties', 'duties')}
+              {rootLink('/about') && (
+                <DirectMenu item={rootLink('/about')!} icon="about" onOpen={closeMega} />
+              )}
+              {rootLink('/managers') && (
+                <DirectMenu item={rootLink('/managers')!} icon="people" onOpen={closeMega} />
+              )}
               {navItem('/service-agreement', 'agreement')}
               <div className="menu-item ai-menu-item">
                 <div className="rast">
@@ -484,7 +516,7 @@ export function SiteHeader({
                     <OriginalIcon name="ai" />
                     AI
                   </span>
-                  <a href="/assistant">هوش مصنوعی سازمانی</a>
+                  <a href={href('/assistant')}>هوش مصنوعی سازمانی</a>
                 </div>
               </div>
             </div>
@@ -520,7 +552,7 @@ export function SiteHeader({
               }}
             >
               <div className="mm-header">
-                <img src={logo} className="mm-logo" alt="استانداری مازندران" />
+                <img src={logo} className="mm-logo" alt={portalName} />
                 <button
                   type="button"
                   id="closeMobileMenu"
@@ -532,10 +564,17 @@ export function SiteHeader({
                 </button>
               </div>
               <MobileItems items={items} />
+              <div className="mm-utility">
+                {utility.map(([title, path]) => (
+                  <a key={path} href={href(path)}>
+                    {title}
+                  </a>
+                ))}
+              </div>
               <div className="mm-footer">
-                <a href="/install">نصب اپلیکیشن</a>
-                <a href="/assistant">هوش مصنوعی سازمانی</a>
-                <a href="/sitemap">نقشه سایت</a>
+                <a href={href('/install')}>نصب اپلیکیشن</a>
+                <a href={href('/assistant')}>هوش مصنوعی سازمانی</a>
+                <a href={href('/sitemap')}>نقشه سایت</a>
               </div>
             </div>
           )}
