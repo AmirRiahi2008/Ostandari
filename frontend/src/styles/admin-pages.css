@@ -987,3 +987,100 @@
 [data-section='admin'] .sidebar.shrink .portal-module-menu details {
   display: block;
 }
+
+/* Shared content editors: fill each row before starting the next field. */
+[data-section='admin'] .portal-resource-form[data-resource='contents'] > .portal-image-field {
+  grid-column: 1 / -1;
+}
+[data-section='admin'] .portal-editor-page .portal-resource-form {
+  align-items: start;
+}
+[data-section='admin'] .portal-resource-field > label.portal-choice {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 12px;
+  min-height: 52px;
+  padding: 14px;
+  border: 1px solid var(--admin-line);
+  border-radius: 10px;
+  background: var(--admin-soft);
+  box-sizing: border-box;
+  cursor: pointer;
+}
+[data-section='admin'] .portal-resource-field .portal-choice > input[type='checkbox'] {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  margin: 4px 0 0;
+  accent-color: #17619b;
+}
+[data-section='admin'] .portal-choice-copy {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+[data-section='admin'] .portal-choice-copy strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+[data-section='admin'] .portal-choice-copy small {
+  font-weight: 400;
+}
+[data-section='admin'] .portal-resource-field[data-editor-field='show_in_slideshow'] > label {
+  border-inline-start: 3px solid #17619b;
+}
+[data-section='admin'] .portal-resource-form > .portal-form-additional,
+[data-section='admin'] .portal-resource-form > .portal-resource-wide {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+[data-section='admin']
+  .portal-resource-form
+  .portal-cms
+  :is(.portal-cms-toolbar, .portal-cms-modes, .portal-cms-tools) {
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  margin: 0;
+  box-sizing: border-box;
+  justify-content: flex-start;
+}
+[data-section='admin'] .portal-resource-form .portal-cms button {
+  flex: 0 0 auto;
+  width: auto;
+  min-height: 36px;
+  margin: 0;
+  line-height: 1.7;
+}
+[data-section='admin'] .portal-resource-form .portal-cms-tools > label {
+  flex: 1 1 160px;
+  min-width: 0;
+}
+[data-section='admin'] .portal-resource-form .portal-image-field figure {
+  margin: 0;
+  max-width: 100%;
+}
+[data-section='admin'] .portal-resource-form .portal-image-field figure img {
+  display: block;
+  max-width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+}
+[data-section='admin'] .portal-resource-form [data-field][hidden],
+[data-section='admin'] .portal-resource-form .portal-cms-tools[hidden] {
+  display: none !important;
+}
+@media (max-width: 760px) {
+  [data-section='admin'] .portal-editor-page .portal-resource-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  [data-section='admin'] .portal-editor-actions {
+    gap: 10px;
+  }
+  [data-section='admin'] .portal-editor-actions button {
+    max-width: 100%;
+    white-space: normal;
+  }
+}

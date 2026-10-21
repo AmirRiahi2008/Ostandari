@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { officialNavigation, type NavigationItem } from '@/data/official-navigation';
 import type { County } from '@/data/counties';
-import { countyPortalHref, countyBannerAssets, canonicalNavigation } from '@/lib/county-portal';
+import { countyPortalHref, canonicalNavigation } from '@/lib/county-portal';
+import { CountyBanner } from './county-banner';
 import { DirectMenu } from './direct-menu';
 import { OriginalIcon, type OriginalIconName } from './original-icons';
 
@@ -158,7 +159,7 @@ export function SiteHeader({
   const portalName = county
     ? 'فرمانداری شهرستان ' + county.name
     : (branding.name ?? 'استانداری مازندران');
-  const banner = branding.banner || (county ? countyBannerAssets[county.slug] : undefined);
+  const banner = branding.banner;
   const image = (value: string | undefined, fallback: string) =>
     value && /^(?:\/(?!\/)|https?:\/\/)/.test(value) ? value : fallback;
   const logo = image(branding.logo, '/design/site/assets/image/logo.png');
@@ -246,66 +247,62 @@ export function SiteHeader({
       <a className="source-skip" href="#main-content">
         رفتن به محتوای صفحه
       </a>
-      <div className="nav-bala">
-        <nav className="nav-bala-right" aria-label="پیوندهای بالای سایت">
-          {utility.map(([title, path]) => (
-            <a key={path} href={href(path)}>
-              {title}
-            </a>
-          ))}
-          {county && <a href="/">پرتال استانداری</a>}
-        </nav>
-        <div className="nav-bala-left">
-          <div className="iran-container">
-            <div className="iran-img">
-              <button
-                type="button"
-                id="flagSwitcher"
-                aria-label="انتخاب زبان"
-                aria-expanded={language}
-                aria-controls="flagDropdown"
-                onClick={() => setLanguage(!language)}
-              >
-                <OriginalIcon name="iran" />
-              </button>
-              <div
-                className={'flag-dropdown' + (language ? ' active' : '')}
-                id="flagDropdown"
-                hidden={!language}
-              >
-                <a className="flag-option" href="/en" lang="en">
-                  <OriginalIcon name="english" />
-                  <span>English</span>
-                </a>
-                <a className="flag-option" href="/ar" lang="ar">
-                  <OriginalIcon name="arabic" />
-                  <span>العربية</span>
-                </a>
+      {!county && (
+        <div className="nav-bala">
+          <nav className="nav-bala-right" aria-label="پیوندهای بالای سایت">
+            {utility.map(([title, path]) => (
+              <a key={path} href={href(path)}>
+                {title}
+              </a>
+            ))}
+            {county && <a href="/">پرتال استانداری</a>}
+          </nav>
+          <div className="nav-bala-left">
+            <div className="iran-container">
+              <div className="iran-img">
+                <button
+                  type="button"
+                  id="flagSwitcher"
+                  aria-label="انتخاب زبان"
+                  aria-expanded={language}
+                  aria-controls="flagDropdown"
+                  onClick={() => setLanguage(!language)}
+                >
+                  <OriginalIcon name="iran" />
+                </button>
+                <div
+                  className={'flag-dropdown' + (language ? ' active' : '')}
+                  id="flagDropdown"
+                  hidden={!language}
+                >
+                  <a className="flag-option" href="/en" lang="en">
+                    <OriginalIcon name="english" />
+                    <span>English</span>
+                  </a>
+                  <a className="flag-option" href="/ar" lang="ar">
+                    <OriginalIcon name="arabic" />
+                    <span>العربية</span>
+                  </a>
+                </div>
               </div>
+              <a className="search" href={href('/search')} aria-label="جستجو در سایت">
+                <OriginalIcon name="search" />
+              </a>
             </div>
-            <a className="search" href={href('/search')} aria-label="جستجو در سایت">
-              <OriginalIcon name="search" />
-            </a>
-          </div>
-          <div className="sabtnam-container">
-            <div className="sabtnan">
-              <a href="/register">ثبت نام</a>
-            </div>
-            <div className="vorod">
-              <a href="/login">ورود به حساب</a>
+            <div className="sabtnam-container">
+              <div className="sabtnan">
+                <a href="/register">ثبت نام</a>
+              </div>
+              <div className="vorod">
+                <a href="/login">ورود به حساب</a>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
       <div className={'imageeee' + (county ? ' county-portal-banner' : '')}>
         {county && !banner ? (
-          <div className="county-banner-fallback" role="img" aria-label={portalName}>
-            <div>
-              <span>وزارت کشور · استانداری مازندران</span>
-              <strong>{portalName}</strong>
-              <span>پرتال رسمی اطلاع‌رسانی و خدمات الکترونیکی</span>
-            </div>
-          </div>
+          <CountyBanner county={county} />
         ) : (
           <img
             className="icx-responsive-img"

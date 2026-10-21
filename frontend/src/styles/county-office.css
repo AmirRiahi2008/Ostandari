@@ -755,3 +755,8 @@
 .county-portal-content .portal-search {
   margin-block: 12px 24px;
 }
+
+[data-county-office] .county-home-slideshow {
+  min-width: 0;
+  margin-bottom: 24px;
+}

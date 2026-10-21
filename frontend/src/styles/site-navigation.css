@@ -616,3 +616,210 @@
     animation: none !important;
   }
 }
+
+/* Keep every trigger connected to its panel, including the space below its label. */
+@media (min-width: 1281px) {
+  [data-section='site'] [data-react-header] .desktop-menu {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 112px minmax(0, 1.15fr);
+    align-items: stretch;
+    gap: 8px;
+    width: 100%;
+    height: 76px;
+    padding: 0 14px;
+  }
+  [data-section='site'] [data-react-header] :is(.header-hamburger, .hum-logo) {
+    display: none !important;
+  }
+  [data-section='site'] [data-react-header] :is(.menu-right, .menu-left) {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-evenly;
+    flex-wrap: nowrap;
+    width: auto;
+    height: 100%;
+    gap: 6px !important;
+    padding: 0;
+    margin: 0;
+  }
+  [data-section='site'] [data-react-header] .menu-item {
+    display: flex;
+    align-items: stretch;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0;
+  }
+  [data-section='site'] [data-react-header] .menu-item > .rast {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    height: 100%;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+    white-space: nowrap;
+  }
+  [data-section='site'] [data-react-header] .menu-item > .rast > :is(a, button) {
+    width: auto;
+    margin: 0;
+    padding-inline: 0;
+    font-size: 11px !important;
+    white-space: nowrap;
+  }
+  [data-section='site'] [data-react-header] .source-direct-toggle {
+    flex: 0 0 24px;
+    min-height: 36px;
+  }
+  [data-section='site'] [data-react-header] .menu-item > .rast > svg {
+    flex: 0 0 17px;
+    width: 17px;
+    height: 17px;
+  }
+  [data-section='site'] [data-react-header] .logo-wrapper {
+    position: relative;
+    inset: auto;
+    transform: none;
+    width: 112px;
+    height: 76px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  [data-section='site'] [data-react-header] .logo-wrapper img {
+    width: 112px;
+    height: auto;
+  }
+}
+@media (max-width: 1280px) {
+  [data-section='site'] [data-react-header] .desktop-menu {
+    display: none !important;
+  }
+  [data-section='site'] [data-react-header] .header-hamburger {
+    display: flex !important;
+  }
+  [data-section='site'] [data-react-header] .hum-logo {
+    display: block !important;
+  }
+}
+[data-section='site'] [data-react-header][data-county-header] .top-header {
+  margin-top: 12px !important;
+  padding-top: 0;
+}
+[data-section='site']
+  [data-react-header][data-county-header]
+  :is(.logo-wrapper img, .hum-logo img) {
+  width: auto;
+  height: 64px;
+  max-height: 100%;
+  object-fit: contain;
+  transform: none;
+}
+[data-section='site'] [data-react-header][data-county-header] .hum-logo {
+  position: static;
+  margin: 0 18px;
+  height: 64px;
+  transform: none;
+}
+[data-react-header] .county-banner-template {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1380 / 180;
+  min-height: 140px;
+  overflow: hidden;
+  border-radius: inherit;
+  background: #193b72;
+}
+[data-react-header] .county-banner-template > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+[data-react-header] .county-banner-name {
+  position: absolute;
+  inset: 0 30.5%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: #fff;
+  text-align: center;
+  text-shadow: 0 2px 5px #102c57;
+}
+[data-react-header] .county-banner-name span {
+  font-size: clamp(14px, 1.65vw, 25px);
+}
+[data-react-header] .county-banner-name strong {
+  font-size: clamp(24px, 2.9vw, 44px);
+  line-height: 1.7;
+}
+@media (max-width: 600px) {
+  [data-react-header] .county-banner-template {
+    min-height: 112px;
+  }
+  [data-react-header] .county-banner-template > svg {
+    width: 860px;
+    max-width: none;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
+  [data-react-header] .county-banner-name {
+    inset-inline: 22%;
+  }
+  [data-react-header] .county-banner-name span {
+    font-size: 12px;
+  }
+  [data-react-header] .county-banner-name strong {
+    font-size: clamp(18px, 5.5vw, 27px);
+  }
+}
+@media (min-width: 1281px) {
+  [data-section='site'] [data-react-header] .menu-item > .rast > :is(a, button) {
+    font-size: clamp(11px, 0.84vw, 13px) !important;
+  }
+  [data-section='site'] [data-react-header] .install-app-menu-item .rast > a {
+    align-self: center;
+    height: auto;
+    min-height: 40px;
+    padding: 8px;
+    box-sizing: border-box;
+  }
+  [data-section='site'] [data-react-header] .ai-menu-item > .rast {
+    align-self: center;
+    height: auto;
+    min-height: 40px;
+    padding: 0 8px;
+  }
+}
+/* Cover the header's own padding as well as the trigger-to-panel boundary. */
+[data-section='site'] [data-react-header] :is(.source-mega, .source-direct-menu).is-open::after {
+  content: '';
+  display: block;
+  position: absolute;
+  inset: calc(100% - 6px) 0 auto;
+  width: 100%;
+  height: 10px;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  pointer-events: auto;
+  z-index: 79;
+}
+@media (max-width: 1280px) {
+  [data-section='site'] [data-react-header] .hum-logo {
+    flex: 0 0 auto;
+    width: auto;
+    margin-inline: 20px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-react-header] .source-direct-panel {
+    animation: none !important;
+  }
+}

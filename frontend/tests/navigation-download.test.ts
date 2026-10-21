@@ -213,3 +213,38 @@ test('installation tabs show the correct three steps and support RTL arrows, Hom
     await unmount();
   }
 });
+
+test('direct menus preserve a slow pointer crossing into their panels and close after leaving', async () => {
+  const { container, unmount } = await mount(React.createElement(SiteHeader));
+  const pause = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+  try {
+    const region = container.querySelector<HTMLElement>('.source-direct-menu')!;
+    const panel = region.querySelector<HTMLElement>('.source-direct-panel')!;
+    await act(async () =>
+      region.dispatchEvent(
+        new window.MouseEvent('mouseover', { bubbles: true, relatedTarget: document.body }),
+      ),
+    );
+    assert.equal(panel.hidden, false);
+    await act(async () => {
+      region.dispatchEvent(
+        new window.MouseEvent('mouseout', { bubbles: true, relatedTarget: document.body }),
+      );
+      await pause(120);
+      panel.dispatchEvent(
+        new window.MouseEvent('mouseover', { bubbles: true, relatedTarget: document.body }),
+      );
+      await pause(270);
+    });
+    assert.equal(panel.hidden, false);
+    await act(async () => {
+      panel.dispatchEvent(
+        new window.MouseEvent('mouseout', { bubbles: true, relatedTarget: document.body }),
+      );
+      await pause(270);
+    });
+    assert.equal(panel.hidden, true);
+  } finally {
+    await unmount();
+  }
+});

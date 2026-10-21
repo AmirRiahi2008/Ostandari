@@ -20,6 +20,7 @@
       "metadata": ["nullable", "array", "max:30"],
       "status": ["sometimes", "in:\"draft\",\"published\",\"archived\""],
       "is_featured": ["sometimes", "boolean"],
+      "show_in_slideshow": ["sometimes", "boolean"],
       "comments_enabled": ["sometimes", "boolean"],
       "priority": ["sometimes", "integer", "min:0", "max:100000"],
       "published_at": ["nullable", "date"],

@@ -16,11 +16,18 @@ export function DirectMenu({
   const button = useRef<HTMLButtonElement>(null);
   const root = useRef<HTMLDivElement>(null);
   const focusPanel = useRef(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const panelId = 'direct-menu-' + item.id;
+  function cancelClose() {
+    if (closeTimer.current !== null) clearTimeout(closeTimer.current);
+    closeTimer.current = null;
+  }
   function show() {
+    cancelClose();
     onOpen();
     setOpen(true);
   }
+  useEffect(() => () => cancelClose(), []);
   useEffect(() => {
     if (!open) return;
     if (focusPanel.current) {
@@ -38,7 +45,13 @@ export function DirectMenu({
       className={'menu-item source-direct-menu' + (open ? ' is-open' : '')}
       ref={root}
       onMouseEnter={show}
-      onMouseLeave={() => setOpen(false)}
+      onMouseLeave={() => {
+        cancelClose();
+        closeTimer.current = setTimeout(() => {
+          if (!root.current?.contains(document.activeElement)) setOpen(false);
+          closeTimer.current = null;
+        }, 240);
+      }}
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget as Node)) setOpen(false);
       }}
@@ -66,7 +79,11 @@ export function DirectMenu({
             aria-label={'زیرمنوی ' + item.title}
             aria-controls={panelId}
             aria-expanded={open}
-            onClick={() => (open ? setOpen(false) : show())}
+            onClick={() => {
+              cancelClose();
+              if (open) setOpen(false);
+              else show();
+            }}
           >
             <svg
               width="14"

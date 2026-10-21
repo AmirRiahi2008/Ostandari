@@ -1,4 +1,5 @@
 import { cache } from 'react';
+import { HomeSlider, type HomeSlide } from '@/components/site/home-slider';
 import { countyPortalHref } from '@/lib/county-portal';
 import type { ReactNode } from 'react';
 import { notFound, redirect } from 'next/navigation';
@@ -42,7 +43,7 @@ export async function officeContent(slug: string | undefined) {
   const identity = await officeIdentity(slug);
   const { organization } = identity;
   const filter = organization?.id ? '&organization_id=' + organization.id : '';
-  const [news, announcements, galleries, links] = await Promise.all([
+  const [news, announcements, galleries, links, portal] = await Promise.all([
     organization
       ? publicData<PublicRecord[]>('news?per_page=6' + filter, [], [])
       : Promise.resolve({ data: [], unavailable: false }),
@@ -55,8 +56,22 @@ export async function officeContent(slug: string | undefined) {
     organization
       ? publicData<PublicRecord[]>('links?per_page=8' + filter, [], [])
       : Promise.resolve({ data: [], unavailable: false }),
+    organization?.slug
+      ? publicData<{ slides?: PublicRecord[] }>(
+          'portals/' + encodeURIComponent(String(organization.slug)) + '?locale=fa',
+          {},
+          {},
+        )
+      : Promise.resolve({ data: {} as { slides?: PublicRecord[] }, unavailable: false }),
   ]);
-  return { ...identity, news, announcements, galleries, links };
+  return {
+    ...identity,
+    news,
+    announcements,
+    galleries,
+    links,
+    slides: (portal.data.slides ?? []) as PublicRecord[],
+  };
 }
 
 function OfficePanel({
@@ -209,9 +224,19 @@ export async function OfficePage({ slug, section }: { slug?: string; section?: s
     galleries,
     links,
     members,
+    slides,
     unavailable,
   } = await officeContent(slug);
   const href = (path: string) => countyPortalHref(county, path);
+  const homeSlides: HomeSlide[] = slides.map((slide) => ({
+    id: String(slide.id),
+    title: String(slide.title ?? ''),
+    image: recordImage(slide.image),
+    href:
+      slide.url || slide.content_id
+        ? href(safeDestination(slide.url, '/content/' + slide.content_id))
+        : undefined,
+  }));
   const about = section === 'about';
   const people = members.filter((person) => person.kind !== 'county_governor');
   const newsItems = (items: PublicRecord[], type: string): OriginalNewsItem[] =>
@@ -238,6 +263,11 @@ export async function OfficePage({ slug, section }: { slug?: string; section?: s
         data-county-office={county.slug}
         data-office-view={about ? 'about' : 'home'}
       >
+        {!about && homeSlides.length > 0 && (
+          <div className="county-home-slideshow">
+            <HomeSlider slides={homeSlides} />
+          </div>
+        )}
         <div className="portal-office-lead">
           <section className="portal-office-identity" aria-label={'معرفی فرمانداری ' + county.name}>
             <div className="portal-office-intro">

@@ -100,6 +100,7 @@ function fixtures() {
         organizations: [
           {
             id: 42,
+            slug: 'sari',
             type: 'county',
             name: 'فرمانداری ساری',
             address: 'SARI ADDRESS',
@@ -108,6 +109,18 @@ function fixtures() {
           },
         ],
         members: [],
+      };
+    if (endpoint === 'portals/sari')
+      data = {
+        slides: [
+          {
+            id: 'content-5',
+            title: 'خبر اختصاصی ساری',
+            content_id: 5,
+            url: '/content/5',
+            image: { url: 'https://assets.test/slide.webp' },
+          },
+        ],
       };
     if (['news', 'announcements', 'contents'].includes(endpoint))
       data = [
@@ -162,6 +175,7 @@ test('county home uses its own full header, banner, aerial image and contact det
     const doc = await render('/sari');
     assert.ok(doc.querySelector('[data-county-header="sari"]'));
     assert.equal(doc.querySelector('.portal-county-navigation'), null);
+    assert.equal(doc.querySelector('[data-county-header] .nav-bala'), null);
     assert.equal(
       doc.querySelector('.county-portal-banner>.icx-responsive-img')?.getAttribute('src'),
       'https://assets.test/sari-banner.webp',
@@ -174,6 +188,14 @@ test('county home uses its own full header, banner, aerial image and contact det
     assert.doesNotMatch(doc.body.textContent ?? '', /PROVINCE ADDRESS/);
     assert.ok(calls.some((x) => x.startsWith('news?') && x.includes('organization_id=42')));
     assert.equal(doc.querySelector('.portal-office-news a')?.getAttribute('href'), '/sari/news');
+    assert.equal(
+      doc.querySelector('.county-home-slideshow a')?.getAttribute('href'),
+      '/sari/content/5',
+    );
+    assert.equal(
+      doc.querySelector('.county-home-slideshow img')?.getAttribute('src'),
+      'https://assets.test/slide.webp',
+    );
   } finally {
     globalThis.fetch = original;
     if (preview === undefined) delete process.env.TEMPLATE_PREVIEW;
@@ -240,12 +262,30 @@ test('a county with no organization never fetches province content as a fallback
     assert.ok(doc.querySelector('.portal-empty'));
     assert.ok(doc.querySelector('[data-county-header="sari"]'));
     assert.equal(
-      doc.querySelector('.county-portal-banner img')?.getAttribute('src'),
-      '/design/site/assets/image/sari.png',
+      doc.querySelector('.county-banner-template')?.getAttribute('aria-label'),
+      'فرمانداری شهرستان ساری',
     );
   } finally {
     globalThis.fetch = original;
     if (preview === undefined) delete process.env.TEMPLATE_PREVIEW;
     else process.env.TEMPLATE_PREVIEW = preview;
+  }
+});
+
+test('every county uses the Amol banner artwork with its own accessible city name and no top utility header', () => {
+  for (const county of counties) {
+    const doc = new JSDOM(
+      renderToStaticMarkup(
+        React.createElement(SiteHeader, { county, items: countyNavigation(county) }),
+      ),
+    ).window.document;
+    assert.equal(doc.querySelector('.nav-bala'), null);
+    assert.equal(doc.querySelector('.county-banner-name strong')?.textContent, county.name);
+    assert.equal(
+      doc.querySelector('.county-banner-template image')?.getAttribute('href'),
+      '/design/site/assets/image/amol.png',
+    );
+    assert.ok(doc.querySelector('.desktop-menu'));
+    assert.ok(doc.querySelector('#hamburgerBtn'));
   }
 });

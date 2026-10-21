@@ -66,6 +66,7 @@ export const fieldLabels: Record<string, string> = {
   term_end: 'پایان مسئولیت',
   comments_enabled: 'ارسال نظر فعال باشد',
   is_featured: 'ویژه',
+  show_in_slideshow: 'نمایش در اسلایدشو',
   caption: 'شرح تصویر',
   requirements: 'مدارک موردنیاز',
   steps: 'مراحل انجام',
@@ -219,9 +220,26 @@ export function AdminResourceForm({
 }) {
   const fields = resourceFields(resource);
   const initialValues = { ...resourceScope(resource), ...defaults };
+  const contentOrder = [
+    'title',
+    'category_id',
+    'cover_media_id',
+    'excerpt',
+    'body',
+    'status',
+    'published_at',
+    'show_in_slideshow',
+    'is_featured',
+    'comments_enabled',
+  ];
   const visible = Object.entries(fields)
     .filter(([field]) => adminFieldIncluded(resource, field, defaults, path))
-    .sort(([a], [b]) => Number(imageFields.includes(b)) - Number(imageFields.includes(a)));
+    .sort(([a], [b]) =>
+      resource === 'contents'
+        ? (contentOrder.includes(a) ? contentOrder.indexOf(a) : 99) -
+          (contentOrder.includes(b) ? contentOrder.indexOf(b) : 99)
+        : Number(imageFields.includes(b)) - Number(imageFields.includes(a)),
+    );
   const slide = ['slides', 'advertisements'].includes(resource);
   const slideExtra = (field: string) => slide && ['title', 'url', 'content_id'].includes(field);
   const renderField = ([field, rules]: [string, string[]]) => {
@@ -282,7 +300,11 @@ export function AdminResourceForm({
     const date = rules.includes('date');
     return (
       <div
-        className={'portal-resource-field' + (long || json ? ' portal-resource-wide' : '')}
+        className={
+          'portal-resource-field' +
+          (long || json || field === 'show_in_slideshow' ? ' portal-resource-wide' : '')
+        }
+        data-editor-field={field}
         key={field}
       >
         {flag ? (
@@ -298,8 +320,10 @@ export function AdminResourceForm({
                 (field === 'is_current' && ['governor', 'county_governor'].includes(defaults.kind))
               }
             />
-            {label}
-            {help && <small className="portal-field-help">{help}</small>}
+            <span className="portal-choice-copy">
+              <strong>{label}</strong>
+              {help && <small className="portal-field-help">{help}</small>}
+            </span>
           </label>
         ) : (
           <>
