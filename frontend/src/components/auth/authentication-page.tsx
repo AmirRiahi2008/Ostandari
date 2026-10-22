@@ -1,276 +1,98 @@
-'use client';
+import { Fragment } from 'react';
+import { REGISTRATION_TERMS } from '@/lib/registration-terms';
 
-import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { api, jsonBody } from '@/lib/api/client';
-import { digits } from '@/lib/dom';
-import { adminDestination, citizenDestination } from '@/lib/auth/destinations';
-import type { PortalUser } from '@/types/portal';
+function inline(text: string) {
+  return text
+    .split(/(\*\*[^*]+\*\*)/g)
+    .map((part, index) =>
+      part.startsWith('**') && part.endsWith('**') ? (
+        <strong key={index}>{part.slice(2, -2)}</strong>
+      ) : (
+        <Fragment key={index}>{part}</Fragment>
+      ),
+    );
+}
 
-export function AuthenticationPage({
-  mode,
-  preview = false,
-  returnTo,
-  denied = false,
-}: {
-  mode: 'login' | 'register' | 'staff';
-  preview?: boolean;
-  returnTo?: string;
-  denied?: boolean;
-}) {
-  const staff = mode === 'staff';
-  const registration = mode === 'register';
-  const [error, setError] = useState(
-    denied ? 'برای دسترسی به پنل مدیریت، ابتدا با حساب مدیریتی وارد شوید.' : '',
-  );
-  const [busy, setBusy] = useState(false);
-  const [challenge, setChallenge] = useState<{ challenge_id: string; dev_code?: string } | null>(
-    null,
-  );
-  const [identity, setIdentity] = useState({ name: '', mobile: '', national_code: '' });
-  const inFlight = useRef(false);
-  const request = useRef<AbortController | null>(null);
-  useEffect(() => () => request.current?.abort(), []);
-  async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (inFlight.current || !event.currentTarget.reportValidity()) return;
-    const fields = new FormData(event.currentTarget);
-    const controller = new AbortController();
-    request.current = controller;
-    inFlight.current = true;
-    setBusy(true);
-    setError('');
-    try {
-      if (staff) {
-        const payload = {
-          login: digits(String(fields.get('login') ?? '').trim()),
-          password: fields.get('password'),
-          audience: 'staff',
-        };
-        const result = preview
-          ? await fetch('/api/local-admin', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: jsonBody(payload),
-              signal: controller.signal,
-            }).then(async (response) => {
-              const result = await response.json();
-              if (!response.ok) throw new Error(result.message);
-              return result as { data: { user: PortalUser } };
-            })
-          : await api<{ user: PortalUser }>('auth/login', {
-              method: 'POST',
-              body: jsonBody(payload),
-              signal: controller.signal,
-            });
-        if (!controller.signal.aborted)
-          window.location.assign(adminDestination(result.data.user, returnTo));
-      } else if (challenge) {
-        const result = await api<{ user: PortalUser }>('auth/otp/verify', {
-          method: 'POST',
-          body: jsonBody({
-            challenge_id: challenge.challenge_id,
-            code: digits(String(fields.get('code') ?? '').trim()),
-          }),
-          signal: controller.signal,
-        });
-        if (!controller.signal.aborted)
-          window.location.assign(citizenDestination(result.data.user));
-      } else {
-        const next = {
-          name: String(fields.get('name') ?? '').trim(),
-          mobile: digits(String(fields.get('mobile') ?? '').trim()),
-          national_code: digits(String(fields.get('national_code') ?? '').trim()),
-        };
-        setIdentity(next);
-        const result = await api<{ challenge_id: string; dev_code?: string }>(
-          registration ? 'auth/register' : 'auth/citizen/login',
-          {
-            method: 'POST',
-            body: jsonBody(registration ? next : { mobile: next.mobile }),
-            signal: controller.signal,
-          },
-        );
-        if (!controller.signal.aborted) setChallenge(result.data);
-      }
-    } catch (error) {
-      if (!controller.signal.aborted)
-        setError(error instanceof Error ? error.message : 'ورود انجام نشد. دوباره تلاش کنید.');
-    } finally {
-      inFlight.current = false;
-      if (!controller.signal.aborted) setBusy(false);
-    }
-  }
-  const normalize = (event: FormEvent<HTMLInputElement>) => {
-    event.currentTarget.value = digits(event.currentTarget.value);
-  };
+const number = (value: number) =>
+  String(value).replace(/\d/g, (digit) => '۰۱۲۳۴۵۶۷۸۹'[Number(digit)]);
+
+export function RegistrationTerms() {
+  const document = REGISTRATION_TERMS;
   return (
-    <main className="portal-auth-page" dir="rtl">
-      <section className="portal-auth-card" aria-labelledby="authentication-title">
-        <a href="/" className="portal-auth-brand">
-          <img
-            src="/design/site/assets/image/logo.png"
-            alt="استانداری مازندران"
-            width={70}
-            height={76}
-          />
-          <span>پرتال استانداری مازندران</span>
-        </a>
-        <span className="portal-auth-kicker">
-          {staff ? 'ورود مدیران و روابط عمومی' : 'حساب شهروندی'}
-        </span>
-        <h1 id="authentication-title">
-          {staff
-            ? 'ورود به پنل مدیریت'
-            : challenge
-              ? 'تأیید شمارهٔ همراه'
-              : registration
-                ? 'ثبت‌نام شهروندان'
-                : 'ورود شهروندان'}
-        </h1>
-        <p>
-          {staff
-            ? 'نام کاربری و رمز عبور حساب مدیریتی خود را وارد کنید.'
-            : challenge
-              ? `کد پیامک‌شده به ${identity.mobile} را وارد کنید.`
-              : registration
-                ? 'اطلاعات خود را وارد کنید. حساب شما پس از تأیید شمارهٔ همراه ساخته می‌شود.'
-                : 'پس از ثبت‌نام، با شمارهٔ همراه و کد یک‌بارمصرف وارد پنل خود شوید.'}
-        </p>
-        {error && (
-          <p className="portal-auth-error" role="alert">
-            {error}
-          </p>
-        )}
-        <form onSubmit={submit} className="portal-auth-form">
-          <fieldset disabled={busy}>
-            {staff ? (
-              <>
-                <label>
-                  نام کاربری
-                  <input name="login" required autoComplete="username" maxLength={255} autoFocus />
-                </label>
-                <label>
-                  رمز عبور
-                  <input
-                    name="password"
-                    type="password"
-                    required
-                    autoComplete="current-password"
-                    maxLength={200}
-                  />
-                </label>
-              </>
-            ) : challenge ? (
-              <label>
-                کد تأیید شش‌رقمی
-                <input
-                  name="code"
-                  required
-                  inputMode="numeric"
-                  autoComplete="one-time-code"
-                  pattern="[0-9]{6}"
-                  maxLength={6}
-                  onInput={normalize}
-                  dir="ltr"
-                  autoFocus
-                />
-              </label>
-            ) : (
-              <>
-                {registration && (
-                  <label>
-                    نام و نام خانوادگی
-                    <input
-                      name="name"
-                      required
-                      minLength={3}
-                      maxLength={120}
-                      autoComplete="name"
-                      defaultValue={identity.name}
-                    />
-                  </label>
-                )}
-                <label>
-                  شمارهٔ همراه
-                  <input
-                    name="mobile"
-                    required
-                    inputMode="tel"
-                    autoComplete="tel-national"
-                    pattern="09[0-9]{9}"
-                    maxLength={11}
-                    placeholder="۰۹xxxxxxxxx"
-                    defaultValue={identity.mobile}
-                    onInput={normalize}
-                    dir="ltr"
-                  />
-                </label>
-                {registration && (
-                  <label>
-                    کد ملی
-                    <input
-                      name="national_code"
-                      required
-                      inputMode="numeric"
-                      pattern="[0-9]{10}"
-                      maxLength={10}
-                      defaultValue={identity.national_code}
-                      onInput={normalize}
-                      dir="ltr"
-                    />
-                    <small>برای تطبیق هویت شهروندی و پیگیری درخواست‌ها استفاده می‌شود.</small>
-                  </label>
-                )}
-              </>
-            )}
-            <button type="submit">
-              {busy
-                ? 'در حال بررسی…'
-                : staff
-                  ? 'ورود به مدیریت'
-                  : challenge
-                    ? registration
-                      ? 'تأیید و ورود به پنل شهروندی'
-                      : 'تأیید و ورود'
-                    : 'دریافت کد تأیید'}
-            </button>
-          </fieldset>
-        </form>
-        {!staff && challenge && (
-          <button
-            className="portal-auth-back"
-            type="button"
-            disabled={busy}
-            onClick={() => {
-              setChallenge(null);
-              setError('');
-            }}
-          >
-            اصلاح شماره یا درخواست کد تازه
-          </button>
-        )}
-        {challenge?.dev_code && (
-          <p className="portal-auth-notice">
-            کد محیط آزمایشی: <b dir="ltr">{challenge.dev_code}</b>
-          </p>
-        )}
-        {!staff && (
-          <p className="portal-auth-switch">
-            {registration ? 'قبلاً ثبت‌نام کرده‌اید؟' : 'حساب شهروندی ندارید؟'}{' '}
-            <a href={registration ? '/login' : '/register'}>
-              {registration ? 'ورود شهروندان' : 'ثبت‌نام شهروندان'}
+    <section className="portal-registration-terms" aria-labelledby="registration-terms-title">
+      <header className="portal-registration-terms-header">
+        <span className="portal-auth-kicker">پیش از ثبت‌نام مطالعه کنید</span>
+        <h2 id="registration-terms-title">قوانین و مقررات استفاده از پرتال</h2>
+        <p>متن کامل آیین‌نامه · ۱۷ ماده · نسخهٔ {document.displayVersion}</p>
+      </header>
+      <details className="portal-registration-terms-index">
+        <summary>فهرست مواد آیین‌نامه</summary>
+        <nav aria-label="فهرست مواد آیین‌نامه">
+          <a href="#registration-terms-introduction">مقدمه</a>
+          {document.articles.map((article) => (
+            <a key={article.number} href={'#registration-terms-article-' + article.number}>
+              {number(article.number)}. {article.title}
             </a>
-          </p>
-        )}
-        {staff && (
-          <a className="portal-auth-back" href="/forgot-password">
-            بازیابی رمز عبور مدیریت
-          </a>
-        )}
-        <a className="portal-auth-back" href="/">
-          بازگشت به سایت
-        </a>
-      </section>
-    </main>
+          ))}
+          <a href="#registration-terms-notice">{document.notice.title}</a>
+        </nav>
+      </details>
+      <div
+        id="registration-terms-text"
+        className="portal-registration-terms-text"
+        role="region"
+        aria-label="متن کامل آیین‌نامه؛ برای مطالعه به پایین پیمایش کنید"
+        tabIndex={0}
+        dir="rtl"
+      >
+        <h3>{document.title}</h3>
+        <dl className="portal-registration-terms-meta">
+          <div>
+            <dt>دامنه اجرا</dt>
+            <dd>{document.scope}</dd>
+          </div>
+          <div>
+            <dt>نسخه</dt>
+            <dd>{document.displayVersion}</dd>
+          </div>
+          <div>
+            <dt>تاریخ اجرا</dt>
+            <dd>{document.effectiveDate}</dd>
+          </div>
+        </dl>
+        <section id="registration-terms-introduction">
+          <h3>مقدمه</h3>
+          {document.introduction.map((text, index) => (
+            <p key={index}>{text}</p>
+          ))}
+        </section>
+        {document.articles.map((article) => (
+          <section
+            key={article.number}
+            id={'registration-terms-article-' + article.number}
+            data-terms-article={article.number}
+          >
+            <h3>
+              ماده {number(article.number)} ـ {article.title}
+            </h3>
+            {'introduction' in article && article.introduction && <p>{article.introduction}</p>}
+            {article.clauses.map((text, index) => (
+              <p key={index} data-terms-clause>
+                {inline(text)}
+              </p>
+            ))}
+          </section>
+        ))}
+        <section id="registration-terms-notice" className="portal-registration-terms-notice">
+          <h3>{document.notice.title}</h3>
+          {document.notice.paragraphs.map((text, index) => (
+            <p key={index}>{inline(text)}</p>
+          ))}
+        </section>
+      </div>
+      <p className="portal-registration-terms-hint" id="registration-terms-help">
+        متن بالا قابل پیمایش است. پذیرش قوانین، شرط ادامهٔ ثبت‌نام شهروندی است.
+      </p>
+    </section>
   );
 }
