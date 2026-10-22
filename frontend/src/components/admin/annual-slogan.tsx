@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
@@ -19,10 +18,7 @@ export function AnnualSlogan({ preview }: { preview: boolean }) {
   useEffect(() => {
     if (preview) return;
     const abort = new AbortController();
-<<<<<<< HEAD
-=======
 
->>>>>>> 9391ead (finish)
     void api<Record<string, unknown>>('settings', { signal: abort.signal })
       .then(({ data }) => {
         if (!abort.signal.aborted)
@@ -65,13 +61,9 @@ export function AnnualSlogan({ preview }: { preview: boolean }) {
       const body = new FormData();
       body.set('file', await prepareUpload(file));
       body.set('visibility', 'public');
-<<<<<<< HEAD
-      if (abort.signal.aborted) return;
-=======
 
       if (abort.signal.aborted) return;
 
->>>>>>> 9391ead (finish)
       const { data } = await api<{ url: string }>('media', {
         method: 'POST',
         body,
@@ -79,16 +71,6 @@ export function AnnualSlogan({ preview }: { preview: boolean }) {
       });
 
       if (abort.signal.aborted) return;
-<<<<<<< HEAD
-      const url = recordImage(data.url);
-      if (!url) throw new Error('نشانی تصویر بارگذاری‌شده معتبر نیست.');
-      await api('admin/settings', {
-        method: 'PUT',
-        body: jsonBody({ settings: [{ key: 'site.slogan', value: url, is_public: true }] }),
-        signal: abort.signal,
-      });
-      if (abort.signal.aborted) return;
-=======
 
       const url = recordImage(data.url);
 
@@ -112,7 +94,6 @@ export function AnnualSlogan({ preview }: { preview: boolean }) {
 
       if (abort.signal.aborted) return;
 
->>>>>>> 9391ead (finish)
       setCurrent(url);
       setFile(null);
 
