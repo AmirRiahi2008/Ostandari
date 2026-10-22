@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { api } from '@/lib/api/client';
+import { api, jsonBody } from '@/lib/api/client';
 import { recordImage } from '@/lib/public-content';
+import { prepareUpload } from '@/features/admin/uploads';
 
 export function AnnualSlogan({ preview }: { preview: boolean }) {
   const [current, setCurrent] = useState('/design/site/assets/image/شعار پ.png');
@@ -17,10 +18,10 @@ export function AnnualSlogan({ preview }: { preview: boolean }) {
   useEffect(() => {
     if (preview) return;
     const abort = new AbortController();
-    void api<unknown>('admin/annual-slogan', { signal: abort.signal })
+    void api<Record<string, unknown>>('settings', { signal: abort.signal })
       .then(({ data }) => {
         if (!abort.signal.aborted)
-          setCurrent(recordImage(data) ?? '/design/site/assets/image/شعار پ.png');
+          setCurrent(recordImage(data['site.slogan']) ?? '/design/site/assets/image/شعار پ.png');
       })
       .catch((error) => {
         if (!abort.signal.aborted) setMessage(error.message);
@@ -48,14 +49,24 @@ export function AnnualSlogan({ preview }: { preview: boolean }) {
     request.current = abort;
     try {
       const body = new FormData();
-      body.set('file', file);
-      const { data } = await api<{ url: string }>('admin/annual-slogan', {
+      body.set('file', await prepareUpload(file));
+      body.set('visibility', 'public');
+      if (abort.signal.aborted) return;
+      const { data } = await api<{ url: string }>('media', {
         method: 'POST',
         body,
         signal: abort.signal,
       });
       if (abort.signal.aborted) return;
-      setCurrent(data.url);
+      const url = recordImage(data.url);
+      if (!url) throw new Error('نشانی تصویر بارگذاری‌شده معتبر نیست.');
+      await api('admin/settings', {
+        method: 'PUT',
+        body: jsonBody({ settings: [{ key: 'site.slogan', value: url, is_public: true }] }),
+        signal: abort.signal,
+      });
+      if (abort.signal.aborted) return;
+      setCurrent(url);
       setFile(null);
       if (input.current) input.current.value = '';
       setMessage('شعار سال جایگزین شد و در سربرگ استانداری و فرمانداری‌ها نمایش داده می‌شود.');
