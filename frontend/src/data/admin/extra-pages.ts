@@ -3,12 +3,12 @@ export const adminExtraPages: Record<
   { title: string; resource: string; defaults: Record<string, string> }
 > = {
   '/panel/admin/announcements': {
-    title: 'مدیریت اطلاعیه‌ها',
+    title: 'اطلاعیه‌ها',
     resource: 'contents',
     defaults: { type: 'announcement' },
   },
   '/panel/admin/resolutions': {
-    title: 'مدیریت مصوبات',
+    title: 'مصوبات',
     resource: 'contents',
     defaults: { type: 'resolution' },
   },
@@ -23,26 +23,26 @@ export const adminExtraPages: Record<
     defaults: { type: 'tender' },
   },
   '/panel/admin/contracts': {
-    title: 'مدیریت قراردادها',
+    title: 'قراردادها',
     resource: 'contents',
     defaults: { type: 'contract' },
   },
   '/panel/admin/events': {
-    title: 'مدیریت رویدادها',
+    title: 'رویدادها',
     resource: 'contents',
     defaults: { type: 'event' },
   },
   '/panel/admin/duties': {
-    title: 'مدیریت شرح وظایف',
+    title: 'شرح وظایف',
     resource: 'contents',
     defaults: { type: 'duty' },
   },
 
-  '/panel/admin/news': { title: 'مدیریت اخبار', resource: 'contents', defaults: { type: 'news' } },
+  '/panel/admin/news': { title: 'اخبار', resource: 'contents', defaults: { type: 'news' } },
   '/panel/admin/pages': { title: 'صفحات داخلی', resource: 'contents', defaults: { type: 'page' } },
-  '/panel/admin/counties': { title: 'شهرستان‌ها و نقشه', resource: 'counties', defaults: {} },
-  '/panel/admin/services': { title: 'مدیریت خدمات', resource: 'services', defaults: {} },
-  '/panel/admin/galleries': { title: 'مدیریت گالری‌ها', resource: 'galleries', defaults: {} },
+  '/panel/admin/counties': { title: 'شهرستان‌ها', resource: 'counties', defaults: {} },
+  '/panel/admin/services': { title: 'خدمات', resource: 'services', defaults: {} },
+  '/panel/admin/galleries': { title: 'آلبوم‌ها', resource: 'galleries', defaults: {} },
   '/panel/admin/gallery-items': { title: 'تصاویر گالری', resource: 'gallery-items', defaults: {} },
   '/panel/admin/poll-options': {
     title: 'گزینه‌های نظرسنجی',
@@ -50,17 +50,17 @@ export const adminExtraPages: Record<
     defaults: {},
   },
   '/panel/admin/governors': {
-    title: 'استاندار فعلی و استانداران ادوار',
+    title: 'استانداران',
     resource: 'members',
     defaults: { kind: 'governor' },
   },
   '/panel/admin/county-governors': {
-    title: 'مدیریت فرمانداران',
+    title: 'فرمانداران',
     resource: 'members',
     defaults: { kind: 'county_governor' },
   },
   '/panel/admin/advisors': {
-    title: 'مدیریت مشاوران',
+    title: 'مشاوران',
     resource: 'members',
     defaults: { kind: 'advisor' },
   },
@@ -70,7 +70,7 @@ export const adminExtraPages: Record<
     defaults: { type: 'form' },
   },
   '/panel/admin/forum-replies': {
-    title: 'بررسی پاسخ‌های تالار گفتگو',
+    title: 'پاسخ‌های تالار',
     resource: 'moderation/forum-replies',
     defaults: {},
   },

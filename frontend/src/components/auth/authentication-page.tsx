@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { api, jsonBody } from '@/lib/api/client';
 import { digits } from '@/lib/dom';
+import { citizenDemo } from '@/features/citizen/demo';
 import { adminDestination, citizenDestination } from '@/lib/auth/destinations';
 import type { PortalUser } from '@/types/portal';
 import { RegistrationTerms } from './registration-terms';
@@ -11,16 +12,19 @@ import { REGISTRATION_TERMS, REGISTRATION_TERMS_SHA256 } from '@/lib/registratio
 export function AuthenticationPage({
   mode,
   preview = false,
+  citizenDemo: demoEnabled = false,
   returnTo,
   denied = false,
 }: {
   mode: 'login' | 'register' | 'staff';
   preview?: boolean;
+  citizenDemo?: boolean;
   returnTo?: string;
   denied?: boolean;
 }) {
   const staff = mode === 'staff';
   const registration = mode === 'register';
+  const demo = demoEnabled && !staff;
   const [error, setError] = useState(
     denied ? 'برای دسترسی به پنل مدیریت، ابتدا با حساب مدیریتی وارد شوید.' : '',
   );
@@ -39,7 +43,7 @@ export function AuthenticationPage({
       setError('برای ادامهٔ ثبت‌نام، قوانین و مقررات پرتال را مطالعه و تأیید کنید.');
       return;
     }
-    if (inFlight.current || !event.currentTarget.reportValidity()) return;
+    if (inFlight.current || (!demo && !event.currentTarget.reportValidity())) return;
     const fields = new FormData(event.currentTarget);
     const controller = new AbortController();
     request.current = controller;
@@ -47,7 +51,17 @@ export function AuthenticationPage({
     setBusy(true);
     setError('');
     try {
-      if (staff) {
+      if (demo) {
+        const user = citizenDemo().signIn(
+          {
+            name: String(fields.get('name') ?? ''),
+            mobile: String(fields.get('mobile') ?? ''),
+            national_code: String(fields.get('national_code') ?? ''),
+          },
+          registration,
+        );
+        window.location.assign(citizenDestination(user));
+      } else if (staff) {
         const payload = {
           login: digits(String(fields.get('login') ?? '').trim()),
           password: fields.get('password'),
@@ -178,7 +192,11 @@ export function AuthenticationPage({
             ? registration
               ? 'تأیید و ورود به پنل شهروندی'
               : 'تأیید و ورود'
-            : 'دریافت کد تأیید'}
+            : demo
+              ? registration
+                ? 'ثبت‌نام و ورود آزمایشی'
+                : 'ورود آزمایشی به پنل'
+              : 'دریافت کد تأیید'}
     </button>
   );
   return (
@@ -213,16 +231,24 @@ export function AuthenticationPage({
             ? 'نام کاربری و رمز عبور حساب مدیریتی خود را وارد کنید.'
             : challenge
               ? `کد پیامک‌شده به ${identity.mobile} را وارد کنید.`
-              : registration
-                ? 'اطلاعات خود را وارد کنید. حساب شما پس از تأیید شمارهٔ همراه ساخته می‌شود.'
-                : 'پس از ثبت‌نام، با شمارهٔ همراه و کد یک‌بارمصرف وارد پنل خود شوید.'}
+              : demo
+                ? 'برای آزمایش پنل شهروندی، اطلاعات دلخواه وارد کنید.'
+                : registration
+                  ? 'اطلاعات خود را وارد کنید. حساب شما پس از تأیید شمارهٔ همراه ساخته می‌شود.'
+                  : 'پس از ثبت‌نام، با شمارهٔ همراه و کد یک‌بارمصرف وارد پنل خود شوید.'}
         </p>
         {error && (
           <p className="portal-auth-error" role="alert">
             {error}
           </p>
         )}
-        <form onSubmit={submit} className="portal-auth-form">
+        {demo && (
+          <p className="portal-auth-notice" role="status">
+            محیط آزمایشی: هر اطلاعاتی وارد کنید، بدون پیامک وارد پنل نمونه می‌شوید. حساب و
+            درخواست‌ها فقط در همین مرورگر ذخیره می‌شوند؛ اطلاعات واقعی وارد نکنید.
+          </p>
+        )}
+        <form onSubmit={submit} noValidate={demo} className="portal-auth-form">
           <fieldset
             disabled={busy}
             className={registering ? 'portal-registration-layout' : undefined}

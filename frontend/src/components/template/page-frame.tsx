@@ -8,11 +8,13 @@ import { useAdminWorkspace } from '@/components/admin/workspace-provider';
 export function PageFrame({
   page,
   preview,
+  citizenDemo = false,
   path,
   children,
 }: {
   page: TemplatePage;
   preview: boolean;
+  citizenDemo?: boolean;
   path: string;
   children: ReactNode;
 }) {
@@ -20,8 +22,8 @@ export function PageFrame({
   const workspace = useAdminWorkspace()?.portal_context;
   useEffect(() => {
     if (!root.current) return;
-    return mountPortal(root.current, { page, preview, path });
-  }, [page, preview, path]);
+    return mountPortal(root.current, { page, preview, citizenDemo, path });
+  }, [page, preview, citizenDemo, path]);
   return (
     <div
       ref={root}

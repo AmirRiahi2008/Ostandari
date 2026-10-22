@@ -247,59 +247,60 @@ export function SiteHeader({
       <a className="source-skip" href="#main-content">
         رفتن به محتوای صفحه
       </a>
-      {!county && (
-        <div className="nav-bala">
-          <nav className="nav-bala-right" aria-label="پیوندهای بالای سایت">
-            {utility.map(([title, path]) => (
-              <a key={path} href={href(path)}>
-                {title}
-              </a>
-            ))}
-            {county && <a href="/">پرتال استانداری</a>}
-          </nav>
-          <div className="nav-bala-left">
-            <div className="iran-container">
-              <div className="iran-img">
-                <button
-                  type="button"
-                  id="flagSwitcher"
-                  aria-label="انتخاب زبان"
-                  aria-expanded={language}
-                  aria-controls="flagDropdown"
-                  onClick={() => setLanguage(!language)}
-                >
-                  <OriginalIcon name="iran" />
-                </button>
-                <div
-                  className={'flag-dropdown' + (language ? ' active' : '')}
-                  id="flagDropdown"
-                  hidden={!language}
-                >
-                  <a className="flag-option" href="/en" lang="en">
-                    <OriginalIcon name="english" />
-                    <span>English</span>
-                  </a>
-                  <a className="flag-option" href="/ar" lang="ar">
-                    <OriginalIcon name="arabic" />
-                    <span>العربية</span>
-                  </a>
-                </div>
+      <div className="nav-bala">
+        <nav className="nav-bala-right" aria-label="پیوندهای بالای سایت">
+          {utility.map(([title, path]) => (
+            <a key={path} href={href(path)}>
+              {title}
+            </a>
+          ))}
+        </nav>
+        <div className="nav-bala-left">
+          <a className="header-install-app" href={href('/install')}>
+            <OriginalIcon name="app" />
+            <span>نصب اپلیکیشن</span>
+          </a>
+          <div className="iran-container">
+            <div className="iran-img">
+              <button
+                type="button"
+                id="flagSwitcher"
+                aria-label="انتخاب زبان"
+                aria-expanded={language}
+                aria-controls="flagDropdown"
+                onClick={() => setLanguage(!language)}
+              >
+                <OriginalIcon name="iran" />
+              </button>
+              <div
+                className={'flag-dropdown' + (language ? ' active' : '')}
+                id="flagDropdown"
+                hidden={!language}
+              >
+                <a className="flag-option" href="/en" lang="en">
+                  <OriginalIcon name="english" />
+                  <span>English</span>
+                </a>
+                <a className="flag-option" href="/ar" lang="ar">
+                  <OriginalIcon name="arabic" />
+                  <span>العربية</span>
+                </a>
               </div>
-              <a className="search" href={href('/search')} aria-label="جستجو در سایت">
-                <OriginalIcon name="search" />
-              </a>
             </div>
-            <div className="sabtnam-container">
-              <div className="sabtnan">
-                <a href="/register">ثبت‌نام شهروندان</a>
-              </div>
-              <div className="vorod">
-                <a href="/login">ورود شهروندان</a>
-              </div>
+            <a className="search" href={href('/search')} aria-label="جستجو در سایت">
+              <OriginalIcon name="search" />
+            </a>
+          </div>
+          <div className="sabtnam-container">
+            <div className="sabtnan">
+              <a href="/register">ثبت‌نام شهروندان</a>
+            </div>
+            <div className="vorod">
+              <a href="/login">ورود شهروندان</a>
             </div>
           </div>
         </div>
-      )}
+      </div>
       <div className={'imageeee' + (county ? ' county-portal-banner' : '')}>
         {county && !banner ? (
           <CountyBanner county={county} />
@@ -482,14 +483,6 @@ export function SiteHeader({
                       </div>
                     ))}
                   </div>
-                </div>
-              </div>
-              <div className="menu-item install-app-menu-item">
-                <div className="rast">
-                  <a href={href('/install')}>
-                    <OriginalIcon name="app" className="source-install-icon" />
-                    <span>نصب اپلیکیشن</span>
-                  </a>
                 </div>
               </div>
               {navItem('/polls', 'poll')}

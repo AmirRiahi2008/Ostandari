@@ -64,6 +64,7 @@ const paths: Record<AdminSectionId, readonly string[]> = {
     'organization-contact',
   ],
   appearance: [
+    'annual-slogan',
     'menu-groups',
     'menu-items',
     'slide-groups',

@@ -6,6 +6,7 @@ import { templatePreview } from '@/lib/config';
 import { AdminAccount, LogoutButton } from './account';
 import { ReportsPanel } from './reports/reports-panel';
 import { SiteSettings } from './site-settings';
+import { AnnualSlogan } from './annual-slogan';
 import { AuditLog } from './audit-log';
 import { adminUtilityTitles } from '@/data/admin/utility-pages';
 export function AdminUtilityPage({ path }: { path: string }) {
@@ -33,6 +34,8 @@ export function AdminUtilityPage({ path }: { path: string }) {
                   <AdminAccount preview={templatePreview()} />
                 ) : path === '/panel/admin/logout' ? (
                   <LogoutButton preview={templatePreview()} />
+                ) : path === '/panel/admin/annual-slogan' ? (
+                  <AnnualSlogan preview={templatePreview()} />
                 ) : path === '/panel/admin/settings' ? (
                   <SiteSettings preview={templatePreview()} />
                 ) : path === '/panel/admin/audit-logs' ? (

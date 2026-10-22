@@ -5,18 +5,12 @@ export function HomeLatestNews({ items }: { items: OriginalNewsItem[] }) {
     <section
       className="container-body-center home-news-card"
       data-home-reveal="true"
-      aria-labelledby="home-latest-title"
+      aria-label="تازه‌های استان"
     >
-      <div className="home-news-heading">
-        <div>
-          <span className="home-kicker">روایت پیشرفت مازندران</span>
-          <h2 id="home-latest-title">تازه‌های استان</h2>
-        </div>
-        <a href="/news" className="home-text-link">
-          همهٔ اخبار <span aria-hidden="true">←</span>
-        </a>
-      </div>
       <OriginalNews items={items} />
+      <a href="/news" className="home-news-all home-text-link">
+        همه اخبار <span aria-hidden="true">←</span>
+      </a>
     </section>
   );
 }

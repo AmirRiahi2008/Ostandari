@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import { PageFrame } from '@/components/template/page-frame';
 import { resolveTemplate } from '@/lib/templates';
 import { templateViews } from '@/views';
-import { templatePreview } from '@/lib/config';
+import { templatePreview, citizenDemoEnabled } from '@/lib/config';
 import { isPublicRoute, routeAlias } from '@/lib/routes';
 import { PublicPage, type Search } from '@/features/site/public-pages';
 import { findCounty } from '@/data/counties';
@@ -85,6 +85,7 @@ export default async function TemplateRoute({ params, searchParams }: Props) {
         key={path}
         mode={path === '/panel/admin/login' ? 'staff' : path === '/register' ? 'register' : 'login'}
         preview={templatePreview()}
+        citizenDemo={citizenDemoEnabled()}
         returnTo={first(search.return)}
         denied={first(search.error) === 'auth_required'}
       />
@@ -143,7 +144,13 @@ export default async function TemplateRoute({ params, searchParams }: Props) {
   return (
     <>
       <link rel="stylesheet" href={page.css} precedence="design" />
-      <PageFrame key={page.id} page={page} preview={preview} path={path}>
+      <PageFrame
+        key={page.id}
+        page={page}
+        preview={preview}
+        citizenDemo={page.controller === 'citizen' && citizenDemoEnabled()}
+        path={path}
+      >
         <View />
       </PageFrame>
     </>

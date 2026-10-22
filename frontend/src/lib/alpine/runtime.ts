@@ -5,6 +5,7 @@ import { bindUi, closeOverlays } from './ui';
 type ContextInput = {
   page: TemplatePage;
   preview: boolean;
+  citizenDemo?: boolean;
   path: string;
   navigate?: (href: string) => void;
 };

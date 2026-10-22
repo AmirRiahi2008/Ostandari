@@ -1,3 +1,4 @@
+import { citizenDemo } from './demo';
 import { api, ApiError, jsonBody, upload } from '@/lib/api/client';
 import { all, date, digits, feedback, one, text, value } from '@/lib/dom';
 import { previewReports, renderCategories, renderReports } from './render';
@@ -7,6 +8,8 @@ import type { PageContext, PortalUser, RecordData } from '@/types/portal';
 
 export function citizenController(context: PageContext) {
   const { root, signal, preview } = context;
+  const demo = context.citizenDemo === true;
+  const requestApi = demo ? citizenDemo().api : api;
   let challenge = '';
   let user: PortalUser | null = null;
   let reports: RecordData[] = [];
@@ -20,9 +23,9 @@ export function citizenController(context: PageContext) {
   const uploaded = new WeakMap<File, number>();
   let timer: ReturnType<typeof setInterval> | undefined;
   const post = <T>(path: string, data: unknown) =>
-    api<T>(path, { method: 'POST', body: jsonBody(data), signal });
+    requestApi<T>(path, { method: 'POST', body: jsonBody(data), signal });
   const allowWrite = () => {
-    if (preview)
+    if (preview && !demo)
       throw new Error(
         'حالت نمایش طرح فعال است؛ برای ثبت واقعی TEMPLATE_PREVIEW=false را تنظیم کنید.',
       );
@@ -79,8 +82,8 @@ export function citizenController(context: PageContext) {
   async function refresh() {
     if (!user) return;
     const [tickets, dashboard] = await Promise.all([
-      api<RecordData[]>('citizen/tickets?per_page=100', { signal }),
-      api<RecordData>('citizen/dashboard', { signal }),
+      requestApi<RecordData[]>('citizen/tickets?per_page=100', { signal }),
+      requestApi<RecordData>('citizen/dashboard', { signal }),
     ]);
     reports = tickets.data;
     renderReports(root, reports, filter);
@@ -139,7 +142,7 @@ export function citizenController(context: PageContext) {
   async function submitTicket(type: 'report' | 'governor') {
     allowWrite();
     const mediaIds: number[] = [];
-    if (type === 'report')
+    if (type === 'report' && !demo)
       for (const file of attachments?.files() ?? []) {
         const id = uploaded.get(file) ?? (await upload(file, 'private', signal));
         uploaded.set(file, id);
@@ -156,6 +159,9 @@ export function citizenController(context: PageContext) {
             address: value(root, '#rep-address'),
             urgency,
             media_ids: mediaIds,
+            ...(demo
+              ? { attachment_names: attachments?.files().map((file) => file.name) ?? [] }
+              : {}),
           }
         : { type, subject: value(root, '#gov-subject'), body: value(root, '#gov-msg') };
     const result = await post<{ reference: string }>('citizen/tickets', data);
@@ -173,7 +179,7 @@ export function citizenController(context: PageContext) {
       input.placeholder.includes('آدرس'),
     );
     user = (
-      await api<PortalUser>('auth/profile', {
+      await requestApi<PortalUser>('auth/profile', {
         method: 'PATCH',
         body: jsonBody({
           name: value(root, '#prof-name'),
@@ -235,7 +241,7 @@ export function citizenController(context: PageContext) {
       if (command === 'logout') {
         await post('auth/logout', {});
         user = null;
-        window.location.assign('/citizen');
+        window.location.assign(demo ? '/login' : '/citizen');
       }
     } catch (error) {
       feedback(root, error instanceof Error ? error.message : 'عملیات ناموفق بود.');
@@ -260,7 +266,16 @@ export function citizenController(context: PageContext) {
 
   function init() {
     renderCategories(root);
-    if (preview) renderReports(root, previewReports());
+    if (preview && !demo) renderReports(root, previewReports());
+    if (demo) {
+      const notice = document.createElement('div');
+      notice.className = 'portal-citizen-demo-notice';
+      notice.setAttribute('role', 'status');
+      notice.textContent =
+        'محیط آزمایشی — حساب و درخواست‌ها فقط در همین مرورگر ذخیره می‌شوند و برای سازمان ارسال نمی‌شوند. پیوست‌ها بارگذاری نمی‌شوند.';
+      root.prepend(notice);
+      signal.addEventListener('abort', () => notice.remove(), { once: true });
+    }
     attachments = bindAttachments(root, signal);
     const pending = JSON.parse(sessionStorage.getItem('ostandari_identity') ?? 'null');
     if (pending) {
@@ -314,8 +329,8 @@ export function citizenController(context: PageContext) {
         const report = target.closest<HTMLElement>('[data-ticket]');
         if (report) {
           report.classList.toggle('open');
-          if (!preview && report.classList.contains('open'))
-            void api<RecordData>('citizen/tickets/' + report.dataset.ticket, { signal })
+          if ((!preview || demo) && report.classList.contains('open'))
+            void requestApi<RecordData>('citizen/tickets/' + report.dataset.ticket, { signal })
               .then((result) => {
                 reports = reports.map((item) =>
                   item.reference === result.data.reference ? result.data : item,
@@ -333,16 +348,18 @@ export function citizenController(context: PageContext) {
       },
       { signal },
     );
-    if (!preview) {
-      void loadCitizenCatalog(context)
+    if (!preview || demo) {
+      void loadCitizenCatalog(context, requestApi)
         .then((result) => {
           poll = result;
+          if (demo && result?.selected_option_id)
+            renderPoll(root, result, true, Number(result.selected_option_id));
           fillProfile();
         })
         .catch((error) => {
           if (!signal.aborted) feedback(root, error.message);
         });
-      void api<PortalUser>('auth/me', { signal })
+      void requestApi<PortalUser>('auth/me', { signal })
         .then((result) => {
           if (result.data.person_type !== 'citizen')
             throw new Error('برای استفاده از پنل شهروندی، با حساب شهروندی وارد شوید.');
@@ -351,6 +368,7 @@ export function citizenController(context: PageContext) {
           return refresh();
         })
         .catch((error) => {
+          if (demo && !signal.aborted) window.location.assign('/login');
           if (!(error instanceof ApiError && error.status === 401) && !signal.aborted)
             feedback(root, error.message);
         });

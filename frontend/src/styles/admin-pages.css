@@ -45,7 +45,8 @@
 [data-section='admin'] .portal-module-menu {
   color: var(--admin-ink);
   padding: 10px 4px 24px;
-  font-size: 12px;
+  font-size: 13px;
+  line-height: 1.9;
 }
 [data-section='admin'] .portal-module-menu a {
   color: inherit;
@@ -1083,4 +1084,34 @@
     max-width: 100%;
     white-space: normal;
   }
+}
+
+[data-section='admin'] .portal-annual-slogan {
+  max-width: 1000px;
+  color: var(--admin-ink);
+  line-height: 2;
+}
+[data-section='admin'] .portal-slogan-preview {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  margin-block: 20px 24px;
+  background: #143c70;
+}
+[data-section='admin'] .portal-slogan-background {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+[data-section='admin'] .portal-slogan-image {
+  position: absolute;
+  inset: 8% auto 8% 1%;
+  width: 20%;
+  height: 84%;
+  object-fit: contain;
+}
+[data-section='admin'] .portal-annual-slogan small {
+  color: var(--admin-muted);
+  font-weight: 400;
+  font-size: 12px;
 }

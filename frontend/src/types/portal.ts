@@ -30,6 +30,7 @@ export interface PortalWorkspace {
   organization_name: string | null;
   county: { id: number; name: string; slug: string } | null;
   can_write: boolean;
+  can_manage_annual_slogan?: boolean;
   is_global: boolean;
   dashboard_path: string;
   login_path: string;
@@ -51,6 +52,7 @@ export interface PageContext {
   root: HTMLElement;
   page: TemplatePage;
   preview: boolean;
+  citizenDemo?: boolean;
   signal: AbortSignal;
   path: string;
   navigate?: (href: string) => void;

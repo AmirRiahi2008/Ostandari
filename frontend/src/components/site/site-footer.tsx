@@ -141,9 +141,9 @@ export function SiteFooter({ contact, county }: { contact?: PublicRecord; county
         </footer>
       </div>
       <div className="bottom-footer">
-        <a href="https://sadrasoft.ir" className="source-footer-credit">
+        <a href="https://sadrasoft.ir/" className="source-footer-credit">
           <span>طراحی و توسعه یافته توسط</span>
-          <span className="source-company">صدرا رایانه نوین طبرستان</span>
+          <span className="source-company">صدرا نوین طبرستان</span>
         </a>
       </div>
     </div>

@@ -904,7 +904,7 @@
   text-align: center;
 }
 [data-source-footer] .source-footer-credit .source-company {
-  color: #a4b4ff;
+  color: inherit;
   margin: 0;
 }
 [data-source-footer] a:focus-visible {

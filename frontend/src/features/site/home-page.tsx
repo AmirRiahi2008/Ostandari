@@ -144,7 +144,6 @@ export async function HomePage() {
               <HomeSlider slides={slides} />
             </div>
             <div className="container-body-left" data-home-reveal="true">
-              <span className="home-governor-label">استانداری مازندران</span>
               {photo && <img src={photo} width={520} height={539} alt={String(governor.name)} />}
               <div className="name">
                 <span>{String(governor.name)}</span>
@@ -154,7 +153,7 @@ export async function HomePage() {
                 ارتباط با استاندار
               </a>
               <a className="name-btn2" href="/governors">
-                معرفی استانداران
+                معرفی استانداران ادوار
               </a>
             </div>
           </div>
@@ -175,7 +174,6 @@ export async function HomePage() {
             <div className="container-peyvand">
               <div className="mz-portal-wrapper">
                 <div className="mz-portal-news">
-                  <span className="home-kicker">دسترسی به تازه‌ترین اسناد</span>
                   <h2 className="mz-portal-title">مصوبات و اطلاعیه‌ها</h2>
                   <p className="mz-portal-subtitle">
                     آخرین مصوبات و اطلاعیه‌های سازمان را مطالعه کنید.
@@ -207,7 +205,6 @@ export async function HomePage() {
                   </a>
                 </div>
                 <div className="mz-portal-links">
-                  <span className="home-kicker">مسیرهای کوتاه‌تر، دسترسی آسان‌تر</span>
                   <h2 className="mz-portal-title">پیوندهای مفید</h2>
                   <p className="mz-portal-subtitle">پیوندهای مفید سازمان را اینجا مطالعه کنید.</p>
                   <div className="mz-links-grid">
@@ -237,7 +234,6 @@ export async function HomePage() {
             <div className="container-modiran">
               <div className="home-section-heading">
                 <div>
-                  <span className="home-kicker">شناخت مسئولان و راه‌های ارتباطی</span>
                   <h2 id="home-managers-title">مدیران و مسئولان استان</h2>
                 </div>
                 <a href="/managers" className="home-text-link">
@@ -266,7 +262,6 @@ export async function HomePage() {
               <div className="stdprx-container">
                 <div className="stdprx-header home-section-heading">
                   <div>
-                    <span className="home-kicker">همراه با رویدادهای استان</span>
                     <h2 id="home-media-title">روابط عمومی استانداری</h2>
                   </div>
                   <a href="/news" className="home-text-link">
@@ -334,7 +329,6 @@ export async function HomePage() {
               <section className="gallery-section">
                 <div className="home-section-heading">
                   <div>
-                    <span className="home-kicker">تصاویر، روایتگر مازندران</span>
                     <h2 className="gallery-title" id="home-gallery-title">
                       گالری تصاویر
                     </h2>

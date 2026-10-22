@@ -841,3 +841,294 @@
     animation: none !important;
   }
 }
+
+/* The utility bar, artwork and navigation each own their full height. */
+[data-section='site'] [data-react-header] .imageeee {
+  border-radius: 18px;
+  display: block !important;
+  height: auto !important;
+  min-height: 0;
+  margin-block: 0 !important;
+  overflow: hidden;
+}
+[data-section='site'] [data-react-header] .imageeee > .icx-responsive-img {
+  display: block;
+  width: 100%;
+  height: auto !important;
+  aspect-ratio: 1380 / 180;
+  object-fit: contain;
+}
+[data-section='site'] [data-react-header] .shoar-sal {
+  position: absolute;
+  inset: 8% auto 8% 1%;
+  width: 20%;
+  height: auto;
+  margin: 0;
+  transform: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+[data-section='site'] [data-react-header] .shoar-sal img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+[data-section='site'] [data-react-header] .top-header,
+[data-section='site'] [data-react-header][data-county-header] .top-header {
+  margin-block: 0 !important;
+  padding-block: 0;
+  height: auto;
+}
+[data-section='site'] [data-react-header] .header-box {
+  height: auto;
+  min-height: 92px;
+  margin: 0 !important;
+  padding-block: 0;
+}
+[data-section='site'] [data-react-header] .nav-bala-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+[data-react-header] .header-install-app {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 4px 12px;
+  border: 1px solid #c5dce6;
+  border-radius: 8px;
+  background: #eef7fa;
+  color: #075779;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.6;
+  text-decoration: none;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+[data-react-header] .header-install-app svg {
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  color: currentColor;
+  flex-shrink: 0;
+}
+[data-react-header] .header-install-app:hover {
+  background: #e0f0f4;
+  border-color: #6da9b5;
+}
+[data-react-header] .header-install-app:focus-visible {
+  outline: 3px solid #178e96;
+  outline-offset: 3px;
+}
+@media (min-width: 1281px) {
+  [data-section='site'] [data-react-header] .desktop-menu {
+    height: 92px;
+    grid-template-columns: minmax(0, 1fr) 96px minmax(0, 1.15fr);
+  }
+  [data-section='site'] [data-react-header] .logo-wrapper {
+    width: 96px;
+    height: 92px;
+  }
+  [data-section='site'] [data-react-header] .logo-wrapper a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+  [data-section='site'] [data-react-header] .logo-wrapper img,
+  [data-section='site'] [data-react-header][data-county-header] .logo-wrapper img {
+    display: block;
+    width: 76px;
+    height: 82px;
+    max-height: 100%;
+    object-fit: contain;
+    transform: none;
+  }
+}
+@media (max-width: 1280px) {
+  [data-section='site'] [data-react-header] .header-box {
+    min-height: 80px;
+  }
+  [data-section='site'] [data-react-header] .hum-logo,
+  [data-section='site'] [data-react-header][data-county-header] .hum-logo {
+    position: static;
+    height: 80px;
+    margin: 0 20px;
+    transform: none;
+  }
+  [data-section='site'] [data-react-header] .hum-logo a {
+    display: flex;
+    height: 100%;
+    align-items: center;
+  }
+  [data-section='site'] [data-react-header] .hum-logo img,
+  [data-section='site'] [data-react-header][data-county-header] .hum-logo img {
+    display: block;
+    width: 64px;
+    height: 70px;
+    max-height: 100%;
+    object-fit: contain;
+    transform: none;
+  }
+}
+@media (max-width: 760px) {
+  [data-section='site'] [data-react-header] .nav-bala {
+    padding-inline: 12px;
+  }
+  [data-section='site'] [data-react-header] .nav-bala-left {
+    flex-wrap: wrap;
+    gap: 8px 12px;
+  }
+  [data-section='site'] [data-react-header] .sabtnam-container {
+    min-width: 0;
+    padding-inline: 8px;
+  }
+  [data-react-header] .header-install-app {
+    padding-inline: 8px;
+    font-size: 10px;
+  }
+}
+
+@font-face {
+  font-family: 'Portal Nastaliq';
+  src: url('/fonts/nastaliq/NotoNastaliqUrdu-Regular.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+[data-react-header] .county-banner-name {
+  gap: 0;
+  padding-block: 4px 14px;
+  box-sizing: border-box;
+  font-family: 'Portal Nastaliq', serif;
+  font-weight: 400;
+}
+[data-react-header] .county-banner-name span {
+  font-family: 'Portal Nastaliq', serif;
+  font-size: clamp(13px, 1.5vw, 23px);
+  line-height: 2;
+}
+[data-react-header] .county-banner-name strong {
+  font-family: inherit;
+  font-weight: 400;
+  font-size: clamp(24px, 3vw, 45px);
+  line-height: 1.7;
+}
+@media (max-width: 600px) {
+  [data-react-header] .county-banner-name {
+    inset-inline: 23%;
+    padding-bottom: 15px;
+  }
+  [data-react-header] .county-banner-name span {
+    font-size: 11px;
+  }
+  [data-react-header] .county-banner-name strong {
+    font-size: clamp(18px, 5vw, 28px);
+  }
+}
+
+/* A quieter directory appearance; menu state and pointer bridges stay unchanged. */
+[data-section='site'] [data-react-header] .source-mega > .mega-menu {
+  grid-template-columns: 235px minmax(0, 1fr);
+  height: 460px;
+  border: 1px solid #d7e4eb;
+  border-block-start: 3px solid #168b90;
+  border-radius: 0 0 20px 20px;
+  box-shadow: 0 24px 40px -20px #153d6270;
+}
+[data-react-header] .source-mega .categories {
+  padding: 18px 12px;
+  background: #f4f8fa;
+  border-inline-end-color: #dfe9ee;
+}
+[data-react-header] .source-mega .categories > li.active,
+[data-react-header] .source-mega .nested-categories > li.active {
+  background: #e2f1f1;
+  color: #086d72;
+  box-shadow: inset -3px 0 #168b90;
+}
+[data-react-header] .source-mega .categories > li > button {
+  min-height: 46px;
+  padding: 10px 14px;
+  font-weight: 650;
+}
+[data-react-header] .source-mega .submenus {
+  padding: 24px 28px;
+}
+[data-react-header] .source-mega-heading {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+}
+[data-react-header] .source-mega-heading h2 {
+  color: #143f63;
+  font-size: 20px;
+}
+[data-react-header] .source-mega-heading > a {
+  padding: 5px 12px;
+  border: 1px solid #d6e7ec;
+  border-radius: 8px;
+  color: #087079;
+  background: #f6fbfc;
+}
+[data-react-header] .source-mega .submenu-grid {
+  gap: 10px 16px;
+}
+[data-react-header] .source-mega .submenu-item {
+  min-height: 62px;
+  padding: 14px 12px;
+  border: 0;
+  border-bottom: 1px solid #e2ebef;
+  border-radius: 6px;
+  background: white;
+  gap: 10px;
+}
+[data-react-header] .source-mega .submenu-item::after {
+  content: '←';
+  margin-inline-start: auto;
+  color: #65919d;
+  font-size: 16px;
+}
+[data-react-header] .source-mega .submenu-item:hover {
+  transform: none;
+  background: #f0f8f9;
+  border-color: #b9d8dc;
+}
+[data-react-header] .source-mega .submenu-item .gerd {
+  width: 5px;
+  height: 5px;
+  flex-basis: 5px;
+  border-radius: 50%;
+  background: #168b90;
+}
+[data-react-header] .source-mega .submenu-text {
+  color: #234a64;
+  font-size: 13px;
+  font-weight: 550;
+}
+[data-section='site'] [data-react-header] .source-direct-panel {
+  border-block-start: 3px solid #168b90;
+  border-radius: 0 0 20px 20px;
+  padding: 24px;
+}
+[data-react-header] .source-direct-grid > div {
+  padding: 18px;
+  background: #f8fbfc;
+  border-color: #deeaef;
+  border-radius: 10px;
+}
+[data-react-header] .source-direct-grid .source-direct-title {
+  color: #164b67;
+  font-size: 14px;
+}
+[data-react-header] .source-direct-grid .source-direct-child {
+  padding-top: 10px;
+  border-top: 1px solid #e4edf1;
+  font-size: 12px;
+  color: #41627a;
+}

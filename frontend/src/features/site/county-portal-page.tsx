@@ -431,7 +431,7 @@ export async function CountyPortalPage({ route, search = {} }: { route: Route; s
     ]);
   } else if (path === '/install' || path === '/download') {
     content = (
-      <Panel title={'پرتال فرمانداری ' + county.name + '، همراه شما'}>
+      <Panel title="اخبار استان یار">
         <p>پرتال همین فرمانداری را از مرورگر تلفن همراه به صفحهٔ اصلی اضافه کنید.</p>
         <InstallGuide />
       </Panel>

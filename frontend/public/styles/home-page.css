@@ -1002,3 +1002,74 @@
     transform: none;
   }
 }
+
+.source-home .home-experience .home-news-card .tabs {
+  margin-top: 16px;
+}
+.source-home .home-experience .home-news-all {
+  display: flex;
+  justify-content: space-between;
+  flex: 0 0 auto;
+  padding: 12px 18px;
+  border-top: 1px solid var(--home-line);
+  background: #f8fbfc;
+  margin: 0;
+}
+/* Keep the map legible at its original coordinate scale, with a smaller preview. */
+.source-home .home-experience .source-county-map.portal-counties .wrapper {
+  grid-template-columns: minmax(200px, 0.7fr) minmax(0, 2fr);
+}
+.source-home .home-experience .source-county-map.portal-counties .righttt {
+  padding: 20px !important;
+}
+.source-home .home-experience .source-county-map .portal-map-viewport {
+  padding-block: 0;
+}
+.source-home .home-experience .source-county-map.portal-counties .map {
+  max-width: 680px !important;
+  margin-inline: auto;
+}
+.source-home .home-experience .source-county-map .portal-map-hint {
+  margin-block: 4px 6px;
+  font-size: 11px;
+}
+.source-home .home-experience .source-county-map .title {
+  font-size: 21px;
+}
+.source-home .home-experience .source-county-map .portal-county-picker {
+  padding-top: 10px;
+}
+.source-home .home-experience .source-county-map .portal-county-preview-body {
+  padding: 10px 14px 14px;
+  gap: 7px;
+}
+.source-home .home-experience .source-county-map.portal-counties .portal-county-caption {
+  font-size: 18px !important;
+}
+.source-home .home-experience .source-county-map .county-map-label.is-selected .county-label-box {
+  fill: #edf7f7;
+  stroke: #17858b;
+}
+.source-home .home-experience .source-county-map .county-map-label.is-selected .city-label {
+  fill: #115967;
+}
+/* SVG links use the county outline, rather than the browser's rectangular focus box. */
+.source-home .home-experience .source-county-map :is(.county-region, .county-map-label):focus {
+  outline: none;
+}
+.source-home .home-experience .source-county-map .county-region:focus-visible .city {
+  fill: #d5ecee;
+  stroke: #08777c;
+  stroke-width: 3;
+}
+@media (max-width: 1040px) {
+  .source-home .home-experience .source-county-map.portal-counties .wrapper {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .source-home .home-experience .source-county-map.portal-counties .lefttt {
+    display: none;
+  }
+  .source-home .home-experience .source-county-map.portal-counties .map {
+    min-width: 680px !important;
+  }
+}

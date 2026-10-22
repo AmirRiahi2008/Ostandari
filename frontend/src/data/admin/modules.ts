@@ -6,16 +6,16 @@ import { adminUtilityTitles } from './utility-pages';
 import { adminSectionFor, adminSectionOrder, reviewResource } from './sections';
 
 const names: Record<string, string> = {
-  '/panel/admin/menu-items': 'گزینه‌های منو و مگامنو',
-  '/panel/admin/menu-groups': 'منوهای سایت',
+  '/panel/admin/menu-items': 'آیتم‌های منو',
+  '/panel/admin/menu-groups': 'فهرست‌های سایت',
   '/panel/admin/slide-groups': 'گروه‌بندی اسلایدها',
-  '/panel/admin/slides': 'اسلایدهای صفحهٔ اصلی',
-  '/panel/admin/member-groups': 'گروه‌بندی مدیران و اعضا',
-  '/panel/admin/members': 'مدیران و اعضای سازمان',
+  '/panel/admin/slides': 'اسلایدشو',
+  '/panel/admin/member-groups': 'گروه‌های مدیران',
+  '/panel/admin/members': 'مدیران',
   '/panel/admin/document-groups': 'گروه‌های اسناد',
   '/panel/admin/service-groups': 'گروه‌های خدمات',
   '/panel/admin/calls': 'فراخوان‌ها',
-  '/panel/admin/form-groups': 'گروه‌بندی ویژگی‌های فرم',
+  '/panel/admin/form-groups': 'ویژگی‌های فرم',
   '/panel/admin/gallery-groups': 'گروه‌های گالری',
   '/panel/admin/item-order': 'تنظیمات پیشرفته',
   '/panel/admin/external-users': 'کاربران مردمی',
@@ -24,20 +24,20 @@ const names: Record<string, string> = {
   '/panel/admin/publications': 'انتشارات',
   '/panel/admin/forms': 'فرم‌ساز',
   '/panel/admin/employee-list': 'فهرست کارمندان',
-  '/panel/admin/employees': 'مدیریت کارمندان',
+  '/panel/admin/employees': 'کارمندان',
   '/panel/admin/experts': 'کارشناسان فرم',
   '/panel/admin/subscribers': 'اعضای خبرنامه',
-  '/panel/admin/organizations': 'واحدهای سازمانی و فرمانداری‌ها',
-  '/panel/admin/files': 'کتابخانهٔ فایل‌ها',
-  '/panel/admin/images': 'کتابخانهٔ تصاویر',
-  '/panel/admin/submissions': 'درخواست‌های ثبت‌شدهٔ فرم‌ها',
+  '/panel/admin/organizations': 'سازمان‌ها',
+  '/panel/admin/files': 'فایل‌ها',
+  '/panel/admin/images': 'تصاویر',
+  '/panel/admin/submissions': 'درخواست‌های فرم',
   '/panel/admin/media-groups': 'گروه‌های چندرسانه‌ای',
   '/panel/admin/roles': 'نقش‌ها و دسترسی‌ها',
   '/panel/admin/comments/pending': 'نظرات در انتظار',
   '/panel/admin/comments/replied': 'نظرات تأییدشده',
   '/panel/admin/polls': 'نظرسنجی‌ها',
-  '/panel/admin/governor/pending': 'پیام‌های تازه به استاندار',
-  '/panel/admin/governor/replied': 'پیام‌های پاسخ‌داده‌شده به استاندار',
+  '/panel/admin/governor/pending': 'پیام‌های جدید استاندار',
+  '/panel/admin/governor/replied': 'پاسخ‌های استاندار',
   '/panel/admin/links': 'پیوندها',
   '/panel/admin/forum-topics': 'موضوعات تالار گفتگو',
   '/panel/admin/faqs': 'پرسش‌های متداول',
@@ -45,10 +45,10 @@ const names: Record<string, string> = {
   '/panel/admin/advertisements': 'تبلیغات و بنرها',
   '/panel/admin/tags': 'برچسب‌های خبر',
   '/panel/admin/forum-groups': 'گروه‌های تالار گفتگو',
-  '/panel/admin/organization-contact': 'اطلاعات تماس واحدهای سازمانی',
-  '/panel/admin/contact/pending': 'پیام‌های تازهٔ تماس با ما',
-  '/panel/admin/contact/replied': 'پیام‌های پاسخ‌داده‌شدهٔ تماس با ما',
-  '/panel/admin/contact/approved': 'پیام‌های تماس در حال بررسی',
+  '/panel/admin/organization-contact': 'تماس سازمان‌ها',
+  '/panel/admin/contact/pending': 'پیام‌های جدید',
+  '/panel/admin/contact/replied': 'پیام‌های پاسخ‌داده‌شده',
+  '/panel/admin/contact/approved': 'پیام‌های در حال بررسی',
 };
 const specialPermissions: Record<string, string> = {
   users: 'users.manage',
@@ -95,9 +95,11 @@ export const adminModules = [
           permission:
             path === '/panel/admin/reports'
               ? 'tickets.manage'
-              : path === '/panel/admin/settings'
-                ? 'settings.manage'
-                : 'audit.view',
+              : path === '/panel/admin/annual-slogan'
+                ? 'media.manage'
+                : path === '/panel/admin/settings'
+                  ? 'settings.manage'
+                  : 'audit.view',
         })),
     ].map((page) => [page.path, page]),
   ).values(),

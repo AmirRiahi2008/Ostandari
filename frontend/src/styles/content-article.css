@@ -1,7 +1,7 @@
 .source-content .portal-article-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(250px, 300px);
-  gap: 26px;
+  grid-template-columns: minmax(0, 1fr) 248px;
+  gap: 22px;
   align-items: start;
   margin-block: 18px 52px;
 }
@@ -87,16 +87,17 @@
   margin: 0;
 }
 .portal-article-body {
-  max-width: 76ch;
-  margin-inline: auto;
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
 }
 .portal-content-article .portal-rich-text {
   color: #283f52;
   font-size: clamp(15px, 1.1vw, 17px);
-  line-height: 2.35;
+  line-height: 2.2;
   white-space: pre-line;
-  text-align: start;
-  overflow-wrap: anywhere;
+  text-align: justify;
+  overflow-wrap: break-word;
 }
 .portal-content-article .portal-rich-text :is(p, ul, ol, table, .portal-image-album) {
   white-space: normal;
@@ -281,4 +282,112 @@
     border: 0;
     box-shadow: none;
   }
+}
+
+/* Content keeps the available column width, including paragraphs imported from editors. */
+.portal-content-article .portal-rich-text :is(p, div) {
+  max-width: 100%;
+  min-width: 0;
+}
+.portal-content-article .portal-rich-text p:empty {
+  display: none;
+}
+@media (max-width: 600px) {
+  .portal-content-article .portal-rich-text {
+    text-align: start;
+    font-size: 16px;
+    line-height: 2.1;
+  }
+}
+
+/* Article elements must not inherit the legacy site's decorative footer or fixed link tiles. */
+.portal-content-article > .portal-article-footer {
+  position: static;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  background: none;
+  color: inherit;
+  box-sizing: border-box;
+}
+.portal-content-article > .portal-article-footer .source-reference {
+  padding: 0;
+  margin: 0;
+  color: #60768a;
+  font-size: 13px;
+  line-height: 2;
+}
+.portal-related-panel .source-directory {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+}
+.portal-related-panel .source-directory .mz-link-btn {
+  display: block;
+  position: static;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  min-height: 0;
+  margin: 0;
+  padding: 14px 0;
+  border: 0;
+  border-bottom: 1px solid #e3ebf0;
+  border-radius: 0;
+  background: transparent;
+  color: #31536d;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 2;
+  text-align: start;
+  text-decoration: none;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  box-shadow: none;
+  transform: none;
+  box-sizing: border-box;
+}
+.portal-related-panel .source-directory .mz-link-btn:hover {
+  color: #087782;
+}
+.portal-related-panel .source-directory .mz-link-btn:focus-visible {
+  outline: 2px solid #168e95;
+  outline-offset: 2px;
+}
+.portal-related-panel .akhbar-container {
+  height: auto;
+  min-height: 0;
+  align-items: start;
+}
+.portal-related-panel .akhbar-container > img {
+  width: 58px;
+  height: 56px;
+  flex-basis: 58px;
+}
+.portal-related-panel .akhbar-left {
+  display: block;
+  position: static;
+  height: auto;
+  padding: 0;
+}
+.portal-related-panel .akhbar-onvan {
+  position: static;
+  inset: auto;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  width: auto;
+  height: auto;
+  max-height: none;
+  margin-block: 5px;
+  overflow: hidden;
+}
+.portal-related-panel .portal-news-card time,
+.portal-related-panel .portal-eyebrow {
+  display: block;
+  position: static;
+  margin: 0;
+  height: auto;
+  color: #58758a;
+  font-size: 10px;
+  line-height: 1.8;
 }

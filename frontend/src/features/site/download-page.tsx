@@ -10,7 +10,7 @@ function PortalPhonePreview() {
         <div className="download-phone-camera" />
         <div className="download-phone-screen">
           <img src="/design/site/assets/image/logo.png" width={64} height={70} alt="" />
-          <strong>استانداری مازندران</strong>
+          <strong>اخبار استان یار</strong>
           <span>درگاه الکترونیکی خدمات</span>
           <div className="download-phone-news">
             <OriginalIcon name="document" />
@@ -47,13 +47,13 @@ function PortalPhonePreview() {
 export async function DownloadPage({ path = '/install' }: { path?: string }) {
   const chrome = loadPortalChrome();
   return (
-    <PortalLayout path={path} title="دانلود و نصب اپلیکیشن" chrome={chrome}>
+    <PortalLayout path={path} title="دانلود و نصب اخبار استان یار" chrome={chrome}>
       <div className="portal-download">
         <section className="download-hero" aria-labelledby="download-title">
           <div className="download-hero-copy">
             <span className="download-eyebrow">پرتال استانداری، همیشه در دسترس</span>
             <h2 id="download-title">
-              استانداری مازندران <strong>همراه شما</strong>
+              <strong>اخبار استان یار</strong>
             </h2>
             <p>
               اخبار استان، خدمات الکترونیکی، فرمانداری‌ها و پیگیری درخواست‌های مردمی؛ با همان تجربهٔ
@@ -110,7 +110,7 @@ export async function DownloadPage({ path = '/install' }: { path?: string }) {
             </div>
             <h2>نسخهٔ وب پرتال</h2>
             <p>
-              پرتال استانداری را به صفحهٔ اصلی دستگاه اضافه کنید و به بخش‌های مورد نیازتان سریع‌تر
+              اخبار استان یار را به صفحهٔ اصلی دستگاه اضافه کنید و به بخش‌های مورد نیازتان سریع‌تر
               برسید.
             </p>
             <a className="download-button" href="#installation-guide">

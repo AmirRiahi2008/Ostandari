@@ -65,14 +65,17 @@ export function renderPoll(
   }
 }
 
-export async function loadCitizenCatalog(context: PageContext): Promise<RecordData | null> {
+export async function loadCitizenCatalog(
+  context: PageContext,
+  read: typeof api = api,
+): Promise<RecordData | null> {
   const { root, signal } = context;
   const [counties, polls, news, faqs, organizations] = await Promise.all([
-    api<RecordData[]>('counties?per_page=100', { signal }),
-    api<RecordData[]>('polls?per_page=100', { signal }),
-    api<RecordData[]>('news?per_page=20', { signal }),
-    api<RecordData[]>('faqs?per_page=100', { signal }),
-    api<RecordData[]>('organizations?per_page=100', { signal }),
+    read<RecordData[]>('counties?per_page=100', { signal }),
+    read<RecordData[]>('polls?per_page=100', { signal }),
+    read<RecordData[]>('news?per_page=20', { signal }),
+    read<RecordData[]>('faqs?per_page=100', { signal }),
+    read<RecordData[]>('organizations?per_page=100', { signal }),
   ]);
   if (signal.aborted) return null;
   all<HTMLSelectElement>(root, '#rep-city,#view-profile select').forEach((select) =>
@@ -89,7 +92,7 @@ export async function loadCitizenCatalog(context: PageContext): Promise<RecordDa
     text(root, '#view-poll h3', '');
     return null;
   }
-  const detail = (await api<RecordData>('polls/' + poll.id, { signal })).data;
+  const detail = (await read<RecordData>('polls/' + poll.id, { signal })).data;
   if (!signal.aborted) renderPoll(root, detail);
   return detail;
 }

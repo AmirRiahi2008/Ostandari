@@ -13,6 +13,8 @@ export function workspaceModuleAllowed(
   module: { path: string; permission: string },
   user?: PortalUser | null,
 ): boolean {
+  if (module.path === '/panel/admin/annual-slogan')
+    return !user || user.portal_context?.can_manage_annual_slogan === true;
   const permissions = user?.role?.permissions;
   if (permissions && !permissions.includes('*') && !permissions.includes(module.permission))
     return false;

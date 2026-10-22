@@ -351,3 +351,16 @@
     font-size: 16px;
   }
 }
+
+.portal-citizen-demo-notice {
+  position: relative;
+  z-index: 30;
+  padding: 10px 20px;
+  border-bottom: 1px solid #dcb66b;
+  background: #fff5db;
+  color: #704e10;
+  font:
+    500 12px/1.9 vazirmatn,
+    sans-serif;
+  text-align: center;
+}
